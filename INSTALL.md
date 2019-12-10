@@ -1,7 +1,7 @@
 ## Dependencies
 
 - bignums  
-- boqEAL  
+- coqEAL  
 - mathcomp  
 - param  
 - multinomials
