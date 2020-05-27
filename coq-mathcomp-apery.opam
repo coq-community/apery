@@ -10,19 +10,18 @@ authors: [
 "Assia Mahboubi"
 "Thomas Sibut-Pinote"
 ]
-build: [
-  [make "INSTMODE=global" "config"]
-  [make "-j%{jobs}%"]
-]
-install: [
-  [make "install"]
-]
+
+build: [make "-j%{jobs}%"]
+
+install: [make "install"]
+
 depends: [
   "coq" {>= "8.11"}
   "coq-coqeal" {>= "1.0.3"}
   "coq-mathcomp-real-closed" {>= "1.0.4"}
   "coq-mathcomp-bigenough" {>= "1.0.0"}
 ]
+
 tags: [
   "keyword:apery recurrence"
   "keyword:irrationality"
@@ -31,4 +30,5 @@ tags: [
   "category:Math/Arith/Number theory"
   "logpath:mathcomp.apery"
 ]
-synopsis: "A constructive proof by computer algebra that zeta(3) irrational."
+
+synopsis: "A constructive proof by computer algebra that zeta(3) is irrational."
