@@ -1,0 +1,76 @@
+---
+fullname: Apery
+shortname: apery
+organization: math-comp
+community: false
+travis: true
+coqdoc: false
+
+
+synopsis: >-
+  A formally verified proof, by computer algebra, that ζ(3) is irrational.
+
+description: |-
+  This project contains a formal proof that the real number zeta(3),
+  also known as Apéry's constant, is irrational. It follows roughly
+  Apéry's original sketch of a proof. However, the recurrence
+  relations constituting the crux of the proof have been guessed by a
+  computer algebra program (in this case in Maple/Algolib). These
+  relations are formally checked a posteriori, so that Coq's kernel
+  remains the sole trusted code base.
+
+publications:
+- pub_url: https://arxiv.org/abs/1912.06611
+  pub_title: A Formal Proof of the Irrationality of ζ(3)
+- pub_url: https://software.imdea.org/~aleks/papers/reflect/reflect.pdf
+  pub_title: A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)
+  pub_doi: https://doi.org/10.1007/978-3-319-08970-6_11
+
+authors:
+- name: Frédéric Chyzak
+  initial: true
+- name: Assia Mahboubi
+  initial: true
+- name: Thomas Sibut-Pinote
+  initial: true
+
+maintainers:
+- name: Assia Mahboubi
+
+
+opam-file-maintainer: assia.mahboubi@inria.fr
+
+opam-file-version: released
+
+license:
+  fullname: CeCILL-C
+  identifier: CECILL-C
+  file: Licence_CeCILL-C_V1-en.txt
+
+supported_coq_versions:
+  text: 8.11 or later (use releases for other Coq versions)
+  opam: '{>= "8.11"}'
+
+
+tested_coq_opam_versions:
+- version: '8.11'
+
+dependencies:
+- opam:
+    name: coq-coqeal
+    version: '{>= "1.0.3"}'
+    name: coq-mathcomp-real-closed
+    version: '{>= "1.0.4"}'
+    name"coq-mathcomp-bigenough '{>= "1.0.0"}'
+
+
+namespace: mathcomp.apery
+
+keywords:
+- name: apery recurrence
+- name: irrationality
+- name: creative telescoping
+
+categories:
+- name: Math/Arith/Number theory
+---
