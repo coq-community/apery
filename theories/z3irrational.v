@@ -337,7 +337,7 @@ Section AperyConstantIsIrrational.
 (* Finally, the irrationality proof of zeta(3). We do not use the standard *)
 (* irrationality criterium using the denominator scale, but rather a *)
 (* simpler argument based on iter_lcmn_mul_rat that works in our case. *)
-Theorem zeta_3_irrational : ~ exists (r : rat), (z3 = r%:CR)%CR.
+Theorem zeta_3_irrational : ~ exists (r : rat), (z3 == r%:CR)%CR.
 Proof.
 case=> z3_rat z3_ratP; case: (denqP z3_rat) z3_ratP => d dP z3_ratP.
 have heps : 0 < 1 / 2%:~R :> rat by [].
