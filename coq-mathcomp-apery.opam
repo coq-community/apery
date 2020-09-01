@@ -1,34 +1,38 @@
 opam-version: "2.0"
-name: "coq-mathcomp-apery"
-maintainer: "Assia.Mahboubi@inria.fr"
-homepage: "https://github.com/math-comp/apery"
-bug-reports: "https://github.com/math-comp/apery/issues"
-dev-repo: "git+https://github.com/math-comp/apery.git"
-license: "CeCILL-C"
-authors: [
-"Frédéric Chyzak"
-"Assia Mahboubi"
-"Thomas Sibut-Pinote"
-]
+maintainer: "assia.mahboubi@inria.fr"
+version: "released"
+
+homepage: "https://github.com/math-comp/mathcomp-apery"
+dev-repo: "git+https://github.com/math-comp/mathcomp-apery.git"
+bug-reports: "https://github.com/math-comp/mathcomp-apery/issues"
+license: "CECILL-C"
+
+synopsis: "A formally verified proof, by computer algebra, that ζ(3) is irrational."
+description: """
+This project contains a formal proof that the real number zeta(3),
+also known as Apéry's constant, is irrational. It follows roughly
+Apéry's original sketch of a proof. However, the recurrence
+relations constituting the crux of the proof have been guessed by a
+computer algebra program (in this case in Maple/Algolib). These
+relations are formally checked a posteriori, so that Coq's kernel
+remains the sole trusted code base."""
 
 build: [make "-j%{jobs}%"]
-
 install: [make "install"]
-
 depends: [
   "coq" {>= "8.11"}
-  "coq-coqeal" {>= "1.0.3"}
-  "coq-mathcomp-real-closed" {>= "1.0.4"}
   "coq-mathcomp-bigenough" {>= "1.0.0"}
 ]
 
 tags: [
+  "category:Math/Arith/Number theory"
   "keyword:apery recurrence"
   "keyword:irrationality"
-  "keyword:zeta function"
   "keyword:creative telescoping"
-  "category:Math/Arith/Number theory"
   "logpath:mathcomp.apery"
 ]
-
-synopsis: "A constructive proof by computer algebra that zeta(3) is irrational."
+authors: [
+  "Frédéric Chyzak"
+  "Assia Mahboubi"
+  "Thomas Sibut-Pinote"
+]
