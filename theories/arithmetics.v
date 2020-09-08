@@ -139,6 +139,7 @@ Proof.
 elim: n => [|n ihn]; first by rewrite iter_lcmn0.
 by rewrite /iter_lcmn (@big_cat_nat _ _ _ n.+1) //= lcmn_gt0 ihn big_nat1.
 Qed.
+Hint Resolve iter_lcmn_gt0.
 
 Fact iter_lcmn_leq_div (n m : nat) : (n <= m)%N -> l n %| l m.
 Proof.
@@ -179,48 +180,41 @@ Lemma bin_valp m k p : (m > 0) -> prime p -> (m <= k) ->
                        (logn p (m * 'C(k, m)) <= logn p (l k)).
 Proof.
 move => gt_m_0 prime_p leq_mk.
-have hp2 : (p >= 2) by exact: prime_gt1.
+have le2p : 2 <= p by exact: prime_gt1.
 have gt_k0 : (k > 0) by rewrite (@leq_trans m).
-have -> : logn p (m * 'C(k, m)) =
-          (logn p m + (logn p k`! - (logn p m`! + logn p (k - m)`!)%N)).
-  rewrite lognM ?bin_gt0 // bin_factd // logn_div // ?lognM ?fact_gt0 // .
+set vp := logn p.
+set tp := trunc_log p.
+have hvp_bin : vp 'C(k,m) = vp k`! - (vp m`! + vp (k - m)`!).
+  rewrite bin_factd // /vp logn_div ?lognM ?fact_gt0 //.
   by rewrite -(bin_fact leq_mk) dvdn_mull.
-have : trunc_log p k <= logn p (l k).
-  rewrite - pfactor_dvdn ?d_lt0 // ; last by apply: iter_lcmn_gt0.
-  by apply: iter_lcmn_div; [by rewrite expn_gt0 ltnW | exact: trunc_logP].
-apply: leq_trans.
-set lhs := (X in X <= _).
-have Hi : forall i : 'I_(logn p m),
-  m %/ p ^ i.+1 + (k - m) %/ p ^ i.+1 <= k %/ p ^ i.+1.
-  move => [i] Hi /= .
-  rewrite -divnDl ?subnKC // pfactor_dvdn // .
-have hsplit : trunc_log p k = (logn p m) + ((trunc_log p k) - (logn p m)).
-  by rewrite subnKC //; exact: (leq_logn_trunc _ _).
-have {lhs} -> : lhs = logn p m +
-    (\sum_(i < trunc_log p k - logn p m)
-       (k %/ p ^ (logn p m + i).+1) -
-    \sum_(i < trunc_log p k - logn p m) (m %/ p ^ (logn p m + i).+1 +
-                                        (k - m) %/ p ^ (logn p m + i).+1)%N).
-  rewrite /lhs logp_sum_floor // !(@fact_logp_sum_small p (trunc_log p k)) //; first last.
-  - by apply: (leq_ltn_trans leq_mk); apply: trunc_log_ltn.
-  - by apply  (leq_ltn_trans (leq_subr m k) (trunc_log_ltn k hp2)).
-  rewrite -!big_split /=;congr (_ + _).
-  rewrite [in LHS]hsplit /=. rewrite 2!big_split_ord /= .
-  have -> : \sum_(i < logn p m) (m %/ p ^ i.+1 + (k - m) %/ p ^ i.+1) =
-            \sum_(i < logn p m) k %/ p ^ i.+1.
-    by apply: eq_bigr => [] [i] Him _ /= ; rewrite -divnDl ?subnKC ?pfactor_dvdn.
-  by rewrite subnDl.
-
-suff Hle : (\sum_(i < trunc_log p k - logn p m) k %/ p ^ (logn p m + i).+1 -
-    \sum_(i < trunc_log p k - logn p m)
-       (m %/ p ^ (logn p m + i).+1 + (k - m) %/ p ^ (logn p m + i).+1)) <=
-       (trunc_log p k - logn p m).
-  by rewrite  [in X in _ <= X]hsplit leq_add.
-suff Heq1 : trunc_log p k - logn p m = \sum_(i < (trunc_log p k) - logn p m) 1.
-  rewrite leq_subLR [in X in _ <= _ + X]Heq1 -big_split /= leq_sum // => i _.
-  have Hk : k = m + (k - m) by rewrite subnKC.
-  by rewrite [in X in X %/ _ <= _]Hk; rewrite leq_divDl.
-by rewrite sum1_card card_ord.
+have {hvp_bin} hvp_bin : vp 'C(k, m) =
+  \sum_(i < tp k) (k %/ p ^ i.+1) -
+  \sum_(i < tp k) (m %/ p ^ i.+1 + (k - m) %/ p ^ i.+1).
+  rewrite -fact_logp_sum_small ?trunc_log_ltn //.
+  rewrite big_split /= -!fact_logp_sum_small ?trunc_log_ltn //.
+  - by apply: (ltn_trans _ (trunc_log_ltn _ le2p)); rewrite ltn_subrL gt_m_0. 
+  - exact: (leq_trans _ (trunc_log_ltn _ le2p)).
+have {hvp_bin} hvp_bin : vp 'C(k, m) =
+  \sum_(i < tp k - vp m) (k %/ p ^ (vp m + i).+1) -
+  \sum_(i < tp k - vp m) (m %/ p ^ (vp m + i).+1 + (k - m) %/ p ^ (vp m + i).+1).
+  set rhs := RHS; rewrite {}hvp_bin.
+  have -> : tp k = vp m + (tp k - vp m) by rewrite subnKC ?leq_logn_trunc.
+  rewrite 2!big_split_ord /=.
+  set x := \sum_(i < vp m) _; set y := \sum_(i < vp m) _.
+  suff <- : x = y by rewrite subnDl.
+  by apply: eq_bigr => [] [i] Him _ /=; rewrite -divnDl ?subnKC ?pfactor_dvdn. 
+have min_vplk : vp m + (tp k - vp m) <= vp (l k).
+  rewrite -maxnE geq_max.
+  have -> : vp m <= vp (l k) by apply: dvdn_leq_log => //; exact: iter_lcmn_div.
+  suff -> : tp k <= vp (l k) by [].
+  rewrite -pfactor_dvdn //; apply: iter_lcmn_div; last exact: trunc_logP.
+  by rewrite expn_gt0 prime_gt0. 
+suff {min_vplk} h : vp 'C(k, m) <= tp k - vp m.
+  by apply: leq_trans min_vplk; rewrite /vp lognM ?bin_gt0 // leq_add2l.
+have -> : tp k - vp m = \sum_(i < tp k - vp m) 1 by rewrite sum1_card card_ord. 
+rewrite {}hvp_bin leq_subLR -big_split /=; apply: leq_sum=> [] [i hi] _ /=.
+have e : k = m + (k - m) by rewrite subnKC.
+rewrite {}[X in X%/ _]e; exact: leq_divDl.
 Qed.
 
 (* In the proof that zeta(3) is irrational, we use this corollary to show *)
