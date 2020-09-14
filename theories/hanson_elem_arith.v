@@ -440,7 +440,7 @@ split.
     apply: leq_pexp2l => // ; exact: leq_logn_trunc.
 - suff Hdiv : p ^ trunc_log p n %| (iter_lcmn n)`_p.
     by apply: dvdn_leq; rewrite ?part_gt0 // .
-  apply: partp_dvdn => // ; first by rewrite iter_lcmn_gt0.
+  apply: partp_dvdn => //. 
   apply: iter_lcmn_div; first by rewrite expn_gt0 p_gt0.
   by rewrite trunc_logP //.
 Qed.
