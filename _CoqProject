@@ -27,6 +27,7 @@ theories/ops_for_b.v
 theories/ops_for_s.v
 theories/ops_for_u.v
 theories/ops_for_v.v
+theories/posnum.v
 theories/punk.v
 theories/rat_of_Z.v
 theories/reduce_order.v
