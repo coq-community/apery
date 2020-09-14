@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* Require Import Reals. *)
-Require Import ssreflect ssrfun ssrbool.
-Require Import ssrnat eqtype choice ssralg ssrnum.
+From mathcomp Require Import ssreflect ssrfun ssrbool.
+From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 (* Require Import boolp reals. *)
 
 (******************************************************************************)
@@ -74,7 +74,7 @@ Notation "x %:pos" := (pos_of_num (Phantom _ x))
 Notation "x %:num" := (num_of_pos x)
   (at level 0, format "x %:num") : ring_scope.
 
-Require Import algC.
+From mathcomp Require Import algC.
 
 Notation posalgc := {posnum algC}.
 (* Notation "2" := 2%:R : ring_scope. *)
