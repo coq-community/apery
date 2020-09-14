@@ -226,7 +226,6 @@ move=> le0j leji lein.
 apply/dvdn_partP => [|p hp]; first by rewrite muln_gt0 bin_gt0 le0j.
 apply: dvdn_trans ( iter_lcmn_leq_div lein); move: hp.
 rewrite mem_primes; case/and3P=> pp hpos hdvd.
-rewrite p_part pfactor_dvdn //; last first.
-  by apply: iter_lcmn_gt0; apply: leq_trans leji.
+rewrite p_part pfactor_dvdn //. 
 exact: bin_valp.
 Qed.
