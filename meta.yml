@@ -1,6 +1,5 @@
----
 fullname: Apery
-shortname: apery
+shortname: mathcomp-apery
 organization: math-comp
 community: false
 travis: true
@@ -61,7 +60,8 @@ dependencies:
     version: '{>= "1.0.3"}'
     name: coq-mathcomp-real-closed
     version: '{>= "1.0.4"}'
-    name"coq-mathcomp-bigenough '{>= "1.0.0"}'
+    name: coq-mathcomp-bigenough
+    version: '{>= "1.0.0"}'
 
 
 namespace: mathcomp.apery
@@ -73,4 +73,3 @@ keywords:
 
 categories:
 - name: Math/Arith/Number theory
----
