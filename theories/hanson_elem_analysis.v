@@ -1,6 +1,6 @@
 From mathcomp Require Import all_ssreflect all_algebra all_field.
 
-Require Import arithmetics multinomial floor.
+Require Import arithmetics multinomial floor posnum.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -234,6 +234,62 @@ Qed.
 Lemma sqrtC_exp_quo (r : rat) : sqrtC r%:C = exp_quo r 1%N 2%N.
 Proof. by rewrite /exp_quo expr1. Qed.
 
+Lemma exp_quo_self_grows (p1 q1 p2 q2 : nat) r1 r2 :
+  (0 < q1)%N ->
+  (0 < q2)%N ->
+  (r1 = p1%:Q / q1%:Q) ->
+  (r2 = p2%:Q / q2%:Q) ->
+  (0 < r1) ->
+  (1 <= r2) ->
+  (r1 <= r2) ->
+  exp_quo r1 p1 q1 <= exp_quo r2 p2 q2.
+Proof.
+move => Hq1 Hq2 Hr1 Hr2 Hr1gt0 Hle1r2 Hle12.
+have Hr1pos : 0 <= r1.
+  exact: ltrW.
+have Hr2pos : 0 <= r2.
+  by rewrite Hr2 divr_ge0 // ?ler0z.
+have Hprodpos : (0 < q1 * q2)%N.
+  by rewrite muln_gt0 Hq1 Hq2.
+have Hleq : (p1 * q2 <= p2 * q1)%N.
+  suff HQ : p1%:Q * q2%:Q <= p2%:Q * q1%:Q.
+  by rewrite -!intrM ler_int in HQ.
+  rewrite -ler_pdivl_mulr ?ltr0z //.
+  rewrite [p2%:~R * _]mulrC -mulrA -ler_pdivr_mull ?ltr0z // mulrC.
+  by move: Hle12; rewrite Hr1 Hr2.
+have -> :
+  exp_quo r2 p2 q2 =
+  exp_quo r2 p1 q1 * exp_quo r2 (p2 * q1 - p1 * q2)%N (q1 * q2)%N.
+  rewrite -exp_quo_plus //.
+  apply: exp_quo_equiv => // .
+    by rewrite !muln_gt0 Hq1 Hq2.
+  rewrite !mulnA.
+  rewrite mulnBl mulnDl mulnBl //.
+  have -> : (p1 * q1 * q2 * q2 = p1 * q2 * q1 * q2)%N.
+    by congr muln; rewrite mulnAC.
+  rewrite subnKC // .
+  by rewrite -mulnA -[X in (_ <= X)%N]mulnA leq_mul.
+have -> : exp_quo r2 p1 q1 = exp_quo r1 p1 q1 * exp_quo (r2 / r1) p1 q1.
+  rewrite exp_quo_mult_distr ?divr_ge0 // .
+  congr exp_quo.
+  rewrite mulrCA divrr ?mulr1 //.
+  exact: unitf_gt0.
+rewrite -{1}[exp_quo _ _ _]mulr1.
+rewrite -mulrA.
+apply: ler_pmul => // ; try rewrite ler01 // .
+  exact: exp_quo_ge0.
+rewrite -[1]mulr1.
+apply: ler_pmul => // ; try rewrite ler01 // .
+  apply: exprn_ege1; rewrite rootC_ge1 //.
+  rewrite rmorphM /= CratrE /=.
+  rewrite ler_pdivl_mulr ?ltr0q ?mul1r //.
+  by rewrite ler_rat.
+apply: exprn_ege1. rewrite rootC_ge1 //.
+suff -> : 1 = ratr (1%N%:Q).
+  by rewrite ler_rat.
+move => t; by rewrite ratr_int.
+Qed.
+ 
 End RationalPower.
 
 (* This Section contains a collection of four facts used in the proof
@@ -277,28 +333,6 @@ have den_neq0 : 1 - r != 0 by rewrite subr_eq0 eq_sym.
 rewrite -[r ^+ n]divr1 addf_div ?oner_neq0 // !mulr1 !divr1; congr (_ / _).
 by rewrite mulrBr mulr1 subrKA exprSr.
 Qed.
-
-Require Import posnum.
-Lemma posnumSn (R : numDomainType) (n : nat) : 0 < (n.+1%:R : R).
-Proof. by []. Qed.
-
-Canonical nat_posnum R n := PosNum (@posnumSn R n).
-
-(* Bad, bad names *)
-Lemma posnumSz (R : numDomainType) (n : nat) : 0 < (n.+1%:~R : R).
-Proof. by []. Qed.
-
-Canonical int_posnum R n := PosNum (@posnumSz R n).
-
-Lemma posnum_expn (R : numDomainType) (n : nat) (x : {posnum R}) : 0 < x%:num ^+ n.
-Proof. by rewrite exprn_gt0. Qed.
-
-Canonical posum_expn (R : numDomainType) n x := PosNum (@posnum_expn R n x).
-
-Lemma posnum_factn (R : numDomainType) (n : nat) : 0 < ((n `!)%:~R : R).
-Proof. rewrite ltr0z; exact: fact_gt0. Qed.
-
-Canonical posum_factn (R : numDomainType) n := PosNum (@posnum_factn R n).
 
   
   (* A bound on (1 + 1 / (n+1)) ^ (n+2) *)

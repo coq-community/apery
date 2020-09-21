@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* Require Import Reals. *)
-From mathcomp Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From mathcomp Require Import all_ssreflect all_algebra all_field.
 (* Require Import boolp reals. *)
 
 (******************************************************************************)
@@ -104,8 +103,26 @@ Canonical mulrn_posnum x n := PosNum (muln_pos_posnum x n).
 Lemma inv_pos_gt0 x : 0 < x%:num^-1. Proof. by rewrite invr_gt0. Qed.
 Canonical invr_posnum x := PosNum (inv_pos_gt0 x).
 
+Lemma pos_Sn (n : nat) : 0 < (n.+1%:R : R).
+Proof. by []. Qed.
+Canonical Sn_posnum n := PosNum (pos_Sn n).
+
+Lemma posnumSz (n : nat) : 0 < ((n.+1)%:~R : R).
+Proof. by rewrite ltr0z. Qed.
+Canonical intSn_posnum n := PosNum (posnumSz n).
+
+Lemma posnum_expn (n : nat) x : 0 < x%:num ^+ n.
+Proof. by rewrite exprn_gt0. Qed.
+Canonical posum_expn n x := PosNum (posnum_expn n x).
+
+Lemma posnum_factn (n : nat) : 0 < ((n `!)%:~R : R).
+Proof. rewrite ltr0z; exact: fact_gt0. Qed.
+Canonical posum_factn n := PosNum (posnum_factn n).
+
+
 Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posnum := PosNum one_pos_gt0.
+
 End PosNum.
 Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
 Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
@@ -154,9 +171,13 @@ Lemma f_gt0 (x : {posnum algC}) :  0 < f (x%:num).
 Proof. by rewrite H. Qed.
 Canonical f_posnum (x : {posnum algC}) := PosNum (f_gt0 x).
 
-Lemma n_gt0 (n : nat) (H : (n > 0)%nat) : 0 < (n%:R : algC).
+Lemma SnC_gt0 (n : nat) : 0 < (n.+1%:R : algC).
 Proof. by rewrite ltr0n. Qed.
-Canonical n_posnum n H := PosNum (@n_gt0 n H).
+Canonical SnC_posnum n := PosNum (SnC_gt0 n).
+
+Lemma Sz_gt0 (n : nat) : 0 < (n.+1%:~R : algC).
+Proof. by rewrite ltr0n. Qed.
+Canonical Sz_posnum n := PosNum (@Sz_gt0 n).
 
 (* Goal forall n (Hn : (n > 0)%nat), True. *)
 (* move => n Hn. *)
