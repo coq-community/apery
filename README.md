@@ -27,7 +27,7 @@ remains the sole trusted code base.
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 
-  - [A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)](https://software.imdea.org/~aleks/papers/reflect/reflect.pdf) doi:[https://doi.org/10.1007/978-3-319-08970-6_11](https://doi.org/https://doi.org/10.1007/978-3-319-08970-6_11)
+  - [A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)](https://doi.org/10.1007/978-3-319-08970-6_11)
 
 ## Building and installation instructions
 
