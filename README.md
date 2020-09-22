@@ -24,14 +24,6 @@ remains the sole trusted code base.
   - Thomas Sibut-Pinote (initial)
 - License: [CeCILL-C](Licence_CeCILL-C_V1-en.txt)
 - Compatible Coq versions: 8.11 or later (use releases for other Coq versions)
-- Additional dependencies:
-  - This project contains a formal proof that the real number zeta(3),
-also known as Apéry's constant, is irrational. It follows roughly
-Apéry's original sketch of a proof. However, the recurrence
-relations constituting the crux of the proof have been guessed by a
-computer algebra program (in this case in Maple/Algolib). These
-relations are formally checked a posteriori, so that Coq's kernel
-remains the sole trusted code base.
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 
@@ -55,6 +47,6 @@ cd mathcomp-apery
 make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
-
+In this case, install first the appropriate dependencies.
 
 
