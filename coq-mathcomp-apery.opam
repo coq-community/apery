@@ -1,13 +1,13 @@
 opam-version: "2.0"
 maintainer: "assia.mahboubi@inria.fr"
-version: "released"
+version: "dev"
 
-homepage: "https://github.com/math-comp/mathcomp-apery"
-dev-repo: "git+https://github.com/math-comp/mathcomp-apery.git"
-bug-reports: "https://github.com/math-comp/mathcomp-apery/issues"
+homepage: "https://github.com/math-comp/apery"
+dev-repo: "git+https://github.com/math-comp/apery.git"
+bug-reports: "https://github.com/math-comp/apery/issues"
 license: "CECILL-C"
 
-synopsis: "A formally verified proof, by computer algebra, that ζ(3) is irrational."
+synopsis: "A formally verified proof, by computer algebra, that ζ(3) is irrational"
 description: """
 This project contains a formal proof that the real number zeta(3),
 also known as Apéry's constant, is irrational. It follows roughly
@@ -17,10 +17,15 @@ computer algebra program (in this case in Maple/Algolib). These
 relations are formally checked a posteriori, so that Coq's kernel
 remains the sole trusted code base."""
 
-build: [make "-j%{jobs}%"]
+build: [make "-j%{jobs}%" ]
 install: [make "install"]
 depends: [
-  "coq" {>= "8.11"}
+  "coq" {>= "8.11" & < "8.12~"}
+  "coq-mathcomp-ssreflect" {>= "1.10" & < "1.11~"}
+  "coq-mathcomp-algebra" 
+  "coq-mathcomp-field" 
+  "coq-coqeal" {>= "1.0.3"}
+  "coq-mathcomp-real-closed" {>= "1.0.4"}
   "coq-mathcomp-bigenough" {>= "1.0.0"}
 ]
 
