@@ -17,8 +17,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -35,14 +34,14 @@ Definition ba_casoratian (k : int) : rat :=
 Lemma ba_casoratianE (n : int) : 2%:~R <= n ->
                                  ba_casoratian n = 6%:~R / (n%:~R + 1%:~R) ^ 3.
 Proof.
-move=> le2n; have le0n : 0 <= n by exact: ler_trans le2n.
+move=> le2n; have le0n : 0 <= n by exact: le_trans le2n.
 pose v (k : int) : rat := 6%:~R / (k%:~R + 1%:~R) ^ 3.
 pose c1 := annotated_recs_c.P_cf2.
 pose c0 := annotated_recs_c.P_cf0.
 pose Urec (v : int -> rat) := forall (k : int), 2%:~R <= k ->
                       (c1 k) * v (int.shift 1 k) - (c0 k) * v k = 0.
 have uUrec : Urec ba_casoratian.
-  move=> k le2k; have le0k : 0 <= k by exact: ler_trans le2k.
+  move=> k le2k; have le0k : 0 <= k by exact: le_trans le2k.
   have brec := b_Sn2 le0k; have arec := a_Sn2 le2k.
   have -> : 0 = a (int.shift 1 k) *  annotated_recs_c.P_horner b k
                 - b  (int.shift 1 k) *  annotated_recs_c.P_horner a k.

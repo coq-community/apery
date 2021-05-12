@@ -9,8 +9,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -26,7 +25,7 @@ have Hrpq : r = p%:Q / q%:Q by rewrite -[r]divq_num_den.
 have EqEuclid : p = (p %/ q)%Z * q + (p %% q)%Z by apply: divz_eq.
 have qnot0 : q%:Q != 0 by rewrite intq_eq0; apply: denq_neq0.
 have qgt0 : 0 < q by exact: denq_gt0.
-have qrge0 :  0 <= q%:~R :> rat by rewrite ler0z ?ltrW.
+have qrge0 :  0 <= q%:~R :> rat by rewrite ler0z ?ltW.
 have EqEuclidQ : r = (p %/ q)%Z%:Q + ((p %% q)%Z%:Q / q%:Q) .
   apply: (mulIf qnot0); set rq := q%:~R.
   by rewrite mulrDl Hrpq  !(mulfVK qnot0) /rq -rmorphM /= -rmorphD /= -EqEuclid.
@@ -54,8 +53,8 @@ rewrite -ltz_addr1.
 suff: (floorQ r1)%:Q < (floorQ r2 + 1)%:Q by rewrite ltr_int.
 have Hle12 : (floorQ r1)%:Q <= r2.
   have Hle1 : (floorQ r1)%:Q <= r1 by case/andP: (floorQ_spec r1).
-  by apply: (ler_trans Hle1).
-apply: (ler_lt_trans Hle12).
+  by apply: (le_trans Hle1).
+apply: (le_lt_trans Hle12).
 by rewrite intrD; case/andP: (floorQ_spec r2).
 Qed.
 
@@ -63,14 +62,14 @@ Lemma floorQ_unique (r : rat) (m : int) : m%:Q <= r < (m + 1)%:Q -> m = floorQ r
 Proof.
 have HfloorQ := (floorQ_spec r).
 move => H.
-apply/eqP; rewrite eqr_le; apply/andP; split.
+apply/eqP; rewrite eq_le; apply/andP; split.
 - suff: m%:Q < ((floorQ r) + 1)%:Q by rewrite ltr_int ltz_addr1.
   have Hlemr :  m%:Q <= r by case/andP: H.
-  apply: (ler_lt_trans Hlemr); by case/andP: HfloorQ; rewrite intrD.
+  apply: (le_lt_trans Hlemr); by case/andP: HfloorQ; rewrite intrD.
 - rewrite -ltz_addr1.
   have Hleflm : (floorQ r)%:Q <= r by case/andP: HfloorQ.
   suff: (floorQ r)%:Q < (m + 1)%:Q by rewrite ltr_int.
-  apply: (ler_lt_trans Hleflm).
+  apply: (le_lt_trans Hleflm).
   by case/andP: H.
 Qed.
 

@@ -43,19 +43,45 @@ license:
   file: Licence_CeCILL-C_V1-en.txt
 
 supported_coq_versions:
-  text: 8.11
-  opam: '{>= "8.11" & < "8.12~"}'
+  text: 8.11 or later
+  opam: '{(>= "8.11" & < "8.15~") | (= "dev")}'
 
 tested_coq_opam_versions:
-- version: '1.10.0-coq-8.11'
+- version: '1.12.0-coq-8.11'
   repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-8.12'
+  repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-8.14'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.11'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.12'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.14'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-dev'
+  repo: 'mathcomp/mathcomp'
+- version: 'coq-8.11'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.12'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.13'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.14'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-dev'
+  repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{>= "1.10" & < "1.11~"}'
+    version: '{(>= "1.12" & < "1.14~") | (= "dev")}'
   description: |-
-    [MathComp ssreflect 1.10](https://math-comp.github.io)
+    [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-algebra
   description: |-
@@ -66,14 +92,14 @@ dependencies:
     [MathComp field](https://math-comp.github.io)
 - opam:
     name: coq-coqeal
-    version: '{>= "1.0.3"}'
+    version: '{>= "1.0.5"}'
   description: |-
-    [CoqEAL 1.0.3 or later](https://github.com/CoqEAL/CoqEAL)
+    [CoqEAL 1.0.5 or later](https://github.com/CoqEAL/CoqEAL)
 - opam:
     name: coq-mathcomp-real-closed
-    version: '{>= "1.0.4"}'
+    version: '{>= "1.1.2"}'
   description: |-
-    [MathComp real closed fields 1.0.4 or later](https://github.com/math-comp/real-closed)
+    [MathComp real closed fields 1.1.2 or later](https://github.com/math-comp/real-closed)
 - opam:
     name: coq-mathcomp-bigenough
     version: '{>= "1.0.0"}'

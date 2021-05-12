@@ -7,9 +7,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
-Import BigEnough.
+Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
 Open Scope ring_scope.
 
@@ -68,8 +66,8 @@ move=> ltxy lt0z; pose_big_enough i.
   apply: (@lt_crealP _ ((diff ltxy) * (diff lt0z)) i i) => //=.
   - apply: mulr_gt0; exact: diff_gt0.
   rewrite -ler_sub_addl -mulrBl; apply: ler_pmul.
-  - by apply: ltrW; apply: diff_gt0.
-  - by apply: ltrW; apply: diff_gt0.
+  - by apply: ltW; apply: diff_gt0.
+  - by apply: ltW; apply: diff_gt0.
   - by rewrite ler_sub_addl diffP.
   - by rewrite -[X in X <= _]add0r -[0]/((0%:CR)%CR i) diffP.
 by close.
@@ -121,8 +119,8 @@ move=> lt_0x lt_0y; pose_big_enough i.
   apply: (@lt_crealP _ ((diff lt_0x) * (diff lt_0y)) i i) => //=.
   - apply: mulr_gt0; exact: diff_gt0.
   rewrite add0r; apply: ler_pmul.
-  - by apply: ltrW; apply: diff_gt0.
-  - by apply: ltrW; apply: diff_gt0.
+  - by apply: ltW; apply: diff_gt0.
+  - by apply: ltW; apply: diff_gt0.
   - by rewrite -[X in X <= _]add0r -[0]/((0%:CR)%CR i) diffP.
   - by rewrite -[X in X <= _]add0r -[0]/((0%:CR)%CR i) diffP.
 by close.
@@ -143,14 +141,14 @@ Proof. by apply: eq_creal_ext=> i /=. Qed.
 Lemma le_ubound (x : creal F) : (x <= (ubound x)%:CR)%CR.
 Proof.
 apply: (@le_crealP _ 0%N) => j _ /=.
-apply: ler_trans (uboundP x j); exact: ler_norm.
+apply: le_trans (uboundP x j); exact: ler_norm.
 Qed.
 
 Lemma lt_ubound (x : creal F) : (x < (ubound x + 1)%:CR)%CR.
 Proof.
 pose_big_enough i.
   apply: (@lt_crealP _ 1 i i) => //=; rewrite ler_add2r.
-  apply: ler_trans (uboundP x i); exact: ler_norm.
+  apply: le_trans (uboundP x i); exact: ler_norm.
 by close.
 Qed.
 
@@ -164,7 +162,7 @@ move=> ltxy leyz; pose_big_enough i.
     apply/eqP; rewrite eq_sym subr_eq -addrA -mulrDr.
     have <- : 1 = 2%:~R^-1 + 2%:~R^-1 :> F by rewrite [LHS](splitf 2) div1r.
     by rewrite mulr1.
-  rewrite ler_subl_addr; apply: ler_trans (diffP _ _) _ => //; apply: ltrW.
+  rewrite ler_subl_addr; apply: le_trans (diffP _ _) _ => //; apply: ltW.
   by apply: le_modP.
 by close.
 Qed.
@@ -177,9 +175,9 @@ move=> lexy ltyz; pose_big_enough i.
   have hpos : 0 < diff ltyz / 2%:~R.
     apply: divr_gt0; rewrite ?ltr0Sn //; exact: diff_gt0.
   apply: (@lt_crealP _  ((diff ltyz) / 2%:~R) i i) => //=.
-  apply: ler_trans (@diffP _ _ _ ltyz _ _ _) => //; rewrite -ler_subr_addr.
+  apply: le_trans (@diffP _ _ _ ltyz _ _ _) => //; rewrite -ler_subr_addr.
   suff <- : y i + diff ltyz / 2%:~R = y i + diff ltyz - diff ltyz / 2%:~R.
-    by apply: ltrW; apply: le_modP.
+    by apply: ltW; apply: le_modP.
   apply/eqP; rewrite eq_sym subr_eq -addrA -mulrDr.
   have <- : 1 = 2%:~R^-1 + 2%:~R^-1 :> F by rewrite [LHS](splitf 2) div1r.
   by rewrite mulr1. 
@@ -196,7 +194,7 @@ Lemma lecr_mulf2r (z : F) (x y : creal F) :
   (x <= y)%CR ->  0 <= z -> (x * z%:CR <= y * z%:CR)%CR.
 Proof.
 move=> lexy.
-rewrite ler_eqVlt; case/orP=> [/eqP <- | lt0z]; first by rewrite !mul_creal0.
+rewrite le_eqVlt; case/orP=> [/eqP <- | lt0z]; first by rewrite !mul_creal0.
 move => h; apply: lexy.
 have aux t : (t == t * z%:CR * z^-1%:CR)%CR.
   rewrite -mulcrA -cst_crealM mulfV ?mul_creal1 //; move: lt0z; rewrite lt0r.
@@ -239,9 +237,9 @@ exists_big_modulus m F.
     rewrite /d [(_ - _) + _]addrC addrA addrNK opprB addrA [_ - x i]addrC.
     by rewrite addrA addKr addrC.
   suff step1 : `|d j + (x i - x j)| + `|d i| < eps.
-    by apply: ler_lt_trans step1; rewrite -[`|d i|]normrN; apply: ler_norm_add.
+    by apply: le_lt_trans step1; rewrite -[`|d i|]normrN; apply: ler_norm_add.
   suff step2 : `|d j| + `|x i - x j| + `|d i| < eps.
-    by apply: ler_lt_trans step2; rewrite ler_add2r; apply: ler_norm_add.
+    by apply: le_lt_trans step2; rewrite ler_add2r; apply: ler_norm_add.
   have -> : eps = eps / 3%:~R + eps / 3%:~R + eps / 3%:~R.
     rewrite /= in eps lt_eps_0 hmi hmj *.
     rewrite -!mulrDl -[in X in _ = X](mulr1 eps) -!mulrDr -mulrA.

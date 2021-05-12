@@ -9,8 +9,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -62,13 +61,13 @@ have {rhs} -> : rhs = 2%:~R^-1 * (2%:~R * r - 1) / (r - 1) ^ 2 * (r ^ 2 )^-1.
   by rewrite /rhs; rat_field; rewrite /r; move: lt1r; goal_to_lia; intlia.
 have -> : (r ^ 3)^-1 = r ^-1 * (r ^ 2 )^-1.
   by rat_field; rewrite /r; move: lt1r; goal_to_lia; intlia.
-have le0r : 0 <= r by apply: ltrW; apply: ltr_trans lt1r.
+have le0r : 0 <= r by apply: ltW; apply: lt_trans lt1r.
 apply: ler_pmul; rewrite ?invr_ge0 ?exprn_ge0 //.
 rewrite ler_pdivl_mulr; last first.
   by apply: exprz_gt0; rewrite subr_gt0.
-rewrite ler_pdivr_mull; last by apply: ltr_trans lt1r.
+rewrite ler_pdivr_mull; last by apply: lt_trans lt1r.
 rewrite -subr_ge0; set rhs := (X in _ <= X).
 have {rhs} -> : rhs = 3%:~R / 2%:~R * r - 1 by rewrite /rhs; rat_field.
-rewrite subr_ge0; apply: mulr_ege1 => //; exact: ltrW.
+rewrite subr_ge0; apply: mulr_ege1 => //; exact: ltW.
 Qed.
 

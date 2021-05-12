@@ -33,7 +33,7 @@ Let a (n : int) : rat := \sum_(0 <= k < n + 1 :> int) (c n k).
 Theorem recAperyA (n : int) : n >= (2 : int) -> c.P_horner a n = 0.
 Proof.
 move=> nge2.
-have nge0 : n >= 0 by apply: ler_trans nge2.
+have nge0 : n >= 0 by apply: le_trans nge2.
 rewrite /c.P_horner.
 rewrite (punk.sound_telescoping P_eq_Delta_Q) //; last exact: addr_ge0.
 set telQ := (X in X + _ + _).
@@ -46,11 +46,11 @@ have onDE : onD =
   rewrite /onD /c.not_D big_int_cond /= int.shift2Z.
   rewrite (eq_bigl (fun i => i == n)); last first.
     move=> j /=; rewrite ltz_addr1; case: (altP (j =P n)).
-    - by move ->; rewrite ltrr andbF /= nge0 lerr.
+    - by move ->; rewrite ltxx andbF /= nge0 lexx.
     - move=> njn.
-      rewrite nge0 /=; case: (0 <= j) => //=; rewrite -lerNgt.
-      by rewrite -eqr_le (negPf njn).
-  by rewrite big_pred1_eqz ltz_addr1 nge0 lerr.
+      rewrite nge0 /=; case: (0 <= j) => //=; rewrite -leNgt.
+      by rewrite -eq_le (negPf njn).
+  by rewrite big_pred1_eqz ltz_addr1 nge0 lexx.
 (* We simplify using the cancellations of onD with telQ. *)
 (* This step is REQUIRED because terms in onD have potential divisions by 0. *)
 have {telQ} -> :

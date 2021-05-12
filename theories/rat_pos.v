@@ -4,13 +4,11 @@
    formalization. *)
 
 Require Import Psatz ZArith.
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat.
-Require Import ssralg ssrint rat ssrnum.
+From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import field_tactics lia_tactics.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -156,7 +154,7 @@ Lemma affine_poly_pos (n : int) (a b : rat) :
   0 <= n -> a > 0 -> b > 0 -> 0 < a * n%:~R + b.
 Proof.
 move=> le_0_n pos_a pos_b.
-apply: (@ltr_le_trans _ b) => //.
+apply: (@lt_le_trans _ _ b) => //.
 rewrite ler_addr mulr_ge0 //.
   by rewrite le0r pos_a orbT.
 by rewrite ler0z.

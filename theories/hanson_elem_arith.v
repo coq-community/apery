@@ -11,8 +11,7 @@ Require Import field_tactics.
 Require Import lia_tactics.
 Require Import extra_mathcomp.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Section BinomialMissing.
 
@@ -278,7 +277,7 @@ case: n => [| n] // _; case: i => [| i]; first by rewrite big_nil.
 suff : (((\sum_(0 <= j < i.+1) n.+1 %/ a j)%N)%:Q < n.+1%:Q)%R.
   by rewrite -ltz_nat ltr_int.
 suff hdiv : (\sum_(0 <= i0 < i.+1) (n.+1%:Q / (a i0)%:Q) < n.+1%:Q)%R.
-  apply: ler_lt_trans hdiv; rewrite sumMz; apply: ler_sum => j _.
+  apply: le_lt_trans hdiv; rewrite sumMz; apply: ler_sum => j _.
   rewrite ler_pdivl_mulr // -intrM ler_int; exact: leq_trunc_div.
 rewrite -mulr_sumr gtr_pmulr; last exact: ltr0z.
 exact: lt_sum_aV_1.
@@ -376,8 +375,7 @@ rewrite betaE // logp_sum_floor // logn_prod; last by move=> i; exact: fact_gt0.
 have -> : \sum_(0 <= i < k) logn p (n %/ a i)`! =
           \sum_(0 <= i < k) \sum_(j < trunc_log p n) (n %/ a i) %/ p ^ j.+1.
   apply: eq_bigr => i _; apply: fact_logp_sum_small => //.
-  apply: (@leq_ltn_trans n); first exact: leq_div.
-  by apply: trunc_log_ltn; rewrite prime_gt1.
+  exact/leq_ltn_trans/trunc_log_ltn/prime_gt1/Hprime/leq_div.
 have -> :
   \sum_(0 <= i < k) \sum_(j < trunc_log p n) (n %/ a i) %/ p ^ j.+1 =
   \sum_(j < trunc_log p n) \sum_(0 <= i < k)  (n %/ a i) %/ p ^ j.+1.
@@ -433,16 +431,9 @@ split.
   case: j lejn lcmnpj => [|j] lejn lcmnpj.
     by rewrite lcmnpj partn0 expn_gt0 p_gt0.
   rewrite lcmnpj p_part.
-  suff Hint : p ^ logn p j.+1 <= p ^ trunc_log p j.+1.
-    apply: leq_trans Hint _. apply: leq_pexp2l => // .
-    apply: trunc_log_max => // .
-    apply: (leq_trans (trunc_logP _ _) _) => // .
-    apply: leq_pexp2l => // ; exact: leq_logn_trunc.
-- suff Hdiv : p ^ trunc_log p n %| (iter_lcmn n)`_p.
-    by apply: dvdn_leq; rewrite ?part_gt0 // .
-  apply: partp_dvdn => //. 
-  apply: iter_lcmn_div; first by rewrite expn_gt0 p_gt0.
-  by rewrite trunc_logP //.
+  exact/leq_pexp2l/leq_logn_trunc.
+- apply/dvdn_leq/partp_dvdn/iter_lcmn_div/trunc_logP => //.
+  by rewrite expn_gt0 p_gt0.
 Qed.
 
 Lemma lcm_leq_Cnk n k : iter_lcmn n <= C n k.
@@ -461,9 +452,7 @@ apply: trunc_log_max; first by rewrite prime_gt1.
 suff Hj : {j | (j <= n.+1) && (ln`_p == j`_p)}.
   case: Hj => j /andP [Hj1 Hj2]; rewrite -p_part; move/eqP: Hj2 => -> .
   case: j Hj1 => [|j Hj1]; first by rewrite partn0.
-  suff Hj' : j.+1`_p <= j.+1.
-    exact : leq_trans Hj1.
-  by apply: dvdn_leq => //; rewrite dvdn_part.
+  exact/leq_trans/Hj1/dvdn_leq/dvdn_part.
 exact: part_p_iter_lcmn.
 Qed.
 
@@ -529,9 +518,8 @@ Local Open Scope nat_scope.
 Lemma replace_exponential (n : nat) : 1 + n <= 3^n.
 Proof.
 elim: n => [|n HIn] // .
-rewrite expnS -(addn1 n) addnA; apply: (@leq_trans (3^n + 1)).
-  by apply: (leq_add HIn ).
-by rewrite mulSn; apply: leq_add ; rewrite // muln_gt0 expn_gt0.
+apply: (@leq_trans (1 + 3 ^ n)); first by rewrite leq_add2l.
+by rewrite addnC expnS mulSn leq_add2l muln_gt0 expn_gt0.
 Qed.
 
 End UsefulBound.

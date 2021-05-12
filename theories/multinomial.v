@@ -2,10 +2,7 @@ From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import extra_mathcomp.
 
-
-
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope nat_scope.
 

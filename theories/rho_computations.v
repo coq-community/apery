@@ -13,8 +13,7 @@ From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat binint rational.
 Import Refinements (* AlgOp *). 
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 

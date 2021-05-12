@@ -9,8 +9,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Delimit Scope Z_scope with coqZ.
@@ -42,22 +41,22 @@ Lemma Z_ltP (x y : int) : (x < y) <-> (Z.lt (Z_of_int x) (Z_of_int y)).
 Proof.
 split; case: x=> [[|xx]|xx]; case: y => [[|yy]|y] //.
 - move=> h; rewrite /= !Zpos_P_of_succ_nat; apply: Zsucc_lt_compat; apply: inj_lt.
-  exact: ltP.
+  exact: ssrnat.ltP.
 - rewrite /Z_of_int; rewrite !NegzE => h.
-  have {h} : (Z_of_nat y.+1 < Z_of_nat xx.+1)%coqZ by apply/inj_lt/ltP.
+  have {h} : (Z_of_nat y.+1 < Z_of_nat xx.+1)%coqZ by apply/inj_lt/ssrnat.ltP.
   by lia.
-- by rewrite /= !Zpos_P_of_succ_nat; move/Zsucc_lt_reg/inj_lt_rev/ltP.
+- by rewrite /= !Zpos_P_of_succ_nat; move/Zsucc_lt_reg/inj_lt_rev/ssrnat.ltP.
 - rewrite /Z_of_int !NegzE => h.
 - have {h} : (Z_of_nat y.+1 < Z_of_nat xx.+1)%coqZ by lia.
-  by move/inj_lt_rev/ltP.
+  by move/inj_lt_rev/ssrnat.ltP.
 Qed.
 
 Lemma Z_leP (x y : int) : (x <= y) <-> Z.le (Z_of_int x) (Z_of_int y).
 Proof.
 split.
-- rewrite ler_eqVlt; case/orP; first by move/eqP->; exact: Z.le_refl.
+- rewrite le_eqVlt; case/orP; first by move/eqP->; exact: Z.le_refl.
   move/Z_ltP; exact: Zlt_le_weak.
-case/Z_le_lt_eq_dec; first by move/Z_ltP/ltrW.
+case/Z_le_lt_eq_dec; first by move/Z_ltP/ltW.
 by move/Z_of_intP->.
 Qed.
 
@@ -73,15 +72,15 @@ Ltac zify_int_rel :=
   | H : context [ @eq _ ?a ?b ] |- _ => rewrite -> (Z_of_intP a b) in H
   | |- context [ @eq _ ?a ?b ] => rewrite -> (Z_of_intP a b)
   (* less than *)
-  | H : is_true (@Num.Def.ltr _ _ _) |- _ => move/Z_ltP: H => H
-  | |- is_true (@Num.Def.ltr _ _ _) => rewrite -> Z_ltP
-  | H : context [  is_true (@Num.Def.ltr _ ?a ?b) ] |- _ => rewrite -> (Z_ltP a b) in H
-  | |- context [ is_true (@Num.Def.ltr _ ?a ?b) ] => rewrite -> (Z_ltP a b)
+  | H : is_true (@Order.lt _ _ _ _) |- _ => move/Z_ltP: H => H
+  | |- is_true (@Order.lt _ _ _ _) => rewrite -> Z_ltP
+  | H : context [  is_true (@Order.lt _ _ ?a ?b) ] |- _ => rewrite -> (Z_ltP a b) in H
+  | |- context [ is_true (@Order.lt _ _ ?a ?b) ] => rewrite -> (Z_ltP a b)
   (* less or equal *)
-  | H : is_true (@Num.Def.ler _ _ _) |- _ => move/Z_leP: H => H
-  | |- is_true (@Num.Def.ler _ _ _) => rewrite -> Z_leP
-  | H : context [  is_true (@Num.Def.ler _ ?a ?b) ] |- _ => rewrite -> (Z_leP a b) in H
-  | |- context [  is_true (@Num.Def.ler _ ?a ?b) ] => rewrite -> (Z_leP a b)
+  | H : is_true (@Order.le _ _ _ _) |- _ => move/Z_leP: H => H
+  | |- is_true (@Order.le _ _ _ _) => rewrite -> Z_leP
+  | H : context [  is_true (@Order.le _ _ ?a ?b) ] |- _ => rewrite -> (Z_leP a b) in H
+  | |- context [  is_true (@Order.le _ _ ?a ?b) ] => rewrite -> (Z_leP a b)
   (* Boolean equality *)
   |H : is_true (@eq_op _  _ _) |- _ => rewrite -> Z_of_intbP in H
   | |- is_true (@eq_op _  _ _) => rewrite -> Z_of_intbP
@@ -101,11 +100,11 @@ have aux (n m : nat) :
   Z_of_int (Posz n.+1 + Negz m) = (Z_of_int n.+1 + Z_of_int (Negz m))%coqZ.
   rewrite {2 3}/Z_of_int NegzE; case: (ltngtP m n)=> hmn.
   + rewrite subzn; last exact: ltn_trans hmn _.
-    rewrite subSn // /Z_of_int -subSn // inj_minus1 //; apply/leP.
+    rewrite subSn // /Z_of_int -subSn // inj_minus1 //; apply/ssrnat.leP.
     exact: ltn_trans hmn _.
   + rewrite -[_ - _]opprK opprB subzn; last exact: ltn_trans hmn _.
     rewrite subSn // -NegzE /Z_of_int -subSn // inj_minus1; first by lia.
-    apply/leP; exact: ltn_trans hmn _.
+    apply/ssrnat.leP; exact: ltn_trans hmn _.
   + by rewrite hmn subrr Zplus_opp_r.
 move=> x y /=; case: x=> [[|xx]|xx]; case: y => [[|yy]|y] //.
 - by rewrite /= subn0.
@@ -212,7 +211,7 @@ repeat (match goal with
  | |-  context [ is_true (andb _ _) ]      => rewrite -(rwP andP)
  | H : context [ is_true (orb _ _) ] |- _ => rewrite -(rwP orP) in H
  | |-  context [ is_true (orb _ _) ]      => rewrite -(rwP orP) end);
-rewrite ?(=^~ ltrNge, =^~ lerNgt).
+rewrite ?(=^~ ltNge, =^~ leNgt).
 
 Ltac goal_to_lia :=
 propify_bool_connectives;

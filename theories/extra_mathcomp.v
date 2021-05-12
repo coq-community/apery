@@ -9,9 +9,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
-Import BigEnough.
+Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
 Open Scope ring_scope.
 
@@ -94,7 +92,7 @@ Lemma ltr1z (n : int) : (1 < n%:~R :> R) = (1 < n).
 Proof. by rewrite -[1]/(1%:~R) ltr_int. Qed.
 
 Lemma ltr_neq (x y : R) : x < y -> x != y.
-Proof. by rewrite ltr_def eq_sym; case/andP. Qed.
+Proof. by rewrite lt_def eq_sym; case/andP. Qed.
 
 Lemma lt0r_neq0 (x : R) : 0 < x  -> x != 0.
 Proof. by move => ?; rewrite eq_sym ltr_neq. Qed.
@@ -137,13 +135,13 @@ Proof.
 move=> ge0E lt1r.
 pose_big_enough M.
   exists M => k hMk.
-  have le1r : 1 <= r by rewrite ltrW.
+  have le1r : 1 <= r by rewrite ltW.
   have {lt1r} lt1r : 0 < r - 1 by rewrite subr_gt0.
   suff aux (n : nat) : n%:~R * (r - 1) - 1 <= r ^ n.
-    apply: ltr_le_trans (aux k); rewrite -ltr_sub_addr opprK -ltr_pdivr_mulr //.
+    apply: lt_le_trans (aux k); rewrite -ltr_sub_addr opprK -ltr_pdivr_mulr //.
     have h : 0 <= (E + 1) / (r - 1).
-       apply: divr_ge0; by [exact:  addr_ge0 | exact: ltrW].
-    by apply: ltr_trans (archi_boundP h) _; rewrite ltr_nat.
+       apply: divr_ge0; by [exact:  addr_ge0 | exact: ltW].
+    by apply: lt_trans (archi_boundP h) _; rewrite ltr_nat.
   elim: n => [|n ihn]; first by rewrite mul0r add0r expr0z.
   have -> : n.+1%:~R * (r - 1) - 1 = n%:~R * (r - 1) - 1 + (r - 1).
     by rewrite -addn1 PoszD rmorphD /= mulrDl mul1r addrAC.
@@ -152,7 +150,7 @@ pose_big_enough M.
   have -> : r ^ n.+1 - r ^ n = r ^ n * (r - 1).
     by rewrite mulrDr mulrN mulr1 -exprnP exprSr.
   case: n {ihn} => [| n ]; first by rewrite mul1r.
-  rewrite ler_pmull // -exprnP expr_ge1 //; exact: ler_trans le1r.
+  rewrite ler_pmull // -exprnP expr_ge1 //; exact: le_trans le1r.
 by close.
 Qed.
 
@@ -160,7 +158,7 @@ Lemma Gseqlt1 (r : rat)(eps : rat) : 0 < eps -> 0 < r < 1 ->
   exists N : nat, forall n : nat, (N <= n)%nat -> r ^ n < eps.
 Proof.
 move=> ge0eps /andP [lt0r ltr1].
-have hE : 0 <= eps ^-1 by apply/ltrW; rewrite invr_gt0.
+have hE : 0 <= eps ^-1 by apply/ltW; rewrite invr_gt0.
 have hr : 1 < r ^-1 by rewrite invf_gt1.
 have [M hM] := Gseqgt1 hE hr; exists M => n hMn.
 rewrite -ltf_pinv //; first by rewrite invr_expz -exprz_inv; exact: hM.

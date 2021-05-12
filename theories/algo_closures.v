@@ -22,12 +22,11 @@ Unset Printing Implicit Defensive.
 Open Scope ring_scope.
 
 Import GRing.Theory.
-Import Num.Theory.
 
 (* First, a few lemmas to avoid repeated 'have ...' in the proofs. *)
 
 Lemma middle_1 (a b : int) : a + 1 + b = a + b + 1.
-Proof.  by rewrite -addrA [1 + _]addrC addrA.  Qed.
+Proof.  by rewrite addrAC. Qed.
 
 Lemma alt_sign (a : int) : (-1) ^ (a + 1) = - (-1) ^ a :> rat.
 Proof.  by rewrite exprzDr // expr1z mulrN1.  Qed.

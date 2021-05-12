@@ -12,8 +12,7 @@ Require (* rat_pos *) algo_closures initial_conds.
 Require annotated_recs_c.
 Require annotated_recs_v.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -132,7 +131,7 @@ Lemma Sn4_flat_to_Sn4_rew (w : int -> rat) :
          annotated_recs_v.P_cf4 n).
 Proof.
 move=> horner_hyp n le_2_n.
-have le_0_n : n >= 0 by apply: (ler_trans _ le_2_n).
+have le_0_n : n >= 0 by apply: (le_trans _ le_2_n).
 set goal := (_ = _).
 move: {horner_hyp} (horner_hyp n le_2_n).
 rewrite /annotated_recs_v.P_horner /punk.horner_seqop /=.
@@ -200,8 +199,8 @@ suff gen (n : int) : (0 : int) <= n -> n <= p -> b' (n + k) = b (n + k).
   by move=> p_pos; apply: (gen _ p_pos).
 move: n.
 elim/int_rect: p => [p h0p hp0 | p ihp n le0n hnp | p _ n hn hp]; last 1 first.
-- by have := (ler_trans hn hp).
-- have -> : p = 0 by apply/eqP; rewrite eqr_le h0p hp0.
+- by have := (le_trans hn hp).
+- have -> : p = 0 by apply/eqP; rewrite eq_le h0p hp0.
   by rewrite add0r.
 case: (altP (n =P 0)) => [-> | hn0].
   by rewrite add0r.
@@ -224,7 +223,7 @@ have -> : m + 4 + k = int.shift 4 (m + k).
   by rewrite int.shift2Z addrAC.
 have b'_Sn4_from2 (n : int) : (2 : int) <= n -> 
                                annotated_recs_v.P_horner b' n = 0.
-  by move=> hn; apply: b'_Sn4; apply: ler_trans hn.
+  by move=> hn; apply: b'_Sn4; apply: le_trans hn.
 have hmk2 : (2 : int) <= m + k by move: kpos le0m; clear; intlia.
 rewrite (Sn4_flat_to_Sn4_rew b'_Sn4_from2 hmk2); clear b'_Sn4_from2.
 rewrite (Sn4_flat_to_Sn4_rew algo_closures.b_Sn4 hmk2); clear hmk2.

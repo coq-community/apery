@@ -15,9 +15,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
-Import BigEnough.
+Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
 Open Scope ring_scope.
 
@@ -51,7 +49,7 @@ have [/= modulus_n_inv modulus_n_inv_P] : {asympt e : i / n_inv_seq i < e}.
     rewrite /n_inv_seq -div1r ltr_pdivr_mulr;
       last by rewrite ltr0n; raise_big_enough.
     rewrite -ltr_pdivr_mull // mulr1.
-    apply: (ltr_trans (archi_boundP _) _); first by rewrite ger0E ltrW.
+    apply: (lt_trans (archi_boundP _) _); first by rewrite ger0E ltW.
     rewrite ltr_nat; raise_big_enough.
   by close.
 exists_big_modulus m rat.
@@ -71,14 +69,14 @@ exists_big_modulus m rat.
     apply: ler_sum => k; case/andP=> hjk hki; rewrite /v addn1.
     apply: z3seq_smd_maj; rewrite ltr0n; apply: leq_trans _ hjk.
     raise_big_enough.
-  apply: (ler_lt_trans maj) => {maj}; rewrite telescope_nat //.
+  apply: (le_lt_trans maj) => {maj}; rewrite telescope_nat //.
   suff maj : v j < 2%:~R * eps.
     rewrite mulNr -mulrN opprB ltr_pdivr_mull // ltr_subl_addr.
-    apply: (ltr_trans maj); rewrite ltr_addl; apply: vpos; exact: ltn_trans ltij.
+    apply: (lt_trans maj); rewrite ltr_addl; apply: vpos; exact: ltn_trans ltij.
   have maj : v j < j%:~R ^-1.
     rewrite /v -div1r ltr_pdivr_mulr; last by rewrite exprz_gt0 // ltr0n.
     by rewrite mulKf ?ltr1n // lt0r_neq0 // ltr0n.
-  by apply: (ltr_trans maj); apply: modulus_n_inv_P => //; rewrite pmulr_rgt0.
+  by apply: (lt_trans maj); apply: modulus_n_inv_P => //; rewrite pmulr_rgt0.
 by close.
 Qed.
 
@@ -97,7 +95,7 @@ exists_big_modulus M rat.
               z3seq i + (\sum_(0 <= k < Posz i + 1 :> int) c i k * s i k) / a i.
       rewrite opprD addNKr normrN normrM normfV.
       rewrite [X in _ / X](gtr0_norm (lt_0_a _)) // ltr_pdivr_mulr ?lt_0_a //.
-      exact: ler_lt_trans (ler_norm_sum _ _ _) _.
+      exact: le_lt_trans (ler_norm_sum _ _ _) _.
     have -> : b_over_a_seq i = (\sum_(0 <= k < Posz i + 1 :> int)
                                 (c i k * ghn3 i + c i k * s i k)) / a i.
       rewrite /b_over_a_seq; congr (_ / a i); apply: eq_bigr => j _.
@@ -110,12 +108,12 @@ exists_big_modulus M rat.
     case/andP=> _ hi0; rewrite normrM [`|c i i0|]gtr0_norm ?lt_0_c //.
     rewrite -mulrA ler_pmul2l //; last exact: lt_0_c.
     apply: s_maj => //; rewrite ltr0n; raise_big_enough.
-  apply: (@ler_lt_trans _ (\sum_(0 <= i0 < i + 1)
+  apply: (@le_lt_trans _ _ (\sum_(0 <= i0 < i + 1)
                    c i i0 * i0%:~R / (2%:~R * i%:~R ^ 2))).
     rewrite [X in X <= _]big_nat [X in _ <= X]big_nat.
     apply: ler_sum => j; case/andP=> h0j.
     rewrite addn1 ltnS => hji; exact: step2.
-  apply:(@ler_lt_trans _ ((\sum_(0 <= i0 < i + 1) c i i0) / (2%:~R * i%:~R))).
+  apply:(@le_lt_trans _ _ ((\sum_(0 <= i0 < i + 1) c i i0) / (2%:~R * i%:~R))).
     rewrite [X in X <= _]big_nat [in X in _ <= X]big_nat.
     rewrite mulr_suml; apply: ler_sum => j; case/andP=> h0j.
     rewrite addn1 ltnS => hji; rewrite -mulrA ler_pmul2l ?lt_0_c //.
@@ -125,8 +123,8 @@ exists_big_modulus M rat.
     rewrite -/(a i); exact: lt_0_a.
   rewrite -div1r ltr_pdivr_mulr; last by apply: mulr_gt0; rewrite ltr0n.
   rewrite mulrA mulrC -ltr_pdivr_mulr; last by apply: mulr_gt0.
-  apply: ltr_trans (archi_boundP _) _; last by rewrite ltr_nat; raise_big_enough.
-  by rewrite mulr_ge0 // invr_ge0 mulr_ge0 // ltrW.
+  apply: lt_trans (archi_boundP _) _; last by rewrite ltr_nat; raise_big_enough.
+  by rewrite mulr_ge0 // invr_ge0 mulr_ge0 // ltW.
 by close.
 Qed.
 
@@ -158,7 +156,7 @@ pose_big_enough m.
       0 < 6%:~R / (i%:~R + 1%:~R) ^ 3 / (a (int.shift 1 i) * a i).
       apply: divr_gt0; first by apply: lt_0_ba_casoratian.
       apply:mulr_gt0; exact: lt_0_a.
-    apply: ltr_spaddl => //;  apply: sumr_ge0 => i _; exact: ltrW.
+    apply: ltr_spaddl => //;  apply: sumr_ge0 => i _; exact: ltW.
   suff diff_pos2 : (0 <= b_over_a - (b_over_a_seq m)%:CR)%CR.
     have ->: b_over_a_seq n = b_over_a_seq m + (b_over_a_seq n - b_over_a_seq m).
       by rewrite addrCA subrr addr0.
@@ -167,7 +165,7 @@ pose_big_enough m.
       by apply: eq_creal_ext=> i /=; rewrite -addrA opprD opprB.
     rewrite z3_eq_b_over_a; apply: ltcr_spaddr=> //; apply: lt_creal_cst.
     apply: diff_pos1; raise_big_enough.
-  apply: (@le_crealP _ m.+1) => *; apply: ltrW.
+  apply: (@le_crealP _ m.+1) => *; apply: ltW.
   apply: diff_pos1; raise_big_enough.
 by close.
 Qed.
@@ -191,7 +189,7 @@ exists large => n hlarge.
                  a n * b_over_a_seq i - b n <= 6%:~R * z3seq i * (1 / a n).
     apply: (@lecr_trans  _ (6%:~R%:CR * z3 * (1 / a n)%:CR))%CR; last first.
       rewrite cst_crealM; apply: lecr_mulf2r; first by apply: le_ubound.
-      apply: divr_ge0=> //; apply: ltrW; exact: lt_0_a.
+      apply: divr_ge0=> //; apply: ltW; exact: lt_0_a.
     rewrite {1}z3_eq_b_over_a; apply: (@le_crealP _ n) => j hj //=; exact: step1.
   move=> leni.
   suff step2 : b_over_a_seq i - b_over_a_seq n <= 6%:~R * z3seq i / a n ^ 2.
@@ -207,9 +205,9 @@ exists large => n hlarge.
     have lt0j : (0 < j)%N by apply: leq_trans hnj; raise_big_enough.
     rewrite ler_pmul2l ; last exact: lt_0_ba_casoratian.
     rewrite exprSz expr1z lef_pinv; [| (apply: mulr_gt0; exact: lt_0_a)..].
-    apply: ler_pmul; rewrite ?(ltrW (lt_0_a _)) //; apply: a_incr => //.
+    apply: ler_pmul; rewrite ?(ltW (lt_0_a _)) //; apply: a_incr => //.
     by rewrite int.shift2Z lez_nat; apply: leq_trans hnj _; rewrite addn1.
-  apply: ler_trans step3 _; rewrite ler_pmul2r; last by rewrite !gtr0E // lt_0_a.
+  apply: le_trans step3 _; rewrite ler_pmul2r; last by rewrite !gtr0E // lt_0_a.
   rewrite -mulr_sumr ler_pmul2l //; set lhs := (X in X <= _).
   have {lhs} -> : lhs =   \sum_(n.+1 <= i0 < i.+1) (i0%:~R ^ 3)^-1.
     rewrite {}/lhs big_add1 /=; apply: eq_bigr => k _.
@@ -280,7 +278,7 @@ split.
 - by rewrite ltr0n.
 - by rewrite ltr0n.
 - by rewrite -exprnP -natrX ltr_nat.
-- move => n _. apply: ler_lt_trans (H n) _.
+- move => n _. apply: le_lt_trans (H n) _.
   by rewrite -exprnP -natrX -natrM ltr_nat ltn_mul2r expn_gt0 /=. (* funny: does not work without the /= *)
 Qed.
 
@@ -311,7 +309,7 @@ pose_big_enough M.
     - apply/lt_creal_cst; apply: mulr_gt0; first exact: lt_0_Kdelta.
       apply: divr_gt0; last by apply: exprn_gt0; rewrite ltr0n.
       rewrite invr_gt0; exact: lt_0_Ka.
-    - apply/lt_creal_cst; rewrite ltr_expn2r //; first exact: ltrW.
+    - apply/lt_creal_cst; rewrite ltr_expn2r //; first exact: ltW.
       apply: hanson; raise_big_enough.
     - apply: lecr_lt_trans (NdeltaP _) _; first by raise_big_enough.
       apply/lt_creal_cst; rewrite ltr_pmul2l; last exact: lt_0_Kdelta.
@@ -350,7 +348,7 @@ pose_big_enough n.
     apply/lt_creal_cst; rewrite sigma_QP; apply: lt_0_sigma; raise_big_enough.
   have h_lt1 : sigma_Q n < 1 / 2%:~R.
     apply/lt_creal_cst; rewrite sigma_QP; apply: MP; raise_big_enough.
-  suff : 1 <= sigma_Q n by apply/negP; rewrite -ltrNge; apply: ltr_trans h_lt1 _.
+  suff : 1 <= sigma_Q n by apply/negP; rewrite -ltNge; apply: lt_trans h_lt1 _.
   suff /QintP [z zP] : sigma_Q n \is a Qint.
     by move: h_pos; rewrite zP ler1z -gtz0_ge1 ltr0z; apply.
   suff hr : 2%:~R * (l n)%:~R ^ 3 * (a n * z3_rat) \is a Qint.

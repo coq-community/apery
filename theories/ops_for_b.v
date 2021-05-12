@@ -48,7 +48,7 @@ Proof using v v_ann v_Sn2 v_SnSk v_Sk2 b.
 move=> nge2.
 rewrite /v.P_horner.
 rewrite (punk.sound_telescoping P_eq_Delta_Q) //;
-  last exact: (addr_ge0 (ler_trans _ nge2) _).
+  last exact: (addr_ge0 (le_trans _ nge2) _).
 set onD := (X in _ + X + _).
 set remP := (X in _ + _ + X).
 set F := BIG_F in onD *.

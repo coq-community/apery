@@ -7,8 +7,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -18,7 +17,7 @@ Open Scope ring_scope.
 Lemma s_maj (i i0 : nat) : 0 < i%:~R :> rat -> (i0 <= i)%N ->
                       `|s i i0| <= i0%:~R / (2%:~R * i%:~R ^ 2) :> rat.
 Proof.
-  move=> bigi1 lei0i; apply: ler_trans (ler_norm_sum _ _ _) _.
+  move=> bigi1 lei0i; apply: le_trans (ler_norm_sum _ _ _) _.
   rewrite -PoszD eq_big_int_nat /=.
   pose U (i1 : nat) := i1%:~R ^ 3 * binomialz i i1 * binomialz (Posz i + i1) i1.
   suff philippe (i1 : nat) : (0 < i1)%N -> (i1 <= i)%N -> i%:~R ^ 2 <= U i1.
@@ -43,14 +42,14 @@ Proof.
     by move: bigi1; rewrite -[0]/(0%:~R) ltr_nat=> ->; rewrite bin_gt0 leq_addl.
   suff h : i1%:~R ^ 3 * i%:~R * i%:~R <=
            i1%:~R ^ 3 * binomialz i i1 * binomialz (Posz i + i1) i1.
-    apply: ler_trans h; rewrite -mulrA ler_pmull; last exact: mulr_gt0.
+    apply: le_trans h; rewrite -mulrA ler_pmull; last exact: mulr_gt0.
     rewrite [_ ^ _.+1]exprS expr2 -!rmorphM /= -[Z in Z <= _]/(1%:~R).
     by rewrite ler_nat !muln_gt0 !andbb.
   rewrite -2!mulrA ler_pmul2l; last first.
     by apply: exprz_gt0; rewrite -[0]/(0%:~R) ltr_nat.
   suff maj : i%:~R <= binomialz i i1.
-    apply: ler_pmul; [exact: ltrW | exact: ltrW | exact: maj |].
-    apply: ler_trans maj _; rewrite !binz_nat_nat ler_nat; apply: leq_bin2l.
+    apply: ler_pmul; [exact: ltW | exact: ltW | exact: maj |].
+    apply: le_trans maj _; rewrite !binz_nat_nat ler_nat; apply: leq_bin2l.
     by rewrite leq_addr.
   rewrite binz_nat_nat ler_nat.
   (* FIXME : n <= 'C(n, m) should be a lemma *)

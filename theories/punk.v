@@ -1,8 +1,8 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import bigopz.
 Require Import shift.
-Import GRing.Theory.
-Import Num.Theory.
+
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -93,8 +93,8 @@ have {step} step : P U n = t1 - t2.
   rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i; simpl in i.
   rewrite andbT mem_index_iota; case/andP=> _ hi.
   rewrite -big_cat_int //= !int.shift2Z.
-  - by apply: ler_trans range_correct _; rewrite ler_add2r ler_addl.
-  - by rewrite ler_add2r ler_add2l ltrW.
+  - by apply: le_trans range_correct _; rewrite ler_add2r ler_addl.
+  - by rewrite ler_add2r ler_add2l ltW.
 have t1_step :
   t1 =
     \sum_(a <= k < int.shift r n + b :> int)
@@ -143,7 +143,7 @@ rewrite exchange_big /= -sumrN -big_split /=.
 rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i /andP [].
 rewrite mem_index_iota; case/andP=> _ hi _; rewrite !int.shift2Z.
 have hl : n + b <= n + i + b by rewrite ler_add2r ler_addl.
-have hr : n + i + b <= n + r + b by rewrite ler_add2r ler_add2l ltrW.
+have hr : n + i + b <= n + r + b by rewrite ler_add2r ler_add2l ltW.
 rewrite (big_cat_int _ _ _ hl hr) {hl hr} addrK [n + i + b]addrAC big_addz2l /=.
 rewrite eq_big_int_nat /=; apply: eq_bigr=> ? _.
 by rewrite int.shift2Z [n + b + _]addrC.

@@ -8,8 +8,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Set Printing Coercions.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Open Scope ring_scope.
 
@@ -130,7 +129,7 @@ wlog: m n / n <= 0.
     rewrite -addrA -opprB opprK subzn // binz_nat_nat bin_small ?mulr0 //.
     by rewrite add1n subnSK // leq_subLR leq_addl.
   - have {hnm} hnm : (Posz m) - (Posz n.+1) - 1 <= 0.
-      rewrite subr_le0 ler_subl_addl; apply: ler_trans hnm _.
+      rewrite subr_le0 ler_subl_addl; apply: le_trans hnm _.
       by rewrite ler_addl.
     rewrite [in RHS]hwlog //.
     rewrite opprB addrA addrAC -[Posz m + 1 - 1]addrA subrr addr0 opprB addrCA.
@@ -159,7 +158,7 @@ Lemma binzSS_weak (n k : int) : n >= 0 -> k + 1 != 0 ->
 Proof.
 move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
 have {hk hk1}: k >= 0 by goal_to_lia; intlia.
 case: n hn => n //; case: k => k // _ _.
@@ -177,7 +176,7 @@ Lemma binzS_weak (n k : int) : n >= 0 -> k + 1 != 0 ->
 Proof.
 move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
 have {hk1 hk}: k >= 0 by goal_to_lia; intlia.
 case: n hn => n //; case: k => k // hn hk.
@@ -199,7 +198,7 @@ Proof.
 case: (lerP 0 n); first exact: binzSS_weak.
 case: (lerP k (-1 - 1)) => hkN2.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hkN2 _.
+  rewrite binz_neg; last by apply: le_trans hkN2 _.
   by rewrite mulr0.
 move=> hn hk1.
 have {hkN2} hk : k >= 0 by goal_to_lia; intlia.
@@ -218,7 +217,7 @@ Lemma binzS (n k : int) : k + 1 != 0 ->
 Proof.
 move=> hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
 have -> : n%:~R - k%:~R = (n%:~R + 1) - (k%:~R + 1) :> rat.
   rat_field.
@@ -267,9 +266,8 @@ case: k ltnk => // k ltnk.
 elim: n ltnk nge0 => [ltnk _ | n HIn ltSnk lt0Sn].
   by rewrite ltz_nat lt0n in ltnk; rewrite binz_nat_nat bin0n (negPf ltnk).
 rewrite -addn1 PoszD binSz ?HIn ?mulr0 //.
-  apply: (@ltr_trans _ (Posz n.+1)); first by rewrite ltz_nat ltnSn.
-  by rewrite ltSnk.
-by rewrite neqr_lt -PoszD addn1 ltSnk orbT.
+  by rewrite ltz_nat ltnW.
+by rewrite neq_lt -PoszD addn1 ltSnk orbT.
 Qed.
 
 
@@ -332,13 +330,13 @@ Proof.
 apply/idP/idP=> h.
 case: (ltrP k 0) => //= hk.
 - case: (lerP 0 n) => /= hn.
-    apply: contraLR h; rewrite -lerNgt; move/(bin_nonneg hn hk).
+    apply: contraLR h; rewrite -leNgt; move/(bin_nonneg hn hk).
     by rewrite lt0r; case/andP.
   apply: contraLR h => _.
   rewrite binNzz; apply: mulf_neq0; first by rewrite expfz_eq0 andbF.
   suff: binomialz (k - n - 1) k > 0 by rewrite lt0r; case/andP.
   have hnk : k <= k - n - 1 by goal_to_lia; intlia.
-  by apply: bin_nonneg => //; apply: ler_trans hnk.
+  by apply: bin_nonneg => //; apply: le_trans hnk.
 case/orP: h => [h | /andP [h1 h2]]; apply/eqP; first by apply: binz_neg; intlia.
 exact: binz_geq.
 Qed.
@@ -402,8 +400,8 @@ Qed.
 
 Lemma ffact_small (n m : nat) : Posz n < Posz m -> n ^_ m = 0.
 Proof.
-move=> hnm; apply/eqP; rewrite eqr_le ffact_ge0 // lerNgt ffact_gt0 //.
-by rewrite -ltrNge andbT.
+move=> hnm; apply/eqP; rewrite eq_le ffact_ge0 // leNgt ffact_gt0 //.
+by rewrite -ltNge andbT.
 Qed.
 
 Lemma ffactnn (n : nat) : (Posz n) ^_ n = Posz n`!.

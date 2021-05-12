@@ -5,9 +5,6 @@ Require Import seq_defs.
 
 Require harmonic_numbers.
 
-Import GRing.Theory.
-Import Num.Theory.
-
 Open Scope ring_scope.
 
 Set Implicit Arguments.

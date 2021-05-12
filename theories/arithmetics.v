@@ -5,9 +5,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
-
 (******************************************************************************)
 (* The main purpose of this library is to establish properties of the         *)
 (* sequence lcm(1..n). The proof of irrationality that we formalize           *)

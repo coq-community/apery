@@ -14,8 +14,7 @@ Require Import extra_mathcomp.
 
 Require Import hanson_elem_arith.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 
@@ -49,14 +48,14 @@ have Heq p s q (Hp : (p <= q)%N) :
   by rewrite -GRing.exprD subnKC.
 suff Hm : (m.-root x) ^+ m <= (n.-root x) ^+ m.
   apply: root_x_le => // .
-  - by rewrite rootC_ge0 ?(ler_trans _ Hx).
-  - by rewrite ?(ler_trans _ Hx).
+  - by rewrite rootC_ge0 ?(le_trans _ Hx).
+  - by rewrite ?(le_trans _ Hx).
   - suff Hinterm :  m.-root x ^+ n <=  m.-root x ^+ m.
-      by rewrite (ler_trans Hinterm) // rootCK ?lerr //.
+      by rewrite (le_trans Hinterm) // rootCK //.
     rewrite (Heq n m m) // ler_pmulr // .
       by rewrite exprn_ege1 // rootC_ge1.
-    by rewrite exprn_gt0 //  rootC_gt0 // (ltr_le_trans _ Hx).
-rewrite rootCK // (Heq n n m) // rootCK // ler_pmulr // ?(ltr_le_trans _ Hx) //.
+    by rewrite exprn_gt0 //  rootC_gt0 // (lt_le_trans _ Hx).
+rewrite rootCK // (Heq n n m) // rootCK // ler_pmulr // ?(lt_le_trans _ Hx) //.
 by rewrite exprn_ege1 // rootC_ge1.
 Qed.
 
@@ -118,7 +117,7 @@ Lemma exp_quo_lessn r1 (p1 q1 p2 q2 : nat) :
 Proof.
 move => Hq1 Hq2 H1r Hle.
 have H0r : (0 <= r1).
-  by apply: (ler_trans _ H1r); exact: ler01.
+  by apply: (le_trans _ H1r); exact: ler01.
 have Hprodpos : (0 < q1 * q2)%N.
   by rewrite muln_gt0 Hq1 Hq2.
 suff :
@@ -132,10 +131,10 @@ rewrite -[in X in _ <= X]exprM.
 have -> : (p2 * (q1 * q2) = q2 * (p2 * q1))%N.
   by rewrite [(q1*q2)%N]mulnC -mulnCA.
 rewrite !exprM ![in X in _ <= X]rootCK // -!exprM.
-rewrite ler_eqVlt in H1r.
-case/orP: H1r.
-- case/eqP => <-; by rewrite rmorph1 !expr1n lerr.
-- by move => H1r; rewrite ler_eexpn2l // ltr1q.
+rewrite le_eqVlt in H1r.
+case/predU1P: H1r => [<-|H1r].
+- by rewrite rmorph1 !expr1n lexx.
+- by rewrite ler_eexpn2l // ltr1q.
 Qed.
 
 
@@ -246,7 +245,7 @@ Lemma exp_quo_self_grows (p1 q1 p2 q2 : nat) r1 r2 :
 Proof.
 move => Hq1 Hq2 Hr1 Hr2 Hr1gt0 Hle1r2 Hle12.
 have Hr1pos : 0 <= r1.
-  exact: ltrW.
+  exact: ltW.
 have Hr2pos : 0 <= r2.
   by rewrite Hr2 divr_ge0 // ?ler0z.
 have Hprodpos : (0 < q1 * q2)%N.
@@ -265,9 +264,8 @@ have -> :
     by rewrite !muln_gt0 Hq1 Hq2.
   rewrite !mulnA.
   rewrite mulnBl mulnDl mulnBl //.
-  have -> : (p1 * q1 * q2 * q2 = p1 * q2 * q1 * q2)%N.
-    by congr muln; rewrite mulnAC.
-  rewrite subnKC // .
+  have -> : (p1 * q1 * q2 = p1 * q2 * q1)%N by rewrite mulnAC.
+  rewrite subnKC //.
   by rewrite -mulnA -[X in (_ <= X)%N]mulnA leq_mul.
 have -> : exp_quo r2 p1 q1 = exp_quo r1 p1 q1 * exp_quo (r2 / r1) p1 q1.
   rewrite exp_quo_mult_distr ?divr_ge0 // .
@@ -303,22 +301,11 @@ Lemma fact_greater_geom i : i.+1`!%:~R >= (3%:Q / 2%:~R) ^+ i.
 Proof.
 elim: i => [|i HIi]; first by rewrite expr0.
 rewrite exprS factS PoszM intrM.
-have frac_ge0 :  0 <= 3%:Q / 2%:~R.
-  by apply: divr_ge0; rewrite ler0z.
-have fracpow_ge0 :  0 <= (3%:Q / 2%:~R) ^+ i.
-  by rewrite exprn_ge0 ?frac_ge0.
-suff : 0 <= 3%:~R / 2%:Q <= i.+2%:~R /\ 0 <= (3%:~R / 2%:Q) ^+ i <= (i.+1)`!%:~R.
-  case => [] /andP [H1 H2] /andP [H3 H4]; exact: ler_pmul.
-split; apply/andP; split.
-  - exact: frac_ge0.
-  - rewrite ler_pdivr_mulr; last by rewrite ltr0n.
-    apply: (@ler_trans _ (2%:~R * 2%:~R)).
-      by rewrite -rmorphM /= ler_nat.
-    apply: ler_pmul; rewrite ?ler0n; try exact: isT.
-    rewrite -[i.+2]addn2 -{1}[2]add0n !PoszD !intrD .
-    apply: ler_add; rewrite ?ler_nat; try exact: isT.
-  - exact: fracpow_ge0.
-  - exact: HIi.
+apply: ler_pmul HIi.
+- by [].
+- by [].
+rewrite ler_pdivr_mulr; last by rewrite ltr0n.
+by rewrite -!pmulrn mulr_natr -mulrnA muln2 ler_nat.
 Qed.
 
 (* Formula for a geometric sum in a field *)
@@ -345,10 +332,10 @@ have step : (1 + n.+1%:~R^-1) ^+ n.+1 <= \sum_(i < n.+2) (i`!)%:~R ^-1 :> rat.
   rewrite -mulr_natl mulrC mulrA -natrM mulnC bin_ffact exprVn ler_pdivr_mulr //.
   rewrite mul1r -natrX ler_nat; exact: ffact_le_expn.
 suff h: (1 + n.+1%:~R^-1 : rat) ^+ n.+2 <= 2%:~R * \sum_(i < n.+2) (i`!)%:~R ^-1.
-  apply: ler_trans h _.
+  apply: le_trans h _.
   suff He_leq_4 : \sum_(i < n.+2) i`!%:~R ^-1 <= 4%:Q.
     by rewrite -[8%:~R]/(2%:~R* 4%:~R : rat) ler_pmul2l.
-  apply: (@ler_trans _ (1 + \sum_(i < n.+1) (2%:Q / 3%:Q) ^+ i)).
+  apply: (@le_trans _ _ (1 + \sum_(i < n.+1) (2%:Q / 3%:Q) ^+ i)).
   - rewrite big_ord_recl /= fact0 ler_add2l /=; apply: ler_sum => [] [i Hi] _.
     rewrite /bump /=.
     have -> : (2%:~R / 3%:~R) ^+ i = ((3%:~R / 2%:~R) ^+ i) ^-1 :> rat.
@@ -381,38 +368,30 @@ have Hq : (0 < q)%N.
   rewrite Habs /= invr0 mulr0 in Hrpq.
   by rewrite Hrpq in Hrpos.
 have Hle01 : 0 <= 1 :> algC by exact: ler01.
-have Hle0r : 0 <= ratr r :> algC by apply: ltrW; rewrite ltr0q.
+have Hle0r : 0 <= ratr r :> algC by apply: ltW; rewrite ltr0q.
 case/orP: (ger_leVge Hle01 Hle0r) => [H1r|Hr1].
 
 (* First part : 1 <= r *)
 have := (floorQ_spec r).
 set f := floorQ r => Hfloor.
 have Hfnat : f \is a Znat.
-  by rewrite Znat_def; apply: floorQ_ge0; apply: ltrW.
+  by rewrite Znat_def; apply: floorQ_ge0; apply: ltW.
 move/ZnatP: Hfnat => [] m Hfm.
 case/andP: Hfloor => [Hf1 Hf2].
-apply (@ler_trans _ (ratr 8%N%:Q)); last  by rewrite ler_rat.
+apply (@le_trans _ _ (ratr 8%N%:Q)); last  by rewrite ler_rat.
 have Hle1m : (1 <= m)%N.
   by rewrite ler1q in H1r; have := (floorQ_ge1 H1r); rewrite -/f Hfm.
 
 have Hfloor_inv : (1%:Q / (f%:Q+1)) < 1%:Q / r <= 1 / f%:Q.
   apply/andP; split.
     rewrite ltr_pdivr_mulr.
-      rewrite mulrC mulrA.
-      rewrite ltr_pdivl_mulr // mul1r mulr1.
-      exact: Hf2.
-    rewrite ltr_paddl // ler0z // .
-    by apply: floorQ_ge0; apply: ltrW.
-  rewrite ler_pdivr_mulr // .
-  rewrite mulrC mulrA.
-  rewrite ler_pdivl_mulr // ?mul1r ?mulr1 ?ltr0z // .
-  apply: ltr_le_trans; last first.
-    apply floorQ_ge1. (* apply: does not work *)
-    by rewrite ler1q in H1r.
-  exact: ltr01.
+      by rewrite mulrAC ltr_pdivl_mulr // !mul1r Hf2.
+    by rewrite ltr_paddl // ler0z; apply/floorQ_ge0/ltW.
+  rewrite ler_pdivr_mulr // mulrAC ler_pdivl_mulr ?mul1r ?ltr0z //.
+  by apply/lt_le_trans/floorQ_ge1; last rewrite ler1q in H1r.
 
 (* a few helpers which will be needed in the intermediate steps *)
-have Helper1 : 0 <= r by exact: ltrW.
+have Helper1 : 0 <= r by exact: ltW.
 have Helper2 : 0 <= 1 / r by rewrite divr_ge0 // .
 have Helper3 : 0 <= 1%:~R + 1 / r.
   exact: addr_ge0 => // .
@@ -424,15 +403,14 @@ have Helper6 : 1 <= 1%:~R + 1 / f%:Q.
   by rewrite ler_addl.
 
 suff Hinterm : exp_quo (1%:~R + 1 / r) p q <= exp_quo (1%:Q + 1 / f%:Q) m.+1 1.
-  apply: (ler_trans Hinterm).
+  apply: (le_trans Hinterm).
   rewrite Hfm.
   case: m Hfm Hinterm Hle1m => [| m] Hfm Hinterm // Hle1m.
   rewrite -exp_quo_r_nat ler_rat mul1r.
   exact: one_plus_invn_expn.
-apply: ler_trans.
+apply: le_trans.
   apply (@exp_quo_less _ (1%:~R + 1 / f%:~R)) => // .
-  apply: ler_add; first by rewrite lerr.
-  by case/andP: Hfloor_inv.
+  by rewrite ler_add2l; case/andP: Hfloor_inv.
 apply exp_quo_lessn => // .
 rewrite muln1.
 move: Hf2.
@@ -445,7 +423,7 @@ by rewrite ltr_nat addn1; exact: leqW.
 have := (floorQ_spec (r^-1)).
 set f := floorQ r^-1 => Hfloor.
 have Hfnat : f \is a Znat.
-  rewrite Znat_def; apply: (@ler_trans _ 1); first by rewrite ler01.
+  rewrite Znat_def; apply: le_trans ler01 _.
   apply: floorQ_ge1; rewrite invr_ge1 //.
     by rewrite lerq1 in Hr1.
   exact: unitf_gt0.
@@ -453,29 +431,28 @@ move/ZnatP: Hfnat => [] m Hfm.
 case/andP: Hfloor => [Hf1 Hf2].
 
 have Helper0 : 0 < f%:Q.
-  apply: (@ltr_le_trans _ 1%:Q); last first.
-    rewrite /f ler_int; apply floorQ_ge1. rewrite invr_ge1;
-                                            rewrite lerq1 // in Hr1.
-    exact: unitf_gt0.
-    exact: ltr01.
+  apply: lt_le_trans ltr01 _.
+  rewrite -rat1 ler_int; apply: floorQ_ge1.
+  rewrite invr_ge1; rewrite lerq1 // in Hr1.
+  exact: unitf_gt0.
 have Helper1 : (0 < m)%N.
   suff: 0 < m%:Q by rewrite ltr0n.
   by rewrite -Hfm.
 
 have Helper2 : 0 < f%:Q + 1.
-  apply: (ltr_le_trans (ltr01)).
-    by rewrite ler_addr Hfm ler0n.
+  apply: lt_le_trans ltr01 _.
+  by rewrite ler_addr Hfm ler0n.
 have Helper3 :   r <= 1 / f%:~R.
   rewrite ler_pdivl_mulr // mulrC  -ler_pdivl_mulr ?div1r //.
 have Helper4 : 0 <= 1%:~R + 1 / r.
-  apply: (@ler_trans _ (1 + f%:~R)).
-  by rewrite addrC; apply: ltrW.
+  apply: (@le_trans _ _ (1 + f%:~R)).
+  by rewrite addrC; apply: ltW.
   by apply: ler_add => // ; rewrite div1r.
 have Helper5 :  0 <= 1%:~R + (1 + f%:~R)%Q.
   by rewrite Hfm -{2}rat1 addrA -!intrD ler0n.
 have Helper6 : 1%:~R + 1 / r <= 1%:~R + (1 + f%:~R)%Q.
   rewrite Hfm -{2}rat1 ler_add // .
-  by rewrite div1r -Hfm; apply: ltrW; rewrite addqC.
+  by rewrite div1r -Hfm; apply: ltW; rewrite addqC.
 have Helper7 : 1 <= 1%:~R + (1 + f%:~R)%Q.
   by rewrite Hfm -{3}rat1 addrA -!intrD ler1n.
 have Helper8 :   (p * m <= q)%N.
@@ -489,10 +466,10 @@ have Helper8 :   (p * m <= q)%N.
 have Hfloor_inv : (1%:Q / (f%:Q+1)) < r <= 1 / f%:Q.
   apply/andP; split => // .
   by rewrite ltr_pdivr_mulr // -ltr_pdivr_mull ?mulr1.
-apply: (@ler_trans _ (exp_quo (1%:~R + (1 + f%:~R)%Q) p q)).
+apply: (@le_trans _ _ (exp_quo (1%:~R + (1 + f%:~R)%Q) p q)).
   exact: exp_quo_less.
-apply: (@ler_trans _ (exp_quo (1%:~R + (1 + f%:~R)%Q) 1 m)); last first.
-- apply: (@ler_trans _ (exp_quo (((3 ^ (m.+1))%N)%:Q) 1 m)).
+apply: (@le_trans _ _ (exp_quo (1%:~R + (1 + f%:~R)%Q) 1 m)); last first.
+- apply: (@le_trans _ _ (exp_quo (((3 ^ (m.+1))%N)%:Q) 1 m)).
   * apply exp_quo_less => //; first exact: ler0n.
     rewrite -{2}rat1 addrA Hfm -!intrD ler_nat -addnA [(1+m)%N]addnC addn1.
     exact: (replace_exponential m.+1).

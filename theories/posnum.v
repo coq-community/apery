@@ -33,7 +33,7 @@ From mathcomp Require Import all_ssreflect all_algebra all_field.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Delimit Scope R_scope with coqR.
 Delimit Scope real_scope with real.
@@ -84,9 +84,9 @@ Implicit Types (x y : {posnum R}).
 
 Definition posnum_gt0_def x (phx : phantom R x) := posnum_gt0 x.
 
-Lemma posnum_ge0 x : x >= 0 :> R. Proof. by apply: ltrW. Qed.
-Lemma posnum_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gtr_eqF. Qed.
-Lemma posnum_neq0 x : (x != 0 :> R). Proof. by rewrite gtr_eqF. Qed.
+Lemma posnum_ge0 x : x >= 0 :> R. Proof. by apply: ltW. Qed.
+Lemma posnum_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gt_eqF. Qed.
+Lemma posnum_neq0 x : (x != 0 :> R). Proof. by rewrite gt_eqF. Qed.
 
 Lemma add_pos_gt0 x y : 0 < x%:num + y%:num.
 Proof. by rewrite addr_gt0. Qed.
@@ -132,12 +132,12 @@ Context {R : realDomainType}.
 Implicit Types (x y : {posnum R}).
 
 Lemma posnum_le0 x : (x%:num <= 0 :> R) = false.
-Proof. by rewrite lerNgt posnum_gt0. Qed.
+Proof. by rewrite leNgt posnum_gt0. Qed.
 Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
-Proof. by rewrite ltrNge posnum_ge0. Qed.
+Proof. by rewrite ltNge posnum_ge0. Qed.
 
 Lemma min_pos_gt0 x y : 0 < minr x%:num y%:num.
-Proof. by rewrite ltr_minr !posnum_gt0. Qed.
+Proof. by rewrite lt_minr !posnum_gt0. Qed.
 Canonical minr_posnum x y := PosNum (@min_pos_gt0 x y).
 
 End PosNumReal.
@@ -153,7 +153,7 @@ CoInductive posnum_spec (R : numDomainType) (x : R) :
 Lemma posnumP (R : numDomainType) (x : R) : 0 < x ->
   posnum_spec x x (x == 0) (0 <= x) (0 < x).
 Proof.
-move=> x_gt0; case: real_ltrgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
+move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
