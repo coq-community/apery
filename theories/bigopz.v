@@ -32,11 +32,11 @@ Reserved Notation "\prod_ ( m <= i < n :> 'int' ) F"
 Import Order.TTheory GRing.Theory Num.Theory.
 
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 
 (* Not sure this is the best definition...*)
-Definition index_iotaz_ (mi ni : int) :=
+Definition index_iotaz (mi ni : int) :=
   match mi, ni with
   | Posz _, Negz _ => [::]
   | Posz m, Posz n => map Posz (index_iota m n)
@@ -44,10 +44,7 @@ Definition index_iotaz_ (mi ni : int) :=
   | Negz m, Posz n => rev (map Negz (index_iota 0 m.+1)) ++ (map Posz (index_iota 0 n))
   end.
 
-Definition index_iotaz := nosimpl index_iotaz_.
-
-Lemma index_iotazE : index_iotaz = index_iotaz_. Proof. by []. Qed.
-
+Arguments index_iotaz mi ni : simpl never.
 
 Lemma size_index_iotaz m n : 
   size (index_iotaz m n) = if m <= n then `|n - m|%N else 0%N.
@@ -114,13 +111,13 @@ case: m => m; case: n => n // hmn hi; rewrite /index_iotaz /=.
       rewrite nth_iota; last by rewrite -ek leq_subr.
       by rewrite NegzE -addnS PoszD opprD addrC.
     by rewrite size_iota -ek leq_subr.
-  - have {hi} hi : (i - m.+1 < n)%N.
+  - have {}hi : (i - m.+1 < n)%N.
       move: hi; rewrite NegzE opprK -PoszD ger0_norm //.
       by rewrite PoszD -lter_sub_addr subzn ?ltz_nat // ltnNge -ltnS him.
     rewrite (nth_map 0%N); last by rewrite /index_iota size_iota subn0.
     rewrite /index_iota subn0 nth_iota // add0n NegzE addrC subzn //.
     by rewrite ltnNge -ltnS him.
-- have {hmn} hmn : (n <= m)%N.
+- have {}hmn : (n <= m)%N.
     by  move: hmn; rewrite !NegzE ler_oppl opprK lez_nat.
   have hi' : (i < m - n)%N.
     by move: hi; rewrite !NegzE opprK addrC subzn.
@@ -204,9 +201,9 @@ Proof. by move=> eqF; apply: congr_big_int. Qed.
 Lemma big_geqz m n (P : pred int) F :
   m >= n -> \big[op/idx]_(m <= i < n :> int | P i) F i = idx.
 Proof.
-case: m => m; case: n => // n; rewrite index_iotazE ?big_nil //.
-  by rewrite lez_nat /index_iotaz_ /index_iota; move/eqnP->; rewrite big_nil.
-rewrite ![in _ <= _]NegzE ler_opp2 lez_nat /index_iotaz_ /index_iota; move/eqnP->.
+case: m => m; case: n => // n; rewrite /index_iotaz ?big_nil //.
+  by rewrite lez_nat /index_iota; move/eqnP->; rewrite big_nil.
+rewrite ![in _ <= _]NegzE ler_opp2 lez_nat /index_iota; move/eqnP->.
 by rewrite big_nil.
 Qed.
 
@@ -221,11 +218,11 @@ Proof.
 case: m => m; case: n => n // hmn.
 - by rewrite /= !big_map big_ltn_cond  ?addn1.
 - case: m hmn => [_ | m]; rewrite NegzE.
-     by rewrite addNr big_map -NegzE index_iotazE /= big_cons big_map.
-  rewrite addrC subzSS add0r -!NegzE index_iotazE /index_iotaz_ -(addn1 m.+1).
+     by rewrite addNr big_map -NegzE /index_iotaz /= big_cons big_map.
+  rewrite addrC subzSS add0r -!NegzE /index_iotaz -(addn1 m.+1).
   by rewrite /index_iota subn0 iota_add map_cat rev_cat add0n /= big_cons.
 - case: m hmn => [ | m] //; rewrite !NegzE ltr_opp2 ltz_nat => hmn.
-  rewrite addrC subzSS add0r -!NegzE index_iotazE /= /index_iota subSn //.
+  rewrite addrC subzSS add0r -!NegzE /index_iotaz /index_iota subSn //.
   by rewrite -[(_ - _).+1]addn1 iota_add rev_cat map_cat subnKC // big_cons.
 Qed.
 

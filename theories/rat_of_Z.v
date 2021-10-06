@@ -6,9 +6,9 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
+Import GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 
 (*  We define an *opaque* cast:                                                *)
@@ -25,14 +25,14 @@ Open Scope ring_scope.
 (* opaque, otherwise we cannot control when binary integers are converted *)
 (* to (unary) rationals.*)
 
-Definition rat_of_Z_fun (z : Z) : rat :=
+Definition rat_of_Z_ (z : Z) : rat :=
   match z with
   | Z0 => zeroq
-  | Zpos p => (Posz (nat_of_P p))%:~R
-  | Zneg p => - (Posz (nat_of_P p))%:~R
+  | Zpos p => (Posz (nat_of_P p))%:Q
+  | Zneg p => - (Posz (nat_of_P p))%:Q
   end.
 
-Definition rat_of_Z_ := nosimpl rat_of_Z_fun.
+Arguments rat_of_Z_ z : simpl never.
 
 (* Opacification of rat_of_Z. A mere 'locked' would not word for it is not *)
 (* fully opaque and would be actually harmeful in the hard-wired post *)
@@ -44,7 +44,7 @@ Parameter rat_of_Z : Z -> rat. Axiom rat_of_ZEdef : rat_of_Z = rat_of_Z_.
 End RatOfZSig.
 
 Module rat_of_ZDef : RatOfZSig.
-Definition rat_of_Z : Z -> rat := rat_of_Z_fun. 
+Definition rat_of_Z : Z -> rat := rat_of_Z_.
 Definition rat_of_ZEdef := erefl rat_of_Z.
 End rat_of_ZDef.
 
@@ -121,20 +121,17 @@ involve constants *)
 
 Lemma rat_of_Z_eq0 x : (rat_of_Z_ x == 0) =  Z.eqb x Z0.
 Proof.
-suff pN0 p : ((Pos.to_nat p) == 0 :> int) = false.
+suff pN0 p : (Pos.to_nat p == 0 :> int) = false.
   by case: x => [| p | p ] //; rewrite ?oppr_eq0 intq_eq0 pN0.
 rewrite eqz_nat nat_of_P_E; apply: negPf.
 elim: p => // p ihp.
 by rewrite nat_of_pos_x0 -muln2 muln_eq0 negb_or ihp.
 Qed.
 
-
 (* Compatibility with order. This is a stub. *)
-
-Import Num.Theory.
 
 Lemma rat_of_Z_Zpos (z : positive) : 0 < rat_of_Z (Zpos z).
 Proof.
 rewrite rat_of_ZEdef /rat_of_Z_ /=; case: (Pos2Nat.is_succ z)=> n -> {z}.
-by rewrite -[0]/(0%:~R) ltr_nat.
+by rewrite -[0]/(0%:Q) ltr_nat.
 Qed.

@@ -35,12 +35,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
-Delimit Scope R_scope with coqR.
-Delimit Scope real_scope with real.
-Close Scope R_scope.
-Open Scope ring_scope.
-(* Open Scope real_scope. *)
-(* Bind Scope ring_scope with R. *)
+Local Open Scope ring_scope.
 
 (* Enrico's trick for tc resolution in have *)
 (* Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing). *)
@@ -103,11 +98,11 @@ Canonical mulrn_posnum x n := PosNum (muln_pos_posnum x n).
 Lemma inv_pos_gt0 x : 0 < x%:num^-1. Proof. by rewrite invr_gt0. Qed.
 Canonical invr_posnum x := PosNum (inv_pos_gt0 x).
 
-Lemma pos_Sn (n : nat) : 0 < (n.+1%:R : R).
+Lemma pos_Sn (n : nat) : 0 < n.+1%:R :> R.
 Proof. by []. Qed.
 Canonical Sn_posnum n := PosNum (pos_Sn n).
 
-Lemma posnumSz (n : nat) : 0 < ((n.+1)%:~R : R).
+Lemma posnumSz (n : nat) : 0 < n.+1%:~R :> R.
 Proof. by rewrite ltr0z. Qed.
 Canonical intSn_posnum n := PosNum (posnumSz n).
 
@@ -115,7 +110,7 @@ Lemma posnum_expn (n : nat) x : 0 < x%:num ^+ n.
 Proof. by rewrite exprn_gt0. Qed.
 Canonical posum_expn n x := PosNum (posnum_expn n x).
 
-Lemma posnum_factn (n : nat) : 0 < ((n `!)%:~R : R).
+Lemma posnum_factn (n : nat) : 0 < n`!%:~R :> R.
 Proof. rewrite ltr0z; exact: fact_gt0. Qed.
 Canonical posum_factn n := PosNum (posnum_factn n).
 
@@ -142,7 +137,7 @@ Canonical minr_posnum x y := PosNum (@min_pos_gt0 x y).
 
 End PosNumReal.
 
-Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt (x%:num).
+Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt x%:num.
 Proof. by rewrite sqrtr_gt0. Qed.
 Canonical sqrt_posnum (R : rcfType) (x : {posnum R}) := PosNum (sqrt_pos_gt0 x).
 
@@ -167,15 +162,15 @@ Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom algC x))
 Variable f : algC -> algC.
 Hypothesis H : forall x, f x > 0.
 
-Lemma f_gt0 (x : {posnum algC}) :  0 < f (x%:num).
+Lemma f_gt0 (x : {posnum algC}) :  0 < f x%:num.
 Proof. by rewrite H. Qed.
 Canonical f_posnum (x : {posnum algC}) := PosNum (f_gt0 x).
 
-Lemma SnC_gt0 (n : nat) : 0 < (n.+1%:R : algC).
+Lemma SnC_gt0 (n : nat) : 0 < n.+1%:R :> algC.
 Proof. by rewrite ltr0n. Qed.
 Canonical SnC_posnum n := PosNum (SnC_gt0 n).
 
-Lemma Sz_gt0 (n : nat) : 0 < (n.+1%:~R : algC).
+Lemma Sz_gt0 (n : nat) : 0 < n.+1%:~R :> algC.
 Proof. by rewrite ltr0n. Qed.
 Canonical Sz_posnum n := PosNum (@Sz_gt0 n).
 

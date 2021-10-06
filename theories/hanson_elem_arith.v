@@ -13,41 +13,12 @@ Require Import extra_mathcomp.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Section BinomialMissing.
-
-Lemma ffact_le_expn : forall m p, (p ^_ m <= p ^ m)%N.
-elim => [|m HIm] => p //.
-  rewrite ffactnSr expnS mulnC.
-  by rewrite leq_mul ?HIm // leq_subr.
-Qed.
-
-End BinomialMissing.
-
-Section PrimeMissing.
-Local Open Scope nat_scope.
-
-Lemma lognn p (Hp : prime p) : logn p p = 1.
-Proof.
-by rewrite -(pfactorK 1 Hp).
-Qed.
-
-Lemma partp_dvdn p (Hprime : prime p) n m :
-  (0 < n) -> (p ^ m %| n) -> p ^ m %| n`_p .
-Proof.
-move => Hn Hdiv; rewrite -(pfactorK m Hprime) -p_part.
-by rewrite partn_dvd //.
-Qed.
-
-End PrimeMissing.
-
 Section DefinitionOfA.
-
-Local Open Scope nat_scope.
 
 Fixpoint a (n : nat) : nat :=
   match n with
   | 0 => 2
-  | k.+1 => ((a k) * ((a k).-1)).+1
+  | k.+1 => (a k * (a k).-1).+1
   end.
 
 Arguments a n : simpl never.
@@ -63,17 +34,15 @@ Lemma a4 : a 4 = 1807. Proof. by []. Qed.
 
 (* We start with trivial facts, tagged in order to feed automation tools in
    further proofs *)
-Lemma aS (n : nat) : a (n.+1) = ((a n) * ((a n).-1)).+1.
+Lemma aS (n : nat) : a n.+1 = (a n * (a n).-1).+1.
 Proof. by []. Qed.
 
 Lemma a_pos n : 0 < a n.
-Proof. by case: n => [| n]. Qed.
+Proof. by case: n. Qed.
 Hint Resolve a_pos.
 
 Lemma a_gt1 n : 1 < a n.
-Proof.
-by elim: n => [| n ihn] //=; rewrite aS ltnS muln_gt0; case: (a n) ihn.
-Qed.
+Proof. by elim: n => // n ihn; rewrite aS ltnS muln_gt0; case: (a n) ihn. Qed.
 Hint Resolve a_gt1.
 
 Lemma pa_gt0 n : 0 < (a n).-1.
@@ -81,7 +50,7 @@ Proof. by rewrite -ltnS prednK. Qed.
 Hint Resolve pa_gt0.
 
 Lemma a_grows1 n : a n < a n.+1.
-Proof. by rewrite /= ltnS leq_pmulr //; case: (a n) (a_gt1 n). Qed.
+Proof. by rewrite aS ltnS leq_pmulr. Qed.
 
 Lemma a_grows2 m n : a m < a (m + n.+1).
 Proof.
@@ -92,15 +61,16 @@ Qed.
 Lemma a_grows m n : m <= n -> a m <= a n.
 Proof.
 move/subnK<-; rewrite addnC; case: (n - m) => [| k]; first by rewrite addn0.
-apply: ltnW; apply: a_grows2.
+exact/ltnW/a_grows2.
 Qed.
 
-Lemma aS_gt2 k : (2 < a k.+1)%nat.
-Proof.
-suff H1 : (2 < a 1)%nat => // .
-apply (leq_trans H1).
-apply: a_grows => // .
-Qed.
+Lemma aS_gt2 k : 2 < a k.+1.
+Proof. by suff H1 : (2 < a 1) by apply: leq_trans H1 (a_grows _). Qed.
+Hint Resolve aS_gt2.
+
+Lemma aSpred_gt1 k : (1 < (a k.+1).-1)%N.
+Proof. by rewrite -subn1 ltn_subRL addn1. Qed.
+Hint Resolve aSpred_gt1.
 
 Lemma a_rec (n : nat) : a n = \prod_(0 <= i < n) a i + 1.
 Proof.
@@ -126,10 +96,10 @@ Hint Resolve a_rat_gt1.
 Lemma a_rat_sub1_gt0 (n : nat) : 0 < (a n)%:Q - 1. by rewrite subr_gt0. Qed.
 Hint Resolve a_rat_sub1_gt0.
 
-Lemma a_rat_pos (n : nat) : 0 < (a n)%:Q. Proof. by rewrite /a_rat ltr0n. Qed.
+Lemma a_rat_pos (n : nat) : 0 < (a n)%:Q. Proof. by rewrite ltr0n. Qed.
 Hint Resolve a_rat_pos.
 
-Lemma a_rat_ge0 (n : nat) : 0 <= (a n)%:Q. Proof. by rewrite /a_rat ler0n. Qed.
+Lemma a_rat_ge0 (n : nat) : 0 <= (a n)%:Q. Proof. by rewrite ler0n. Qed.
 Hint Resolve a_rat_ge0.
 
 Lemma a_rat_rec1 (n : nat) : (a (n.+1))%:Q = (a n)%:Q * ((a n)%:Q - 1) + 1.
@@ -149,6 +119,8 @@ End DefinitionOfA.
 Hint Resolve a_pos.
 Hint Resolve a_gt1.
 Hint Resolve pa_gt0.
+Hint Resolve aS_gt2.
+Hint Resolve aSpred_gt1.
 
 Hint Resolve a_rat_gt1.
 Hint Resolve a_rat_sub1_gt0.
@@ -156,8 +128,6 @@ Hint Resolve a_rat_pos.
 Hint Resolve a_rat_ge0.
 
 Section BoundsOnA.
-
-Local Open Scope nat_scope.
 
 Lemma a_lower_bound (k : nat) :  2 ^ (2 ^ k).+1 < a k.+2.
 Proof.
@@ -184,8 +154,8 @@ move=> leaSSn; do 2! (apply: trunc_log_max => //); apply: leq_trans leaSSn.
 exact: a_lower_boundW.
 Qed.
 
-Lemma k_bound n k (Hank : (a k <= n < (a k.+1))%nat) (le2k : (k >= 2)%nat) :
-  (k <= trunc_log 2 (trunc_log 2 n) + 2)%nat.
+Lemma k_bound n k (Hank : a k <= n < a k.+1) (le2k : k >= 2) :
+  k <= trunc_log 2 (trunc_log 2 n) + 2.
 Proof.
 case/andP: Hank => lean lena.
 case: k lean lena le2k => // k lean lena le2k.
@@ -213,7 +183,7 @@ Lemma n_between_a n (Hn : (2 <= n)) :
   (a (f_k n) <= n < a ((f_k n).+1)).
 Proof.
 elim: n Hn => // n; set k0 := f_k n => ihn.
-rewrite leq_eqVlt; case/orP; first by move/eqP <-.
+rewrite leq_eqVlt => /predU1P[<- //|].
 have -> : f_k n.+1 = if n.+1 < a k0.+1 then k0 else k0.+1 by [].
 rewrite ltnS; move/ihn.
 case: ifP; first by move -> => /andP [Hn _]; rewrite ltnW.
@@ -235,13 +205,13 @@ Lemma sum_aV (n : nat) :
 Proof.
 elim: n => [|n ihn]; first by rewrite big_mkord big_ord1.
 pose an1 := (a n.+1)%:Q; pose an2 := (a n.+2)%:Q.
-suff step : (an1 - 2%:~R) / (an1 - 1) + an1 ^-1 = (an2 - 2%:~R) / (an2 - 1).
+suff step : (an1 - 2%:Q) / (an1 - 1) + an1 ^-1 = (an2 - 2%:Q) / (an2 - 1).
   by rewrite big_nat_recr // ihn /= step.
 have -> : an2 = an1 * (an1 - 1) + 1 by exact: a_rat_rec1.
-have for_field1 : an1 - 1 <> 0 by move/eqP; apply/negP; rewrite /an1 lt0r_neq0.
-have for_field2 : an1 <> 0 by move/eqP; apply/negP; rewrite eq_sym /an1 ltr_neq.
+have for_field1 : an1 - 1 <> 0 by apply/eqP; rewrite /an1 lt0r_neq0.
+have for_field2 : an1 <> 0 by apply/eqP; rewrite eq_sym /an1 ltr_neq.
 have for_field3 : ((an1 * (an1 - 1)) + 1) - 1 <> 0.
-  by move/eqP; apply/negP; rewrite addrK mulf_neq0 => //; apply/negP; move/eqP.
+  by apply/eqP; rewrite addrK mulf_neq0 => //; apply/eqP.
 rat_field.
 done.
 Qed.
@@ -255,13 +225,13 @@ Proof. by rewrite sum_aV ltr_pdivr_mulr // mul1r ltr_add2l. Qed.
 (* observation in lemma 5 from original Hanson paper *)
 Corollary sum_aV_bis (n : nat) :
   \sum_(0 <= i < n.+1) ((a i).-1)%:Q / (a_rat i) =
-   n.+1%:R - (a_rat n.+1 - 2%:~R) / (a_rat n.+1 - 1).
+   n.+1%:Q - (a_rat n.+1 - 2%:Q) / (a_rat n.+1 - 1).
 Proof.
 have -> : \sum_(0 <= i < n.+1) ((a i).-1)%:Q / a_rat i =
           \sum_(0 <= i < n.+1) (1 - (a_rat i) ^-1).
   apply: eq_bigr => i _; rewrite -subn1 -subzn ?a_pos // ?rmorphB /= .
   rewrite /a_rat // ; rat_field. rewrite /emb.
-  have -> : 0%Q = 0%:~R by []; rewrite eqr_int_prop.
+  have -> : 0%Q = 0%:Q by []; rewrite eqr_int_prop.
   have Hpos := (a_pos i); rewrite -ltz_nat in Hpos.
   by move => Habs; rewrite Habs in Hpos.
 by rewrite sumrB big_mkord sumr_const /= card_ord sum_aV.
@@ -274,7 +244,7 @@ Local Open Scope nat_scope.
 Corollary suminv_lt1 i n : 0 < n ->  \sum_(0 <= j < i) n %/ a j < n.
 Proof.
 case: n => [| n] // _; case: i => [| i]; first by rewrite big_nil.
-suff : (((\sum_(0 <= j < i.+1) n.+1 %/ a j)%N)%:Q < n.+1%:Q)%R.
+suff : ((\sum_(0 <= j < i.+1) n.+1 %/ a j)%N%:Q < n.+1%:Q)%R.
   by rewrite -ltz_nat ltr_int.
 suff hdiv : (\sum_(0 <= i0 < i.+1) (n.+1%:Q / (a i0)%:Q) < n.+1%:Q)%R.
   apply: le_lt_trans hdiv; rewrite sumMz; apply: ler_sum => j _.
@@ -287,7 +257,7 @@ Corollary sum_aV_leqn n k : \sum_(0 <= i < k) n %/ a i <= n.
 Proof.
 case: n => [|n]; first by rewrite big1 // => i _; exact: div0n.
 case: k => [| k]; first by rewrite big_nil.
-apply: ltnW; exact: suminv_lt1.
+exact/ltnW/suminv_lt1.
 Qed.
 
 
@@ -301,8 +271,6 @@ End MajorationOfTheSumOfInversesOfA.
 
 Section DefinitionOfCandValuations.
 
-Local Open Scope nat_scope.
-
 (* Note that the formal definition and notations of multinomials is still a
    bit rough... *)
 Definition C_row n k :=
@@ -311,14 +279,13 @@ Definition C_row n k :=
 Definition C n k : nat := 'C[C_row n k] * (n - \sum_(0 <= i < k) n %/ a i)`!.
 
 Lemma C_pos n k : 0 < C n k.
-  by rewrite muln_gt0 multi_gt0 fact_gt0.
-Qed.
+Proof. by rewrite muln_gt0 multi_gt0 fact_gt0. Qed.
 Hint Resolve C_pos.
 
 Lemma nth_C_row n k i :
   nth 0 (C_row n k) i =
   if i < k then n %/ a i
-  else if i == k then (n - (\sum_(0 <= i < k) n %/ a i))
+  else if i == k then n - \sum_(0 <= i < k) n %/ a i
   else 0.
 Proof.
 by rewrite /C_row nth_rcons size_mkseq; case: ifP=> // ltik; rewrite nth_mkseq.
@@ -348,6 +315,9 @@ have -> : \sum_(0 <= i < k) nth 0 (C_row n k) i = \sum_(0 <= i < k) n %/ a i.
 rewrite subnKC //; exact: sum_aV_leqn.
 Qed.
 
+Lemma C_n0 n : C n 0 = n `!.
+Proof. by have := C_multi n 0; rewrite big_nil mul1n. Qed.
+
 Lemma C_0k k : C 0 k = 1.
 Proof.
 move: (C_multi 0 k).
@@ -359,7 +329,7 @@ Qed.
 (* The p valuation of a natural number k is (logn p k). So here is a formula
    for the p-valuation of (C n k) *)
 Lemma betaE p n k : prime p ->
-  beta p n k = logn p (n`!) - logn p ((\prod_(0 <= i < k) ((n %/ a i)`!))).
+  beta p n k = logn p (n`!) - logn p (\prod_(0 <= i < k) (n %/ a i)`!).
 Proof.
 move => Hprime; rewrite -(logn_div p); last first.
   by rewrite -(C_multi n k) dvdn_mulr.
@@ -382,12 +352,12 @@ have -> :
   exact: exchange_big_dep.
 suff maj j : j < trunc_log p n ->
              \sum_(0 <= i < k) (n %/ a i) %/ p ^ j.+1 < n %/ p ^ j.+1.
-  rewrite natsumrB; last by case=> i hi _ /=; apply: ltnW; apply: maj.
+  rewrite natsumrB; last by case=> i hi _ /=; apply/ltnW/maj.
   have {1}-> : trunc_log p n = \sum_(j < trunc_log p n) 1 by rewrite sum1_ord.
   by apply: leq_sum=> [] [i hi] _; rewrite subn_gt0; apply: maj.
 have {Hprime} lt1p : 1 < p by exact: prime_gt1.
 rewrite -(leq_exp2l j.+1 _ lt1p) => hj.
-have {hj} hj : p ^ j.+1 <= n by apply: leq_trans hj _; apply: trunc_logP.
+have {}hj : p ^ j.+1 <= n by apply: leq_trans hj (trunc_logP _ _).
 have -> : \sum_(0 <= i < k) (n %/ a i) %/ p ^ j.+1 =
           \sum_(0 <= i < k) (n %/ p ^ j.+1) %/ a i.
   by apply: eq_bigr=> i; rewrite divnAC.
@@ -400,7 +370,7 @@ Proof.
 elim: n => [|n ihn].
   by exists 0; rewrite leqnn iter_lcmn0 partn0 partn1.
 case: ihn => j /andP [lejn] /eqP ihn.
-have H1 m : (iter_lcmn m)`_p = \big[lcmn/1%N]_(1 <= i < m.+1) i`_p.
+have H1 m : (iter_lcmn m)`_p = \big[lcmn/1]_(1 <= i < m.+1) i`_p.
   by rewrite /iter_lcmn !big_add1 /= 2!big_mkord partn_biglcm.
 have {H1} H2 : (iter_lcmn n.+1)`_p = lcmn j`_p n.+1`_p.
   rewrite H1 big_add1 big_nat_recr // -ihn /=; congr lcmn.
@@ -450,7 +420,7 @@ suff lelogtrunc : logn p ln <= trunc_log p n.+1.
   exact: leq_trans (Hanson_2 _ _ _).
 apply: trunc_log_max; first by rewrite prime_gt1.
 suff Hj : {j | (j <= n.+1) && (ln`_p == j`_p)}.
-  case: Hj => j /andP [Hj1 Hj2]; rewrite -p_part; move/eqP: Hj2 => -> .
+  case: Hj => j /andP [Hj1 /eqP]; rewrite p_part => ->.
   case: j Hj1 => [|j Hj1]; first by rewrite partn0.
   exact/leq_trans/Hj1/dvdn_leq/dvdn_part.
 exact: part_p_iter_lcmn.
@@ -460,8 +430,6 @@ End DefinitionOfCandValuations.
 
 (* This section presents a first bound on C(n,k) *)
 Section BoundOnC.
-
-Local Open Scope nat_scope.
 
 (* Lemma 8 of "Hanson Summary" paper *)
 Lemma l8 n k :
@@ -512,10 +480,8 @@ End BoundOnC.
 
 Section UsefulBound.
 
-Local Open Scope nat_scope.
-
 (* nat equivalent of 1 + x <= exp x *)
-Lemma replace_exponential (n : nat) : 1 + n <= 3^n.
+Lemma replace_exponential (n : nat) : 1 + n <= 3 ^ n.
 Proof.
 elim: n => [|n HIn] // .
 apply: (@leq_trans (1 + 3 ^ n)); first by rewrite leq_add2l.

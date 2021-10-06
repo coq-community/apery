@@ -1,5 +1,4 @@
 Require Import BinInt.
-Require Import NArith.
 
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import rat_of_Z.
@@ -11,17 +10,17 @@ Unset Printing Implicit Defensive.
 
 From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat binint rational.
-Import Refinements (* AlgOp *). 
+Import Refinements (* AlgOp *).
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 (* You don't really need Z here but positive *)
-Definition rat_of_positive_fun (p : positive) : rat :=
-  (pos_to_int (Op.spec p))%:~R.
+Definition rat_of_positive_ (p : positive) : rat :=
+  (pos_to_int (Op.spec p))%:Q.
 
-Definition rat_of_positive_ := nosimpl rat_of_positive_fun.
+Arguments rat_of_positive_ p : simpl never.
 
 Module Type RatOfZSig.
 Parameter rat_of_positive : positive -> rat.
@@ -29,7 +28,7 @@ Axiom rat_of_positiveEdef : rat_of_positive = rat_of_positive_.
 End RatOfZSig.
 
 Module rat_of_positiveDef : RatOfZSig.
-Definition rat_of_positive : positive -> rat := rat_of_positive_fun.
+Definition rat_of_positive : positive -> rat := rat_of_positive_.
 Definition rat_of_positiveEdef := erefl rat_of_positive.
 End rat_of_positiveDef.
 
@@ -41,18 +40,17 @@ Export rat_of_positiveDef.
 Lemma rat_of_Z_rat_of_positive (p : positive) :
   rat_of_Z (Z.pos p)%Z = rat_of_positive p.
 Proof.
-rewrite rat_of_positiveEdef rat_of_ZEdef /rat_of_Z_ /rat_of_Z_fun.
-rewrite /rat_of_positive_ /rat_of_positive_fun /pos_to_int /=.
-by rewrite val_insubd to_nat_gt0 natz.
+rewrite rat_of_positiveEdef rat_of_ZEdef /rat_of_Z_ /rat_of_positive_.
+by rewrite /pos_to_int val_insubd to_nat_gt0 natz.
 Qed.
 
-Lemma rat_of_positiveE (p : positive) : 
-  rat_of_positive p = (Posz (nat_of_P p))%:~R.
+Lemma rat_of_positiveE (p : positive) :
+  rat_of_positive p = (Posz (nat_of_P p))%:Q.
 Proof. by rewrite -rat_of_Z_rat_of_positive rat_of_ZEdef. Qed.
 
 Fact lt_0_rat_of_positive (p : positive) : 0 < rat_of_positive p.
 Proof.
-rewrite rat_of_positiveEdef /rat_of_positive_ /rat_of_positive_fun /pos_to_int.
+rewrite rat_of_positiveEdef /rat_of_positive_ /pos_to_int.
 by rewrite val_insubd to_nat_gt0 natz ltr0n to_nat_gt0.
 Qed.
 
@@ -177,7 +175,7 @@ Global Instance Q_of_nat : Op.cast_of nat Q :=
 
 Global Instance RQ_of_nat : refines (Logic.eq ==> RQ)%rel natr cast.
 Proof.
-eapply refines_abstr => n b; rewrite refinesE => <- {b}.
+apply: refines_abstr => n b; rewrite refinesE => <- {b}.
 rewrite /natr /cast /Q_of_nat /=.
 elim: n => [|n ihn] //=; first by rewrite mulr0n; tc.
 by rewrite mulrS; tc.
@@ -186,9 +184,8 @@ Qed.
 Global Instance RQ_of_pos :
   refines (Logic.eq ==> RQ)%rel rat_of_positive cast.
 Proof.
-eapply refines_abstr => n b; rewrite refinesE => <- {b}.
-rewrite rat_of_positiveEdef /rat_of_positive_ /rat_of_positive_fun.
-by rewrite /cast /cast_PQ; tc.
+apply: refines_abstr => n b; rewrite refinesE => <- {b}.
+by rewrite rat_of_positiveEdef /rat_of_positive_ /cast /cast_PQ; tc.
 Qed.
 
 Global Instance positive_refines_eq (x : positive) : refines Logic.eq x x.

@@ -219,11 +219,11 @@ prefield;
 patch_incomplete_field; 
 repeat catch_embedded; 
 field;
-rewrite ?rat_of_ZEdef /=.
+rewrite ?rat_of_ZEdef.
 
 Ltac rat_field_simplify := 
 prefield; 
 patch_incomplete_field; 
 repeat catch_embedded; 
 field_simplify;
-rewrite ?rat_of_ZEdef /=.
+rewrite ?rat_of_ZEdef.

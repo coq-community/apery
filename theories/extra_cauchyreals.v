@@ -9,13 +9,11 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Section ExtraCreals.
 
 Variable F : realFieldType.
-
-Local Open Scope ring_scope.
 
 Lemma eq_creal_ext (x y : creal F) : x =1 y ->  (x == y)%CR.
 Proof.

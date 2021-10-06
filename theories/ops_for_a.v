@@ -30,7 +30,7 @@ Qed.
 
 Let a (n : int) : rat := \sum_(0 <= k < n + 1 :> int) (c n k).
 
-Theorem recAperyA (n : int) : n >= (2 : int) -> c.P_horner a n = 0.
+Theorem recAperyA (n : int) : 2 <= n :> int -> c.P_horner a n = 0.
 Proof.
 move=> nge2.
 have nge0 : n >= 0 by apply: le_trans nge2.

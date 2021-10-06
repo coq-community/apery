@@ -94,4 +94,3 @@ rewrite /emb /emb0; goal_to_lia; intlia.
 Qed.
 
 End AnnOfV.
-

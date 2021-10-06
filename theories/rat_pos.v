@@ -3,14 +3,14 @@
    them to concrete values that will be used in the rest of the
    formalization. *)
 
-Require Import Psatz ZArith.
+Require Import ZArith.
 From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import field_tactics lia_tactics.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -42,24 +42,24 @@ apply: (ltr_spsaddl bn_pos an_pos).
 Qed.
 
 Definition p4 (n_ : int) : rat :=
-  let n := n_%:~R : rat in
+  let n : rat := n_%:Q in
   rat_of_Z 12 * n^4 + rat_of_Z 96 * n^3 + rat_of_Z 283 * n^2 +
     rat_of_Z 364 * n + rat_of_Z 173.
 
 Definition p3 (n_ : int) : rat :=
-  let n := n_%:~R : rat in
+  let n : rat := n_%:Q in
   rat_of_Z 48 * n^3 + rat_of_Z 360 * n^2 + rat_of_Z 902 * n + rat_of_Z 755.
 
 Definition p2 (n_ : int) : rat :=
-  let n := n_%:~R : rat in
+  let n : rat := n_%:Q in
   rat_of_Z 144 * n^2 + rat_of_Z 864 * n + rat_of_Z 1310.
 
 Definition p1 (n_ : int) : rat :=
-  let n := n_%:~R : rat in
+  let n : rat := n_%:Q in
   rat_of_Z 288 * n + rat_of_Z 1008.
 
 Definition p0 (n_ : int) : rat :=
-  let n := n_%:~R : rat in
+  let n : rat := n_%:Q in
   rat_of_Z 288.
 
 Lemma p3_is_fdiff_of_p4 : is_fdiff_of p3 p4.
@@ -151,7 +151,7 @@ Proof.  rewrite lt0r.  case/andP.  done.  Qed.
 
 (* Move these and the previous one to rat_pos? *)
 Lemma affine_poly_pos (n : int) (a b : rat) :
-  0 <= n -> a > 0 -> b > 0 -> 0 < a * n%:~R + b.
+  0 <= n -> a > 0 -> b > 0 -> 0 < a * n%:Q + b.
 Proof.
 move=> le_0_n pos_a pos_b.
 apply: (@lt_le_trans _ _ b) => //.
@@ -161,10 +161,10 @@ by rewrite ler0z.
 Qed.
 
 Lemma affine_poly_pos_with_one (n : int) (b : rat) :
-  0 <= n -> b > 0 -> 0 < n%:~R + b.
+  0 <= n -> b > 0 -> 0 < n%:Q + b.
 Proof.
 move=> ? ?.
-have <- : rat_of_Z 1 * n%:~R = n%:~R by rewrite rat_of_ZEdef mul1r.
+have <- : rat_of_Z 1 * n%:Q = n%:Q by rewrite rat_of_ZEdef mul1r.
 apply: affine_poly_pos => //.
 by rewrite rat_of_ZEdef.
 Qed.

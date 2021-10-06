@@ -1,4 +1,4 @@
-Require Import Psatz ZArith.
+Require Import ZArith.
 
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import binomialz bigopz.
@@ -14,7 +14,7 @@ Require annotated_recs_v.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -68,7 +68,7 @@ Qed.
 Lemma b'0_eq : b' 0 = 0.
 Proof.  by rewrite /= initial_conds.b0_eq.  Qed.
 
-Lemma b'1_eq : b' 1 = 6%:~R.
+Lemma b'1_eq : b' 1 = 6%:Q.
 Proof.  by rewrite /= initial_conds.b1_eq.  Qed.
 
 Lemma b'2_eq : b' (2 : int) = rat_of_Z 351 / rat_of_Z 4.
@@ -214,10 +214,8 @@ clear ebk0 ebk1 ebk2 ebk3.
 (* Again a variable change. *)
 pose m : int := n - (4 : int); simpl in m.
 have hm : n = m + 4 by rewrite /m addrK.
-have le0m : m >= 0.
-  by move: le0n hn0 hn1 hn2 hn3; rewrite hm; clear; goal_to_lia; intlia.
-have hmp : m + 3 <= p.
-  move: hnp; rewrite -addn1 PoszD hm; clear; goal_to_lia; intlia.
+have le0m : m >= 0 by move: le0n hn0 hn1 hn2 hn3; rewrite hm; clear; intlia.
+have hmp : m + 3 <= p by move: hnp; rewrite -addn1 PoszD hm; clear; intlia.
 rewrite hm; clearbody m; clear le0n hnp hn0 hn1 hn2 hn3 hm n.
 have -> : m + 4 + k = int.shift 4 (m + k).
   by rewrite int.shift2Z addrAC.
@@ -228,7 +226,7 @@ have hmk2 : (2 : int) <= m + k by move: kpos le0m; clear; intlia.
 rewrite (Sn4_flat_to_Sn4_rew b'_Sn4_from2 hmk2); clear b'_Sn4_from2.
 rewrite (Sn4_flat_to_Sn4_rew algo_closures.b_Sn4 hmk2); clear hmk2.
 rewrite !int.shift2Z ![m + k + _]addrAC.
-by do 4! (rewrite ihp; [ | (goal_to_lia; intlia) ..]).
+by do 4! (rewrite ihp; [ | intlia ..]).
 Qed.
 
 (* Maybe should part of this go to initial_conds. *)
@@ -255,19 +253,16 @@ apply: b'_eq_b_reduction => //.
   by rewrite rat_of_Z_eq0.
 Qed.
 
-Lemma b_Sn2_almost (n : int) : n >= (2 : int) ->
-                                annotated_recs_c.P_horner b n = 0.
+Lemma b_Sn2_almost (n : int) :
+  n >= 2 :> int -> annotated_recs_c.P_horner b n = 0.
 Proof.
 move=> h.
 rewrite /annotated_recs_c.P_horner/punk.horner_seqop [LHS]/=.
-rewrite -!b'_eq_b; [ | (goal_to_lia; intlia) ..].
+rewrite -!b'_eq_b; [ | intlia ..].
 have h' : 0 <= n by intlia.
 rewrite b'_Sn2_rew //.
 rat_field.
-rewrite /annotated_recs_c.P_cf2.
-apply/eqP.
-apply: expfz_neq0.
-by apply: lt0r_neq0; affine_poly_intlia.
+by apply/eqP/expfz_neq0/lt0r_neq0; affine_poly_intlia.
 Qed.
 
 Lemma b_Sn2_at_0 : annotated_recs_c.P_horner b 0 = 0.
@@ -297,10 +292,8 @@ case: (altP (n =P 0)) => [-> | h0]; first exact: b_Sn2_at_0.
 case: (altP (n =P 1)) => [-> | h1]; first exact: b_Sn2_at_1.
 pose p : int := n - (2 : int); simpl in p.
 have hnp : n = p + (2 : int) by rewrite /p addrNK.
-have {hn h0 h1} le0p : 0 <= p.
-  by move: hn h0 h1; rewrite hnp; clear; goal_to_lia; intlia.
-have {le0p hnp p} h : (2 : int) <= n.
-  by rewrite hnp ler_addr.
+have {hn h0 h1} le0p : 0 <= p by move: hn h0 h1; rewrite hnp; clear; intlia.
+have {le0p hnp p} h : 2 <= n :> int by rewrite hnp ler_addr.
 exact: b_Sn2_almost.
 Qed.
 

@@ -12,7 +12,7 @@ Unset Printing Implicit Defensive.
 
 Import GRing.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Module int.
 
@@ -23,7 +23,6 @@ Definition shift1 (z : int) := z + 1.
 Definition shift_ n := iter n shift1.
 
 Definition shift := nosimpl shift_.
-
 
 Lemma shiftE : shift = shift_. by []. Qed.
 
@@ -64,4 +63,3 @@ Proof. by rewrite shiftE /=. Qed.
 End shift.
 
 End int.
-

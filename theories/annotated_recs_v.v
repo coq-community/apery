@@ -20,4 +20,3 @@ Record Ann v : Type := ann {
   SnSk_ : SnSk v;
   Sk2_ : Sk2 v
 }.
-
