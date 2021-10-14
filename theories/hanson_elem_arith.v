@@ -1,6 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import extra_mathcomp field_tactics lia_tactics.
-Require Import floor arithmetics multinomial.
+Require Import extra_mathcomp tactics floor arithmetics multinomial.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -202,13 +201,8 @@ elim: n => [|n ihn]; first by rewrite big_mkord big_ord1.
 pose an1 := (a n.+1)%:Q; pose an2 := (a n.+2)%:Q.
 suff step : (an1 - 2%:Q) / (an1 - 1) + an1 ^-1 = (an2 - 2%:Q) / (an2 - 1).
   by rewrite big_nat_recr // ihn /= step.
-have -> : an2 = an1 * (an1 - 1) + 1 by exact: a_rat_rec1.
-have for_field1 : an1 - 1 <> 0 by apply/eqP; rewrite /an1 lt0r_neq0.
-have for_field2 : an1 <> 0 by apply/eqP; rewrite eq_sym /an1 ltr_neq.
-have for_field3 : ((an1 * (an1 - 1)) + 1) - 1 <> 0.
-  by apply/eqP; rewrite addrK mulf_neq0 => //; apply/eqP.
-rat_field.
-done.
+rewrite [an2]a_rat_rec1 /an1 addrK.
+by field; rewrite pmulrn !lt0r_neq0.
 Qed.
 
 
@@ -224,11 +218,8 @@ Corollary sum_aV_bis (n : nat) :
 Proof.
 have -> : \sum_(0 <= i < n.+1) ((a i).-1)%:Q / a_rat i =
           \sum_(0 <= i < n.+1) (1 - (a_rat i) ^-1).
-  apply: eq_bigr => i _; rewrite -subn1 -subzn ?a_pos // ?rmorphB /= .
-  rewrite /a_rat // ; rat_field. rewrite /emb.
-  have -> : 0%Q = 0%:Q by []; rewrite eqr_int_prop.
-  have Hpos := (a_pos i); rewrite -ltz_nat in Hpos.
-  by move => Habs; rewrite Habs in Hpos.
+  apply: eq_bigr => i _; rewrite /a_rat.
+  by case: (a i) (a_pos i) => //= ai _; field; ring_lia.
 by rewrite sumrB big_mkord sumr_const /= card_ord sum_aV.
 Qed.
 

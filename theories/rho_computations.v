@@ -1,14 +1,13 @@
 Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
+From CoqEAL Require Import hrel param refinements.
+From CoqEAL Require Import pos binnat binint rational.
+Import Refinements (* AlgOp *).
 Require Import rat_of_Z.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-From CoqEAL Require Import hrel param refinements.
-From CoqEAL Require Import pos binnat binint rational.
-Import Refinements (* AlgOp *).
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -38,7 +37,7 @@ Export rat_of_positiveDef.
 Lemma rat_of_Z_rat_of_positive (p : positive) :
   rat_of_Z (Z.pos p)%Z = rat_of_positive p.
 Proof.
-rewrite rat_of_positiveEdef rat_of_ZEdef /rat_of_Z_ /rat_of_positive_.
+rewrite rat_of_positiveEdef rat_of_ZEdef /rat_of_positive_.
 by rewrite /pos_to_int val_insubd to_nat_gt0 natz.
 Qed.
 

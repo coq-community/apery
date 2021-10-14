@@ -7,8 +7,7 @@ From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat binint rational.
 Import Refinements (* AlgOp *).
 
-Require Import field_tactics lia_tactics shift.
-Require Import binomialz bigopz rho_computations.
+Require Import tactics shift binomialz bigopz rat_of_Z rho_computations.
 Require annotated_recs_c.
 Require Import seq_defs c_props initial_conds algo_closures.
 
@@ -32,23 +31,23 @@ Fact Qint_a (i : int)  : a i \is a Qint.
 Proof.
 rewrite /a /c big_int_cond /=.
 apply: rpred_sum=> j; rewrite andbT => /andP [le0j lejSi].
-by rewrite rpredM // rpredX //; apply: Qint_binomialz; intlia.
+by rewrite rpredM // rpredX //; apply: Qint_binomialz; lia.
 Qed.
 
 (* The values of a are strictly positive at positive indexes. *)
 Fact lt_0_a (k : int) : 0 <= k -> 0 < a k.
 Proof.
-move=> h0k; rewrite /a big_int_recl /=; last by intlia.
+move=> h0k; rewrite /a big_int_recl /=; last lia.
 apply: ltr_paddr; last exact: lt_0_c.
 rewrite big_int_cond; apply: sumr_ge0 => i; rewrite andbT => /andP [] *.
-by apply/ltW/lt_0_c/andP; intlia.
+by apply/ltW/lt_0_c; lia.
 Qed.
 
 (* The values of a are nonnegative *)
 Fact le_0_a (k : int) : 0 <= a k.
 Proof.
 have [le0k | ltk0] := lerP 0 k; first exact/ltW/lt_0_a.
-by rewrite /a big_geqz //; intlia.
+by rewrite /a big_geqz //; lia.
 Qed.
 
 Fact a_neq0 (k : int) : 0 <= k -> a k != 0.
@@ -58,14 +57,13 @@ Proof. by move/lt_0_a; rewrite lt0r; case/andP. Qed.
 Fact a_incr (n m : int) : n <= m -> a n <= a m.
 Proof.
 move=> lenm.
-have [le0n | ltn0] := lerP 0 n; last first.
-  by rewrite {1}/a big_geqz ?le_0_a ?lez_addr1.
-have leSnSm : n + 1 <= m + 1 by intlia.
+have [le0n | ltn0] := lerP 0 n; last by rewrite {1}/a big_geqz ?le_0_a; lia.
+have leSnSm : n + 1 <= m + 1 by lia.
 rewrite /a (big_cat_int _ _ _ _ leSnSm) //=; apply: ler_paddr=> //; last first.
   rewrite [X in X <= _]big_int_cond [X in _ <= X]big_int_cond /=.
-  apply: ler_sum => i; rewrite andbT => /andP [hi hin]; apply: c_incr; intlia.
+  apply: ler_sum => i; rewrite andbT => /andP [hi hin]; apply: c_incr; lia.
 rewrite big_int_cond; apply: sumr_ge0 => i; rewrite andbT => /andP [hni hmi].
-by apply/ltW/lt_0_c/andP; intlia.
+by apply/ltW/lt_0_c; lia.
 Qed.
 
 (*  One of the important properties of a for the proof is the asymptotic     *)
@@ -172,7 +170,7 @@ suff trans :  rat_of_positive 2 * (x + rat_of_positive 2) ^+ 2 <
   rewrite pmulr_rge0 //; exact: lt_0_rat_of_positive.
 rewrite -exprnP sqrrD !mulrDr; apply: ler_lt_add; last first. 
   by rewrite [_ < _]refines_eq.
-apply: ler_add; first by apply: ler_pmul; rewrite ?exprn_ge0 // [_ <= _]refines_eq.
+apply: ler_add; first by rewrite ler_wpmul2r ?exprn_ge0 // [_ <= _]refines_eq.
 by rewrite [x * _]mulrC mulrA -mulrDl ler_wpmul2r // [_ <= _]refines_eq.
 Qed.
 
@@ -197,13 +195,12 @@ have -> : rhs = (rat_of_positive 51 * x ^+ 4 +
                   ((x + rat_of_positive 3) ^+ 3 * (x + rat_of_positive 2) ^+ 3).
   rewrite /rhs /alpha !exprnP. 
   rewrite -!rat_of_Z_rat_of_positive in hx2 hx3 *.
-  rat_field.
-  by split; apply/eqP; rewrite -rat_of_ZEdef lt0r_neq0.
-apply: divr_ge0; last first.
-  by apply: mulr_ge0; exact/exprn_ge0/ltW.
+  rewrite rat_of_ZEdef in hx2 hx3.
+  by field; rewrite !lt0r_neq0.
+apply: divr_ge0; last by apply: mulr_ge0; exact/exprn_ge0/ltW.
+apply: addr_ge0; last by rewrite [_ <= _]refines_eq.
 have hposM (r : rat) (p : positive) : 0 <= r -> 0 <= rat_of_positive p * r.
   by move=> le0x; exact/mulr_ge0/le0x/ltW/lt_0_rat_of_positive.
-apply: addr_ge0; last by rewrite [_ <= _]refines_eq.
 apply/addr_ge0/hposM/le0i; do 2! (apply: addr_ge0; last exact/hposM/exprn_ge0).
 exact/hposM/exprn_ge0.
 Qed.
@@ -245,14 +242,9 @@ have -> (n := x) : rhs = (
                                    ((n + rat_of_Z 3) ^ 6 * (n + rat_of_Z 2) ^ 6).
   rewrite {}/rhs {}/n /delta.
   rewrite /alpha /beta -!rat_of_Z_rat_of_positive !exprnP.
-  rat_field.
-  by split; apply/eqP; rewrite -rat_of_ZEdef lt0r_neq0.
-apply: divr_ge0; last by apply: mulr_ge0; apply/exprn_ge0/ltW.
-have poslin (r : rat) (p : positive) : 0 <= r -> 0 <= rat_of_Z (Z.pos p) * r.
-  by move=> le0r; apply/mulr_ge0/le0r/ltW/rat_of_Z_Zpos.
-apply/addr_ge0/ltW/rat_of_Z_Zpos/addr_ge0/poslin/le0x.
-do 8! (apply/addr_ge0; last exact/poslin/exprn_ge0).
-exact/poslin/exprn_ge0.
+  rewrite rat_of_ZEdef in hi2 hi3.
+  by field; rewrite !lt0r_neq0.
+by rewrite divr_ge0 ?addr_ge0 ?mulr_ge0 ?addr_ge0.
 Qed.
 
 
@@ -262,7 +254,6 @@ Lemma hE (x y : rat) : h x y = alpha x - beta x / y.
 Proof. by []. Qed.
 
 (* Here the rat_field is used to prove a simple reorganisation of terms. *)
-(*FIXME : Why a /= after goal_to_lia? *)
 Lemma rho_rec (i : int) : Posz 2 <= i -> rho (i + 1) = h i%:Q (rho i).
 Proof.
 move=> le2i; rewrite hE.
@@ -270,7 +261,7 @@ have rhoi_neq0 : rho i != 0 by apply/lt0r_neq0/lt_0_rho/le_trans/le2i.
 have ai_neq0 : a i != 0 by apply/a_neq0/le_trans/le2i.
 rewrite -[alpha i%:Q](mulfK rhoi_neq0) -mulrBl; apply: canRL (mulfK _) _ => //.
 have -> : rho (i + 1) * rho i = a (i + 2) / a i.
-  by rewrite /rho mulrA mulfVK -?addrA //; apply/a_neq0; intlia.
+  by rewrite /rho mulrA mulfVK -?addrA //; apply/a_neq0; lia.
 apply: canLR (mulfK _) _; rewrite // mulrDl -mulrA mulNr /rho divfK //.
 have c2_neq0 : annotated_recs_c.P_cf2 i != 0.
   rewrite /annotated_recs_c.P_cf2; apply: lt0r_neq0. rewrite exprn_gt0 //.
@@ -284,8 +275,7 @@ have -> : a (i + 2) = - (annotated_recs_c.P_cf1 i * a (i + 1) +
   have := a_Sn2 le2i; rewrite /annotated_recs_c.P_horner.
   by rewrite /punk.horner_seqop /= !int.shift2Z -[_ + 1 + 1]addrA.
 rewrite /annotated_recs_c.P_cf2 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf0.
-rewrite /alpha /beta -!rat_of_Z_rat_of_positive !exprnP; rat_field.
-rewrite {}/emb; move: le2i; goal_to_lia; rewrite /=; intlia.
+by rewrite /alpha /beta -!rat_of_Z_rat_of_positive !exprnP; field; ring_lia.
 Qed.
 
 Local Notation QtoR := (realalg_of _).

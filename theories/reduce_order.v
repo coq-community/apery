@@ -1,6 +1,6 @@
 Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import field_tactics lia_tactics binomialz shift seq_defs.
+Require Import tactics binomialz shift rat_of_Z seq_defs.
 Require annotated_recs_c annotated_recs_v algo_closures initial_conds.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -75,25 +75,21 @@ Proof.
 rewrite -[Posz 3]/(int.shift 2 1) b'_Sn2_rew // b'1_eq b'2_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
 (* Doesn't finish: apply/eqP; rewrite rat_of_ZEdef; vm_compute. *)
-rat_field.
-do 2! (split; first by move/eqP; rewrite rat_of_Z_eq0).
-by move/eqP; rewrite rat_of_Z_eq0.
+by field.
 Qed.
 
 Lemma b'4_eq : b' 4%N = rat_of_Z 11424695 / rat_of_Z 288.
 Proof.
 rewrite -[Posz 4]/(int.shift 2 2) b'_Sn2_rew // b'2_eq b'3_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-rat_field.
-do 3! (split; first by move/eqP; rewrite rat_of_Z_eq0).
-by move/eqP; rewrite rat_of_Z_eq0.
+by field.
 Qed.
 
 Lemma b'_Sn4 (n : int) : n >= 0 -> annotated_recs_v.P_horner b' n = 0.
 Proof.
 move=> ?.
 rewrite /annotated_recs_v.P_horner /punk.horner_seqop [LHS]/=.
-rewrite !b'_Sn2_rew //; [ | intlia ..].
+rewrite !b'_Sn2_rew //; [ | lia ..].
 set b'1 := b' _.
 set b'2 := b' _.
 Fail set b'3 := b' _.
@@ -101,15 +97,8 @@ rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
 rewrite  /annotated_recs_v.P_cf0 /annotated_recs_v.P_cf1.
 rewrite /annotated_recs_v.P_cf2 /annotated_recs_v.P_cf3 /annotated_recs_v.P_cf4.
 rewrite !rmorphD /=.
-rat_field.
-goal_to_lia.
-intlia.
+field; ring_lia.
 Qed.
-
-Ltac affine_poly_intlia := 
-  rewrite ?rat_of_ZEdef;
-  rewrite -1?rmorphM -1?rmorphD -1?rmorphN /=;
-  rewrite ?intr_eq0 ?ltr0z ?ler0z; intlia.
 
 Lemma Sn4_flat_to_Sn4_rew (w : int -> rat) :
   (forall n : int, 2 <= n :> int -> annotated_recs_v.P_horner w n = 0) ->
@@ -138,19 +127,12 @@ set c4 := annotated_recs_v.P_cf4 n => hyp.
 clearbody t0 t1 t2 t3.
 have c4_neq_0 : c4 != 0.
   rewrite /c4 /annotated_recs_v.P_cf4.
-  apply: mulf_neq0; last first.
-    apply: expfz_neq0; last by affine_poly_intlia. 
-    apply: mulf_neq0; first by affine_poly_intlia. 
-    apply: lt0r_neq0; apply: addr_gt0; last exact: rat_of_Z_Zpos.
-    apply: addr_gt0; last by affine_poly_intlia.
-    apply: addr_gt0; last first.
-      apply: mulr_gt0; first by affine_poly_intlia.
-      apply: exprz_gt0; affine_poly_intlia.
-    apply: addr_gt0.
-      apply: mulr_gt0; first by affine_poly_intlia.
-      apply: exprz_gt0; affine_poly_intlia.
-    apply: mulr_gt0; first by affine_poly_intlia.
-    apply: exprz_gt0; affine_poly_intlia.
+  apply: mulf_neq0; last by ring_lia.
+  apply: mulf_neq0; first by ring_lia.
+  apply: lt0r_neq0; apply: addr_gt0; last by ring_lia.
+  apply: addr_gt0; last by ring_lia.
+  apply: addr_gt0; last by ring_lia.
+  by apply: addr_gt0; ring_lia.
 clearbody c4.  clear le_0_n.
 rewrite mulNr.
 apply/eqP.
@@ -160,9 +142,8 @@ have <- : (c4 * (w (int.shift 4 n) + (t0 + t1 + t2 + t3) / c4) == 0) =
   by apply: mulrI_eq0; first by apply/lregP.
 rewrite mulrDr [c4 * (_ / c4)]mulrC.
 rewrite -{}hyp 3!(int.shiftS n).
-apply/eqP.  move/eqP in c4_neq_0.
-rat_field. 
-by done.
+apply/eqP.
+by field.
 Qed.
 
 Lemma shift1_to_plus1 (o : nat) : int.shift 1 (Posz o) = Posz (o.+1).
@@ -205,18 +186,18 @@ clear ebk0 ebk1 ebk2 ebk3.
 (* Again a variable change. *)
 pose m : int := n - (4 : int); simpl in m.
 have hm : n = m + 4 by rewrite /m addrK.
-have le0m : m >= 0 by move: le0n hn0 hn1 hn2 hn3; rewrite hm; clear; intlia.
-have hmp : m + 3 <= p by move: hnp; rewrite -addn1 PoszD hm; clear; intlia.
+have le0m : m >= 0 by lia.
+have hmp : m + 3 <= p by lia.
 rewrite hm; clearbody m; clear le0n hnp hn0 hn1 hn2 hn3 hm n.
 have -> : m + 4 + k = int.shift 4 (m + k).
   by rewrite int.shift2Z addrAC.
 have b'_Sn4_from2 n : 2 <= n :> int -> annotated_recs_v.P_horner b' n = 0.
   by move=> hn; apply: b'_Sn4; apply: le_trans hn.
-have hmk2 : 2 <= m + k :> int by move: kpos le0m; clear; intlia.
+have hmk2 : 2 <= m + k :> int by lia.
 rewrite (Sn4_flat_to_Sn4_rew b'_Sn4_from2 hmk2); clear b'_Sn4_from2.
 rewrite (Sn4_flat_to_Sn4_rew algo_closures.b_Sn4 hmk2); clear hmk2.
 rewrite !int.shift2Z ![m + k + _]addrAC.
-by do 4! (rewrite ihp; [ | intlia ..]).
+by do 4! (rewrite ihp; [| lia ..]).
 Qed.
 
 (* Maybe should part of this go to initial_conds. *)
@@ -229,18 +210,12 @@ apply: b'_eq_b_reduction => //.
   rewrite b'_Sn2_rew // b'2_eq b'3_eq.
   rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1.
   rewrite /annotated_recs_c.P_cf2.
-  initial_conds.expand_b.
-  rat_field.
-  do 9! (split; first by move/eqP; rewrite rat_of_Z_eq0).
-  by move/eqP; rewrite rat_of_Z_eq0.
+  by initial_conds.solve_b_evaluation.
 - rewrite -[(2 : int) + (3 : int)]/(int.shift 2 3).
   rewrite b'_Sn2_rew // b'3_eq b'4_eq.
   rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1.
   rewrite /annotated_recs_c.P_cf2.
-  initial_conds.expand_b.
-  rat_field.
-  initial_conds.try_solve_numeral_intia_obligations.
-  by rewrite rat_of_Z_eq0.
+  by initial_conds.solve_b_evaluation.
 Qed.
 
 Lemma b_Sn2_almost (n : int) :
@@ -248,11 +223,11 @@ Lemma b_Sn2_almost (n : int) :
 Proof.
 move=> h.
 rewrite /annotated_recs_c.P_horner/punk.horner_seqop [LHS]/=.
-rewrite -!b'_eq_b; [ | intlia ..].
-have h' : 0 <= n by intlia.
+rewrite -!b'_eq_b; [ | lia ..].
+have h' : 0 <= n by lia.
 rewrite b'_Sn2_rew //.
-rat_field.
-by apply/eqP/expfz_neq0/lt0r_neq0; affine_poly_intlia.
+field.
+by apply/expfz_neq0; ring_lia.
 Qed.
 
 Lemma b_Sn2_at_0 : annotated_recs_c.P_horner b 0 = 0.
@@ -260,9 +235,7 @@ Proof.
 rewrite  /annotated_recs_c.P_horner /punk.horner_seqop /=.
 rewrite initial_conds.b0_eq initial_conds.b1_eq initial_conds.b2_eq.
 rewrite /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-rat_field.
-goal_to_lia.
-intlia.
+by field; ring_lia.
 Qed.
 
 Lemma b_Sn2_at_1 : annotated_recs_c.P_horner b 1 = 0.
@@ -270,9 +243,7 @@ Proof.
 rewrite /annotated_recs_c.P_horner /punk.horner_seqop /=.
 rewrite initial_conds.b1_eq initial_conds.b2_eq initial_conds.b3_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-rat_field.
-goal_to_lia.
-intlia.
+by field; ring_lia.
 Qed.
 
 Lemma b_Sn2 (n : int) : n >= 0 -> annotated_recs_c.P_horner b n = 0.
@@ -282,8 +253,8 @@ case: (altP (n =P 0)) => [-> | h0]; first exact: b_Sn2_at_0.
 case: (altP (n =P 1)) => [-> | h1]; first exact: b_Sn2_at_1.
 pose p : int := n - (2 : int); simpl in p.
 have hnp : n = p + (2 : int) by rewrite /p addrNK.
-have {hn h0 h1} le0p : 0 <= p by move: hn h0 h1; rewrite hnp; clear; intlia.
-have {le0p hnp p} h : 2 <= n :> int by rewrite hnp ler_addr.
+have {hn h0 h1} le0p : 0 <= p by lia.
+have {le0p hnp p} h : (2 : int) <= n by rewrite hnp ler_addr.
 exact: b_Sn2_almost.
 Qed.
 

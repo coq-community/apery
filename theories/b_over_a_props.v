@@ -1,6 +1,5 @@
-Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import extra_mathcomp field_tactics lia_tactics shift.
+Require Import extra_mathcomp tactics shift rat_of_Z.
 Require annotated_recs_c.
 Require Import seq_defs initial_conds algo_closures reduce_order a_props.
 
@@ -37,23 +36,21 @@ have uUrec : Urec ba_casoratian.
                 - b (int.shift 1 k) * annotated_recs_c.P_horner a k.
     by rewrite brec arec !mulr0 subrr.
   rewrite /annotated_recs_c.P_horner /annotated_recs_c.P_seq /c1 /c0.
-  by rewrite /punk.horner_seqop /= /ba_casoratian; rat_field.
+  by rewrite /punk.horner_seqop /= /ba_casoratian; ring.
 have vUrec : Urec v.
   move=> k le2k.
   rewrite /c0 /c1 /annotated_recs_c.P_cf2 /annotated_recs_c.P_cf0 /v.
-  by rewrite int.shift2R; rat_field; rewrite {}/emb; goal_to_lia; intlia.
+  by rewrite int.shift2R; field; ring_lia.
 (* this step below is only the fact that U is a rec of order 1 : should be *)
 (* obtained from something more general... *)
 suff {uUrec vUrec v} Urec1P (w1 w2 : int -> rat) : w1 2 = w2 2 ->
   Urec w1 -> Urec w2 -> forall (k : int), 2%:~R <= k -> w1 k = w2 k.
   apply: (Urec1P _ v) => //; rewrite /ba_casoratian /v b2_eq b3_eq.
   rewrite int.shift2Z a2_eq a3_eq.
-  rat_field; do 2! (split; first by move/eqP; rewrite rat_of_Z_eq0).
-  by move/eqP; rewrite rat_of_Z_eq0.
+  by field; ring_lia.
 have hUrec w k : Urec w -> 2%:~R <= k -> w (int.shift 1 k) = (c0 k / c1 k) * w k.
   move=> wUrec le2k; rewrite mulrAC; apply: canRL (mulfK _) _.
-    rewrite /c1 /annotated_recs_c.P_cf2 expf_eq0 /= rat_of_ZEdef.
-    rewrite  -[rat_of_Z_ 2]/(2%:Q) -rmorphD /= intr_eq0; intlia.
+    by rewrite /c1 /annotated_recs_c.P_cf2 expf_eq0; ring_lia.
   by apply/eqP; rewrite [_ * c1 k]mulrC -subr_eq0 wUrec.
 move=> ic Uw1 Uw2 [] //; elim => // [[]] // [] // k ihk _.
 by rewrite -[_.+3]addn1 PoszD -int.zshiftP !hUrec // ihk.
@@ -78,9 +75,7 @@ Lemma Db_over_a_casoratian (i j : nat) : (2 <= j)%N -> (j <= i)%N ->
   \sum_(j <= k < i) 6%:Q / (k%:Q + 1) ^ 3 / (a (int.shift 1 k) * a k).
 Proof.
 move=> le2j leji; rewrite -(telescope_nat (fun k => b_over_a_seq (Posz k))) //.
-rewrite [RHS]big_nat_cond [LHS]big_nat_cond.
-apply: eq_bigr => k /andP[/andP[lejk ltki] _].
-rewrite -ba_casoratianE /b_over_a_seq /ba_casoratian.
-  by rewrite PoszD int.zshiftP; rat_field; split; apply/eqP; apply: a_neq0.
-by rewrite lez_nat; apply: leq_trans lejk.
+rewrite [RHS]big_nat_cond [LHS]big_nat_cond; apply: eq_bigr => k Hk.
+rewrite -ba_casoratianE /b_over_a_seq /ba_casoratian; last ring_lia.
+by rewrite PoszD int.zshiftP; field; rewrite !a_neq0.
 Qed.

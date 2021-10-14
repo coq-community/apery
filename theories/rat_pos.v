@@ -5,7 +5,7 @@
 
 Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import field_tactics lia_tactics.
+Require Import tactics rat_of_Z.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -36,7 +36,7 @@ move: {cond_an_pos} (cond_an_pos n_nonneg) => an_pos.
 move: {cond_bn_pos} (cond_bn_pos n n_nonneg) => bn_pos.
 move: {fdiff} (fdiff n n_nonneg) => fdiff.
 rewrite -{}fdiff in bn_pos.
-have -> : a (n + 1) = a (n + 1) - a n + a n by rat_field.
+have -> : a (n + 1) = a (n + 1) - a n + a n by ring.
 apply: (ltr_spsaddl bn_pos an_pos).
 Qed.
 
@@ -64,29 +64,25 @@ Definition p0 (n_ : int) : rat :=
 Lemma p3_is_fdiff_of_p4 : is_fdiff_of p3 p4.
 Proof.
 rewrite /is_fdiff_of => n pos_n.
-rewrite /p3 /p4 rmorphD /=.
-by rat_field.
+by rewrite /p3 /p4; ring.
 Qed.
 
 Lemma p2_is_fdiff_of_p3 : is_fdiff_of p2 p3.
 Proof.
 rewrite /is_fdiff_of => n pos_n.
-rewrite /p2 /p3 rmorphD /=.
-by rat_field.
+by rewrite /p2 /p3; ring.
 Qed.
 
 Lemma p1_is_fdiff_of_p2 : is_fdiff_of p1 p2.
 Proof.
 rewrite /is_fdiff_of => n pos_n.
-rewrite /p1 /p2 rmorphD /=.
-by rat_field.
+by rewrite /p1 /p2; ring.
 Qed.
 
 Lemma p0_is_fdiff_of_p1 : is_fdiff_of p0 p1.
 Proof.
 rewrite /is_fdiff_of => n pos_n.
-rewrite /p0 /p1 rmorphD /=.
-by rat_field.
+by rewrite /p0 /p1; ring.
 Qed.
 
 (* Take the evaluation at 0 of a polynomial in expanded form and normalize it
@@ -165,5 +161,4 @@ Proof.
 move=> ? ?.
 have <- : rat_of_Z 1 * n%:Q = n%:Q by rewrite rat_of_ZEdef mul1r.
 apply: affine_poly_pos => //.
-by rewrite rat_of_ZEdef.
 Qed.

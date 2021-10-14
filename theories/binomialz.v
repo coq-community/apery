@@ -1,6 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import field_tactics lia_tactics.
+Require Import tactics.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -163,7 +162,7 @@ move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
   rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
-have {hk hk1}: k >= 0 by goal_to_lia; intlia.
+have {hk hk1}: k >= 0 by lia.
 case: n hn => n //; case: k => k // _ _.
 rewrite mulrAC; apply/eqP. 
 have -> m : Posz m + 1 = Posz m.+1 by rewrite -addn1 PoszD.
@@ -181,10 +180,10 @@ move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
   rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
-have {hk1 hk}: k >= 0 by goal_to_lia; intlia.
+have {hk1 hk}: k >= 0 by lia.
 case: n hn => n //; case: k => k // hn hk.
-have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by rat_field.
-rewrite -mulrA mulrBl !mulrA -binzSS_weak //; last by goal_to_lia; intlia.
+have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by ring.
+rewrite -mulrA mulrBl !mulrA -binzSS_weak //; last lia.
 rewrite divff ?mul1r; last first.
   by rewrite -[1]/(1%:Q) -rmorphD -PoszD pnatr_eq0 addn1.
 by apply/eqP; rewrite eq_sym subr_eq; apply/eqP; rewrite Pascal_z.
@@ -203,14 +202,14 @@ case: (lerP k (-1 - 1)) => hkN2.
   rewrite binz_neg; last by apply: le_trans hkN2 _.
   by rewrite mulr0.
 move=> hn hk1.
-have {hkN2} hk : k >= 0 by goal_to_lia; intlia.
+have {hkN2} hk : k >= 0 by lia.
 rewrite [LHS]binNzz [in RHS]binNzz.
-have -> : k + 1 - (n + 1) - 1 = k - n - 1 by intlia.
-rewrite binzS_weak //; last by goal_to_lia; intlia.
+have -> : k + 1 - (n + 1) - 1 = k - n - 1 by lia.
+rewrite binzS_weak //; last lia.
 rewrite !rmorphD !rmorphN /=; case: k hk1 hk => [k hk0 hk| //].
 rewrite -[Posz k + 1]PoszD addn1 exprSzr.
 set b := binomialz _ _; set c := (- 1) ^ k.
-by rat_field; goal_to_lia; intlia.
+by field; ring_lia.
 Qed.
 
 Lemma binzS (n k : int) : k + 1 != 0 ->
@@ -220,7 +219,7 @@ move=> hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
   rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
-have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by rat_field.
+have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by ring.
 rewrite -mulrA mulrBl !mulrA -binzSS // divff ?mul1r; last first.
   by rewrite -[1]/(1%:Q) -rmorphD /= intr_eq0.
 by apply/eqP; rewrite eq_sym subr_eq; apply/eqP; rewrite Pascal_z.
@@ -234,8 +233,7 @@ move=> hkn; case: (altP (k =P 0)) hkn => [-> | hk0] hkn.
 have hk : k = k - 1 + 1 by rewrite -addrA subrr addr0.
 rewrite hk binzSS; last by rewrite -hk.
 rewrite binzS; last by rewrite -hk.
-rewrite !rmorphD !rmorphN /=; rat_field.
-move: hk0 hkn hk; goal_to_lia; intlia.
+by field; ring_lia.
 Qed.
 
 Lemma binz_gt0 (n k : int) : 0 <= k -> k <= n -> 0 < binomialz n k.
@@ -311,7 +309,7 @@ case: (ltrP k 0) => //= hk.
   apply: contraLR h => _.
   rewrite binNzz; apply: mulf_neq0; first by rewrite expfz_eq0 andbF.
   suff: binomialz (k - n - 1) k > 0 by rewrite lt0r; case/andP.
-  have hnk : k <= k - n - 1 by intlia.
+  have hnk : k <= k - n - 1 by lia.
   by apply: bin_nonneg => //; apply: le_trans hnk.
 case/orP: h => [h | /andP [h1 h2]]; apply/eqP; first by apply: binz_neg.
 exact: binz_geq.
