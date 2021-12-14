@@ -28,11 +28,7 @@ Local Open Scope ring_scope.
 (* Although the type of the values of a is the one of rationals, these *)
 (* values are all integer. *)
 Fact Qint_a (i : int)  : a i \is a Qint.
-Proof.
-rewrite /a /c big_int_cond /=.
-apply: rpred_sum=> j; rewrite andbT => /andP [le0j lejSi].
-by rewrite rpredM // rpredX //; apply: Qint_binomialz; lia.
-Qed.
+Proof. by apply: rpred_sum => ?; rewrite rpred_zify. Qed.
 
 (* The values of a are strictly positive at positive indexes. *)
 Fact lt_0_a (k : int) : 0 <= k -> 0 < a k.

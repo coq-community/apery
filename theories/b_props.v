@@ -28,13 +28,12 @@ Local Notation l := iter_lcmn.
 Fact cdM (n : nat) (k m : int) :
   0 <= k -> 1 <= m -> m < k + 1 -> k < Posz n + 1 ->
   c n k * d n k m =
-  ((-1) ^ (m + 1) / 2%:Q) / (m%:Q ^ 3 * binomialz k m ^ 2) *
+  ((-1) ^ (m + 1) / 2%:Q) / (m%:Q ^ 3 * (binomialz k m)%:Q ^ 2) *
   (binomialz n k * binomialz (Posz n + k) k *
-  binomialz (Posz n - m) (Posz n - k) * binomialz ((Posz n) + k) (k - m)).
+  binomialz (Posz n - m) (Posz n - k) * binomialz ((Posz n) + k) (k - m))%:Q.
 Proof.
-move=> h0k h1m hmk hkn; rewrite /c /d.
-case: m h1m hmk => // m; case: k h0k hkn => k _ //.
-rewrite !ltz_addr1 => hkn h1m hmk.
+case: m k => m // [] // k _ h1m.
+rewrite /c /d -!PoszD !addn1 !ltz_nat !ltnS !rmorphM /= => hmk hkn.
 have hnm : (m <= n)%N by lia.
 rewrite (subzn hkn) (subzn hmk) (subzn hnm) !binzE; [| lia..].
 have -> : (n + k - (k - m) = n + m)%N by rewrite subnBA // addnAC addnK.
@@ -75,19 +74,19 @@ apply/rpredD/rpred_sum.
   apply/rpredM/rpredX/iter_lcmn_mul_rat; rewrite // normr_denq denqVz; lia.
 move=> k /andP [/andP [le0k lekn] _]; rewrite mulrA mulr_sumr big_int_cond /=.
 apply/rpred_sum => m /andP [/andP [le1m lemk] _]; rewrite -mulrA cdM //.
-pose hardest_term := (l n)%:Q ^ 3 / (m%:Q ^ 3 * binomialz k m ^ 2).
+pose hardest_term := (l n)%:Q ^ 3 / (m%:Q ^ 3 * (binomialz k m)%:Q ^ 2).
 set other_term := (X in _ * _ * _ * X).
 set goal_term := (X in X \is a Qint).
 have {goal_term} -> : goal_term = (-1) ^ (m + 1) * other_term * hardest_term.
   rewrite /goal_term /hardest_term; field.
-  by rewrite lt0r_neq0 ?binz_gt0; ring_lia.
-apply/rpredM; first by rewrite expN1r !rpredM ?rpredX // Qint_binomialz; lia.
+  rewrite !intr_eq0 lt0r_neq0 ?binz_gt0; lia.
+apply/rpredM; first by rewrite expN1r rpred_zify.
 have {hardest_term other_term} -> :
-    hardest_term = ((l n)%:Q / m%:Q) * ((l n)%:Q / (m%:Q * binomialz k m)) ^ 2.
+    hardest_term = ((l n)%:Q / m%:Q) * ((l n)%:Q / (m * binomialz k m)%:Q) ^ 2.
   rewrite expfzMl {}/hardest_term; field.
-  by rewrite lt0r_neq0 ?binz_gt0; ring_lia.
+  by rewrite !intr_eq0 lt0r_neq0 ?binz_gt0; lia.
 apply/rpredM/rpredX.
   apply: iter_lcmn_mul_rat; rewrite normr_denq denqVz; lia.
 case: k m le0k le1m lemk lekn => [] k [] m // *.
-rewrite binz_nat_nat -rmorphM /=; apply/Qint_dvdz/dvd_nbin_iter_lcmn; lia.
+rewrite binz_nat_nat; apply/Qint_dvdz/dvd_nbin_iter_lcmn; lia.
 Qed.

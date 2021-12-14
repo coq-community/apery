@@ -14,7 +14,7 @@ Local Open Scope ring_scope.
 Fact lt_0_c (i j : int) : 0 <= j <= i -> 0 < c i j.
 Proof.
 case/andP=> h0j hji; rewrite /c -expfzMl.
-apply/exprz_gt0/mulr_gt0; apply/binz_gt0; lia.
+by apply/exprz_gt0/mulr_gt0; rewrite ltr0z binz_gt0; lia.
 Qed.
 
 (* c is monotonic wrt its first argument *)
