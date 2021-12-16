@@ -25,7 +25,7 @@ andb_to_and => ?; rewrite /d.P1_horner /d.P1_seq.
 rewrite /punk.biv_horner_seqop2 /punk.biv_horner_seqop.
 rewrite /punk.biv_horner_seqop_rec /punk.pfun2 /d.Q1_flat /=.
 do 4! (rewrite d_Sn; last by rewrite /d.precond.Sn; intlia).
-do 2! (rewrite d_Sk; last by rewrite /d.precond.Sk).
+do 2! rewrite d_Sk //.
 rewrite d_Sm; last by rewrite /d.precond.Sm; intlia.
 set d_nmk := d _ _ _.
 Fail set dtest := d _ _ _.
@@ -63,7 +63,7 @@ move => n m k; rewrite (* /d.P_eq_Delta_Q_fmt *) /d.not_D3; andb_to_and => ?.
 rewrite /d.P3_horner /d.P3_seq /punk.biv_horner_seqop2 /punk.biv_horner_seqop.
 rewrite /punk.biv_horner_seqop_rec /punk.pfun2 /d.Q3_flat /=.
 do 2! (rewrite d_Sn; last by rewrite /d.precond.Sn; intlia).
-rewrite d_Sk; last by rewrite /d.precond.Sk.
+rewrite d_Sk //.
 rewrite d_Sm; last by rewrite /d.precond.Sm; intlia.
 set d_nmk := d _ _ _.
 Fail set dtest := d _ _ _.
@@ -79,7 +79,7 @@ Proof.
 move => n m k; rewrite (* /d.P_eq_Delta_Q_fmt *) /d.not_D4; andb_to_and => ?.
 rewrite /d.P4_horner /d.P4_seq /punk.biv_horner_seqop2 /punk.biv_horner_seqop.
 rewrite /punk.biv_horner_seqop_rec /punk.pfun2 /d.Q4_flat /=.
-do 2! (rewrite d_Sk; last by rewrite /d.precond.Sk ).
+do 2! rewrite d_Sk //.
 rewrite d_Sm; last by rewrite /d.precond.Sm; intlia.
 set d_nmk := d _ _ _.
 Fail set dtest := d _ _ _.
@@ -142,7 +142,6 @@ have -> : onD = 0.
 
   rewrite /d.not_D1.
   apply: negbTE.
-  rewrite negb_and negbK negb_and -lerNgt -ltrNge orb_andr.
   by goal_to_lia; intlia.
 
 rewrite {}/telQ {}/remP.
@@ -188,7 +187,6 @@ have -> : onD = 0.
 
   rewrite /d.not_D2.
   apply: negbTE.
-  rewrite negb_and negbK negb_and -lerNgt -ltrNge orb_andr.
   by goal_to_lia; intlia.
 
 rewrite {}/telQ.
@@ -235,7 +233,7 @@ have -> : onD = 0.
 
   rewrite /d.not_D3.
   apply: negbTE.
-  rewrite negb_and negbK negb_and -lerNgt -ltrNge orb_andr.
+  rewrite negb_and negbK negb_and -leNgt -ltNge orb_andr.
   by goal_to_lia; intlia.
 
 rewrite {}/telQ {}/remP.
@@ -286,7 +284,7 @@ have -> : onD = 0.
 
   rewrite /d.not_D4.
   apply: negbTE.
-  rewrite negb_and negbK negb_and -lerNgt -ltrNge orb_andr.
+  rewrite negb_and negbK negb_and -leNgt -ltNge orb_andr.
   by goal_to_lia; intlia.
 
 rewrite {}/telQ {}/remP.
@@ -359,8 +357,8 @@ Proof.
 rewrite /Sn2 /precond.Sn2 => n k [ltk0 ltkn].
 have Sn2_lcomb_eq_0 : Sn2_lcomb s n k = 0.
   rewrite /Sn2_lcomb /Sn2_lcomb_cf2 /Sn2_lcomb_cf4 -rat_of_Z_0 !mul0r !addr0.
-  rewrite -/P1_flat recD1_flat recD1; try intlia.
-  rewrite -/P3_flat recD3_flat recD3; try intlia.
+  rewrite -/P1_flat recD1_flat recD1 //.
+  rewrite -/P3_flat recD3_flat recD3 //.
   by rewrite !mulr0 !addr0.
 apply/eqP.
 rewrite -subr_eq0.
@@ -370,11 +368,11 @@ have nzero_n0 : nzero != 0.
   rewrite mulf_eq0 /Sn2_lcomb_cf1 /d.P1_cf2_0.
   rewrite negb_or expfz_neq0 ?andbT; last first.
   (* missing lemmas in Nums *)
-    suff aux : n%:~R + rat_of_Z 2 > 0 by rewrite -normr_gt0 gtr0_norm.
-    rewrite rat_of_ZEdef addr_gt0 // ltr0z. exact: ler_lt_trans ltkn.
-  suff aux : n%:~R + rat_of_Z 2 + k%:~R > 0 by rewrite -normr_gt0 gtr0_norm.
+    suff aux : n%:Q + rat_of_Z 2 > 0 by rewrite -normr_gt0 gtr0_norm.
+    rewrite rat_of_ZEdef addr_gt0 // ltr0z. exact: le_lt_trans ltkn.
+  suff aux : n%:Q + rat_of_Z 2 + k%:Q > 0 by rewrite -normr_gt0 gtr0_norm.
   apply: ltr_spaddl; last by rewrite ler0z.
-  rewrite rat_of_ZEdef addr_gt0 // ?ltr0z //. exact: ler_lt_trans ltkn.
+  rewrite rat_of_ZEdef addr_gt0 // ?ltr0z //. exact: le_lt_trans ltkn.
 rewrite -(mulrI_eq0 _ (lregP nzero_n0)) {nzero_n0}.
 rewrite -Sn2_lcomb_eq_0.
 apply/eqP.
@@ -407,11 +405,11 @@ rewrite -subr_eq0.
 set nzero := d.P3_cf1_1 n k.
 have nzero_n0 : nzero != 0.
   rewrite /nzero /d.P3_cf1_1.
-  suff aux : n%:~R + rat_of_Z 2 + k%:~R > 0 by rewrite -normr_gt0 gtr0_norm.
+  suff aux : n%:Q + rat_of_Z 2 + k%:Q > 0 by rewrite -normr_gt0 gtr0_norm.
   rewrite rat_of_ZEdef -addrA addr_gt0 //.
-    by rewrite ltr0z; apply: ler_lt_trans ltkn.
-  have le0k : 0 <= k%:~R :> rat by rewrite ler0z.
-  by apply: ler_lt_trans le0k _; rewrite ltr_addr.
+    by rewrite ltr0z; apply: le_lt_trans ltkn.
+  have le0k : 0 <= k%:Q by rewrite ler0z.
+  by apply: le_lt_trans le0k _; rewrite ltr_addr.
 rewrite -(mulrI_eq0 _ (lregP nzero_n0)) // {nzero_n0}.
 rewrite -SnSk_lcomb_eq_0.
 apply/eqP.
@@ -444,15 +442,15 @@ rewrite -subr_eq0.
 set nzero := d.P4_cf0_2 n k.
 have nzero_n0 : nzero != 0.
   rewrite /nzero /d.P4_cf0_2 mulf_neq0 //; last first.
-    suff aux : - n%:~R + k%:~R + rat_of_Z 1 < 0.
+    suff aux : - n%:Q + k%:Q + rat_of_Z 1 < 0.
       by rewrite -normr_gt0 // ltr0_norm // oppr_gt0.
     by rewrite rat_of_ZEdef -addrA addrC subr_lt0 -intrD ltr_int.
-  have kp2gt0 : k%:~R + rat_of_Z 2 > 0.
+  have kp2gt0 : k%:Q + rat_of_Z 2 > 0.
     by rewrite rat_of_ZEdef ltr_paddl // ler0z.
   rewrite mulf_neq0 //; first by rewrite -normr_gt0 gtr0_norm.
-  suff aux : n%:~R + rat_of_Z 2 + k%:~R > 0 by rewrite -normr_gt0 gtr0_norm.
+  suff aux : n%:Q + rat_of_Z 2 + k%:Q > 0 by rewrite -normr_gt0 gtr0_norm.
   rewrite -addrA [in X in _ + X]addrC addr_gt0 // ltr0z.
-  by apply: ler_lt_trans ltk0 _; apply: ltr_trans ltSkn; rewrite ltr_addl.
+  by apply: le_lt_trans ltk0 _; apply: lt_trans ltSkn; rewrite ltr_addl.
 rewrite -(mulrI_eq0 _ (lregP nzero_n0)) // {nzero_n0}.
 rewrite -Sk2_lcomb_eq_0.
 apply/eqP.

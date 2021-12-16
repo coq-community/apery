@@ -19,4 +19,3 @@ Record Ann c : Type := ann {
   Sn_ : Sn c;
   Sk_ : Sk c
 }.
-

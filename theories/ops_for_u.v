@@ -36,7 +36,7 @@ have ? := z_ann.
 rewrite /s.Sk2 /s.precond.Sk2.
 move => n k ?.
 rewrite /u.
-do 1! (rewrite s_Sk2 => //).
+rewrite s_Sk2 //.
 set s1 := s _ _.
 set s2 := s _ _.
 set z1 := z _.
@@ -52,7 +52,7 @@ have ? := z_ann.
 rewrite /s.SnSk /s.precond.SnSk.
 move => n k ?.
 rewrite /u.
-do 1! (rewrite s_SnSk => //).
+rewrite s_SnSk //.
 set s1 := s _ _.
 set s2 := s _ _.
 set s3 := s _ _.
@@ -68,8 +68,8 @@ Proof.
 rewrite /s.Sn2 /s.precond.Sn2.
 move => n k ?.
 rewrite /u.
-do 1! rewrite z_Sn2; last by (rewrite /z.precond.Sn2; intlia).
-do 1! (rewrite s_Sn2 => //).
+rewrite z_Sn2; last by rewrite /z.precond.Sn2; intlia.
+rewrite s_Sn2 //.
 set s1 := s _ _.
 set s2 := s _ _.
 set s3 := s _ _.

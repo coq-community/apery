@@ -29,15 +29,14 @@ Reserved Notation "\prod_ ( m <= i < n :> 'int' ) F"
   (at level 36, F at level 36, i, m, n at level 50,
            format "'[' \prod_ ( m  <=  i  <  n  :>  'int' ) '/  '  F ']'").
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 
 (* Not sure this is the best definition...*)
-Definition index_iotaz_ (mi ni : int) :=
+Definition index_iotaz (mi ni : int) :=
   match mi, ni with
   | Posz _, Negz _ => [::]
   | Posz m, Posz n => map Posz (index_iota m n)
@@ -45,10 +44,7 @@ Definition index_iotaz_ (mi ni : int) :=
   | Negz m, Posz n => rev (map Negz (index_iota 0 m.+1)) ++ (map Posz (index_iota 0 n))
   end.
 
-Definition index_iotaz := nosimpl index_iotaz_.
-
-Lemma index_iotazE : index_iotaz = index_iotaz_. Proof. by []. Qed.
-
+Arguments index_iotaz mi ni : simpl never.
 
 Lemma size_index_iotaz m n : 
   size (index_iotaz m n) = if m <= n then `|n - m|%N else 0%N.
@@ -115,13 +111,13 @@ case: m => m; case: n => n // hmn hi; rewrite /index_iotaz /=.
       rewrite nth_iota; last by rewrite -ek leq_subr.
       by rewrite NegzE -addnS PoszD opprD addrC.
     by rewrite size_iota -ek leq_subr.
-  - have {hi} hi : (i - m.+1 < n)%N.
+  - have {}hi : (i - m.+1 < n)%N.
       move: hi; rewrite NegzE opprK -PoszD ger0_norm //.
       by rewrite PoszD -lter_sub_addr subzn ?ltz_nat // ltnNge -ltnS him.
     rewrite (nth_map 0%N); last by rewrite /index_iota size_iota subn0.
     rewrite /index_iota subn0 nth_iota // add0n NegzE addrC subzn //.
     by rewrite ltnNge -ltnS him.
-- have {hmn} hmn : (n <= m)%N.
+- have {}hmn : (n <= m)%N.
     by  move: hmn; rewrite !NegzE ler_oppl opprK lez_nat.
   have hi' : (i < m - n)%N.
     by move: hi; rewrite !NegzE opprK addrC subzn.
@@ -205,9 +201,9 @@ Proof. by move=> eqF; apply: congr_big_int. Qed.
 Lemma big_geqz m n (P : pred int) F :
   m >= n -> \big[op/idx]_(m <= i < n :> int | P i) F i = idx.
 Proof.
-case: m => m; case: n => // n; rewrite index_iotazE ?big_nil //.
-  by rewrite lez_nat /index_iotaz_ /index_iota; move/eqnP->; rewrite big_nil.
-rewrite ![in _ <= _]NegzE ler_opp2 lez_nat /index_iotaz_ /index_iota; move/eqnP->.
+case: m => m; case: n => // n; rewrite /index_iotaz ?big_nil //.
+  by rewrite lez_nat /index_iota; move/eqnP->; rewrite big_nil.
+rewrite ![in _ <= _]NegzE ler_opp2 lez_nat /index_iota; move/eqnP->.
 by rewrite big_nil.
 Qed.
 
@@ -222,11 +218,11 @@ Proof.
 case: m => m; case: n => n // hmn.
 - by rewrite /= !big_map big_ltn_cond  ?addn1.
 - case: m hmn => [_ | m]; rewrite NegzE.
-     by rewrite addNr big_map -NegzE index_iotazE /= big_cons big_map.
-  rewrite addrC subzSS add0r -!NegzE index_iotazE /index_iotaz_ -(addn1 m.+1).
+     by rewrite addNr big_map -NegzE /index_iotaz /= big_cons big_map.
+  rewrite addrC subzSS add0r -!NegzE /index_iotaz -(addn1 m.+1).
   by rewrite /index_iota subn0 iota_add map_cat rev_cat add0n /= big_cons.
 - case: m hmn => [ | m] //; rewrite !NegzE ltr_opp2 ltz_nat => hmn.
-  rewrite addrC subzSS add0r -!NegzE index_iotazE /= /index_iota subSn //.
+  rewrite addrC subzSS add0r -!NegzE /index_iotaz /index_iota subSn //.
   by rewrite -[(_ - _).+1]addn1 iota_add rev_cat map_cat subnKC // big_cons.
 Qed.
 
@@ -286,17 +282,17 @@ have h : `|n - m| + `|p - n| = `|p - m|%N.
   rewrite hnp hmn orbT addnC; move/eqP; move/(f_equal Posz).
   by rewrite PoszD; move<-.
 apply: (@eq_from_nth _ 0); rewrite size_cat !size_index_iotaz hmn hnp.
-- rewrite (ler_trans hmn hnp); move: h; rewrite -PoszD /=; move/eqP.
+- rewrite (le_trans hmn hnp); move: h; rewrite -PoszD /=; move/eqP.
   by rewrite eqz_nat; move/eqP.
 - move=> i; move: (h); rewrite -PoszD; move/eqP; rewrite eqz_nat.
   move/eqP-> => hi1. rewrite (nth_cat 0) size_index_iotaz.
   rewrite hmn; case: ifP => hi2.
-  + by rewrite !nth_index_iotaz //;apply: ler_trans hnp.
+  + by rewrite !nth_index_iotaz //;apply: le_trans hnp.
   have hmn' : `|n - m |  = n - m by apply: ger0_norm; rewrite subr_gte0.
   rewrite nth_index_iotaz //; last first.
     rewrite -subzn; last by  rewrite leqNgt hi2.
     by rewrite lter_sub_addr addrC h ltz_nat.
-  rewrite nth_index_iotaz //; last exact: ler_trans hnp.
+  rewrite nth_index_iotaz //; last exact: le_trans hnp.
   rewrite -subzn; last by  rewrite leqNgt hi2.
   move: hmn'; rewrite abszE; move->. rewrite addrCA opprB.
   by rewrite [_ + (_ - _)]addrCA subrr addr0 addrC.
@@ -337,15 +333,14 @@ case: ifP=> hj; last first.
   apply: big_hasC; apply/hasPn => k.
   by rewrite mem_index_iotaz => hk; move/negbT: hj; apply: contra; move/eqP<-.
 case/andP: hj => hmj hjn.
-rewrite (@big_cat_int _ _ _ _ _ hmj) /=; last by exact: ltrW.
+rewrite (@big_cat_int _ _ _ _ _ hmj) /=; last by exact: ltW.
 rewrite big_hasC; last first.
-  apply/hasPn => k. rewrite mem_index_iotaz; case/andP=> _.
-  by rewrite ltr_def eq_sym; case/andP.
+  by apply/hasPn => k; rewrite mem_index_iotaz; case/andP=> _; apply: ltr_neq.
 rewrite Monoid.Theory.mul1m.
 rewrite big_ltz_cond // eqxx big_hasC; last first.
   apply/hasPn => k. rewrite mem_index_iotaz; case/andP=> hkj _.
-  suff : j < k by rewrite ltr_def eq_sym; case/andP.
-  by apply: ltr_le_trans hkj; rewrite cpr_add.
+  suff : j < k by rewrite lt_def eq_sym; case/andP.
+  by apply: lt_le_trans hkj; rewrite cpr_add.
 by rewrite Monoid.Theory.mulm1.
 Qed.
 
@@ -365,7 +360,7 @@ Lemma big_nat_widen_lr (m1 m2 n1 n2 : nat) (P : pred nat) F :
     = \big[op/idx]_(m2 <= i < n2 | P i && (m1 <= i < n1)%N) F i.
 Proof.
 move=> len12 len21; symmetry; rewrite -big_filter filter_predI big_filter.
-have [ltn_trans eq_by_mem] := (ltn_trans, eq_sorted_irr ltn_trans ltnn).
+have [ltn_trans eq_by_mem] := (ltn_trans, irr_sorted_eq ltn_trans ltnn).
 congr bigop; apply: eq_by_mem; rewrite ?sorted_filter ?iota_ltn_sorted // => i.
 rewrite mem_filter !mem_index_iota; apply/idP/idP; first by case/and3P.
 move=> himn; rewrite himn; case/andP: himn => h1 h2.

@@ -1,12 +1,8 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-Import GRing.Theory.
-Import Num.Theory.
 
 (******************************************************************************)
 (* The main purpose of this library is to establish properties of the         *)
@@ -22,8 +18,6 @@ Import Num.Theory.
 
 Section ExtraBigOp.
 
-Local Open Scope nat_scope.
-
 Lemma logn_prod (I : Type) (r : seq I) F p : (forall i : I, 0 < F i) ->
   logn p (\prod_(i <- r) F i) = \sum_(i <- r) logn p (F i).
 Proof.
@@ -31,17 +25,14 @@ move => H; elim: r => [|a l Hl]; first by rewrite !big_nil logn1.
 rewrite !big_cons lognM ?Hl //; exact: prodn_gt0.
 Qed.
 
-
 Lemma natsumrB A (P : A -> bool) F1 F2 l :
   (forall i, (P i -> F1 i >= F2 i)) ->
   \sum_(i <- l | P i) F1 i - \sum_(i <- l | P i) F2 i =
   \sum_(i <- l | P i) (F1 i - F2 i).
 Proof.
 move => Hge; elim: l => [|a l Hl]; first by rewrite !big_nil.
-case HPa : (P a); rewrite !big_cons HPa /=; last exact: Hl.
-have H12 : F1 a = F2 a + (F1 a - F2 a) by rewrite subnKC //; exact: (Hge a HPa).
-rewrite H12 -addnA subnDl -addnBA; last by apply: leq_sum.
-by rewrite Hl -H12.
+rewrite !big_cons; case HPa: (P a); rewrite // subnDA -addnBAC ?Hge //.
+by rewrite -addnBA ?Hl // leq_sum.
 Qed.
 
 Lemma sum_ord_const_nat n m : \sum_(i < n) m = m * n.
@@ -76,7 +67,7 @@ have -> : logn p n.+1 = \sum_(i < n) (p ^ i.+1 %| n.+1).
   have -> : P = [set i : 'I__ | i.+1 <= logn p n.+1].
     apply/setP => i; rewrite !inE /= -{1}(@partnC p n.+1) //.
     rewrite Gauss_dvdl; first by rewrite p_part dvdn_Pexp2l ?prime_gt1.
-    by rewrite (@pnat_coprime p) ?part_pnat ?pnat_exp ?pnat_id.
+    by rewrite (@pnat_coprime p) ?part_pnat ?pnatX ?pnat_id.
   rewrite -sum1dep_card big_ord_narrow ?sum_nat_const ?muln1 ?card_ord //.
   rewrite -(@leq_exp2l p) ?prime_gt1 // -p_part.
   by rewrite (leq_trans (dvdn_leq _ (dvdn_part p _))) // ltn_expl ?prime_gt1.
@@ -93,6 +84,7 @@ Qed.
 (* Same as fact_logp_sum, with a wider range for the sum. *)
 Lemma fact_logp_sum_widen p m n : prime p -> (m >= n)%N ->
   logn p n`! =  \sum_(i < m) (n %/ p ^ i.+1).
+Proof.
 move => prime_p leq_nm; rewrite logn_fact //; symmetry.
 (* FIXME : here I would like to simply 'rewrite big_mkord', but I need *)
 (* to specify both the (dummy) predicate and the summand... *)
@@ -134,6 +126,9 @@ Proof. by rewrite /iter_lcmn big_geq. Qed.
 Lemma iter_lcmnS m : iter_lcmn m.+1 = lcmn (iter_lcmn m) m.+1.
 Proof. by rewrite /iter_lcmn 2!big_add1 big_nat_recr /=. Qed.
 
+Lemma iter_lcmn1 : iter_lcmn 1 = 1.
+Proof. by rewrite iter_lcmnS iter_lcmn0 lcmn1. Qed.
+
 Fact iter_lcmn_gt0 (n : nat) : (l n > 0)%N.
 Proof.
 elim: n => [|n ihn]; first by rewrite iter_lcmn0.
@@ -164,7 +159,7 @@ Qed.
 
 (* (logn p n!) can be expressed as a sum of trunc_log *)
 Lemma logp_sum_floor p n : prime p ->
- logn p (n`!) =  \sum_(i < trunc_log p n) (n %/ p ^ i.+1).
+ logn p (n`!) = \sum_(i < trunc_log p n) n %/ p ^ i.+1.
 Proof.
 move=> hp; rewrite -fact_logp_sum_small //; apply: trunc_log_ltn.
 exact:  prime_gt1.
@@ -176,8 +171,8 @@ Lemma logn_divz p a b : (0 < a)%N -> b %| a ->
 Proof. by move=> ? ?; rewrite logn_div // -subzn // dvdn_leq_log.
 Qed.
 
-Lemma bin_valp m k p : (m > 0) -> prime p -> (m <= k) ->
-                       (logn p (m * 'C(k, m)) <= logn p (l k)).
+Lemma bin_valp m k p :
+  m > 0 -> prime p -> m <= k -> logn p (m * 'C(k, m)) <= logn p (l k).
 Proof.
 move => gt_m_0 prime_p leq_mk.
 have le2p : 2 <= p by exact: prime_gt1.
@@ -187,14 +182,14 @@ set tp := trunc_log p.
 have hvp_bin : vp 'C(k,m) = vp k`! - (vp m`! + vp (k - m)`!).
   rewrite bin_factd // /vp logn_div ?lognM ?fact_gt0 //.
   by rewrite -(bin_fact leq_mk) dvdn_mull.
-have {hvp_bin} hvp_bin : vp 'C(k, m) =
+have {}hvp_bin : vp 'C(k, m) =
   \sum_(i < tp k) (k %/ p ^ i.+1) -
   \sum_(i < tp k) (m %/ p ^ i.+1 + (k - m) %/ p ^ i.+1).
   rewrite -fact_logp_sum_small ?trunc_log_ltn //.
   rewrite big_split /= -!fact_logp_sum_small ?trunc_log_ltn //.
   - by apply: (ltn_trans _ (trunc_log_ltn _ le2p)); rewrite ltn_subrL gt_m_0. 
   - exact: (leq_trans _ (trunc_log_ltn _ le2p)).
-have {hvp_bin} hvp_bin : vp 'C(k, m) =
+have {}hvp_bin : vp 'C(k, m) =
   \sum_(i < tp k - vp m) (k %/ p ^ (vp m + i).+1) -
   \sum_(i < tp k - vp m) (m %/ p ^ (vp m + i).+1 + (k - m) %/ p ^ (vp m + i).+1).
   set rhs := RHS; rewrite {}hvp_bin.
@@ -220,7 +215,7 @@ Qed.
 (* In the proof that zeta(3) is irrational, we use this corollary to show *)
 (* that (lcn (1..n))^3 * b_n is an integer. *)
 Corollary dvd_nbin_iter_lcmn (i j : nat) (n : nat) :
-  (1 <= j) -> (j  <= i) -> (i <= n) -> (j * 'C(i, j) %| l n).
+  1 <= j -> j <= i -> i <= n -> j * 'C(i, j) %| l n.
 Proof.
 move=> le0j leji lein.
 apply/dvdn_partP => [|p hp]; first by rewrite muln_gt0 bin_gt0 le0j.

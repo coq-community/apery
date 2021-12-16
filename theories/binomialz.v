@@ -1,4 +1,3 @@
-Require Import Psatz.
 From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import field_tactics lia_tactics.
@@ -8,10 +7,9 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Set Printing Coercions.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 (* A binomial function over signed integers*)
 Fixpoint binomial_rec (n m : nat) (pn pm : bool) : rat :=
@@ -31,7 +29,7 @@ end.
 
 (* Eval compute in (binomial_rec 5 3 false true).*)
 
-Definition binomialz_ (n m : int) : rat :=
+Definition binomialz (n m : int) : rat :=
 match n,m with
 | Posz n1, Posz m1 => binomial_rec n1 m1 true true
 | Negz n1, Posz m1 => binomial_rec n1 m1 false true
@@ -39,13 +37,13 @@ match n,m with
 | Negz n1, Negz m1 => binomial_rec n1 m1 false false
 end.
 
-Definition binomialz := nosimpl binomialz_.
+Arguments binomialz n m : simpl never.
 
 (* Eval compute in binomialz 5 3.*)
 
 (* Facts from the recursive code defining of binomialz. *)
 Fact binz0 (n : int) : binomialz n 0 = 1.
-Proof. by case: n => n /=; rewrite /binomialz /binomialz_ /=. Qed.
+Proof. by case: n => n. Qed.
 
 Fact binz_neg (n m : int) : m <= -1 -> binomialz n m = 0.
 Proof. by case: m => m //= _; case: n => n; case: m. Qed.
@@ -91,7 +89,7 @@ Qed.
 
 (* Now we prove more (conditional) relations and values for binomialz *)
 
-Lemma binz_nat_nat (n m : nat) : binomialz (Posz n) (Posz m) = 'C(n,m)%:~R.
+Lemma binz_nat_nat (n m : nat) : binomialz (Posz n) (Posz m) = 'C(n,m)%:Q.
 Proof.
 elim: n m => [ | n Hn] [ | n0] //;
   rewrite -[in LHS](addn1 n) -[in LHS](addn1 n0).
@@ -101,17 +99,21 @@ Qed.
 
 Lemma binzE (m n : nat) : (m <= n)%N ->
   binomialz (Posz n) (Posz m) =
-    (Posz n`!)%:~R / ((Posz m`!)%:~R * (Posz (n - m)`!)%:~R).
+    (Posz n`!)%:Q / ((Posz m`!)%:Q * (Posz (n - m)`!)%:Q).
 Proof.
 move=> hmn; rewrite binz_nat_nat; apply/eqP.
-set denom := (X in _ / X).
-have side : denom != 0.
-  by rewrite /denom -rmorphM pnatr_eq0 muln_eq0 negb_or -!lt0n !fact_gt0.
-rewrite -(inj_eq (@mulIf _ denom _)) // divfK // /denom {side denom}.
-by rewrite -!rmorphM -!PoszM /= bin_fact.
+rewrite -(bin_fact hmn) !PoszM !rmorphM mulfK //=.
+by apply/mulf_neq0; rewrite pnatr_eq0 lt0n_neq0 ?fact_gt0.
 Qed.
 
-Lemma binz_on_diag (n : int) : binomialz n n = (n >= 0)%:~R.
+Lemma binzE_ffact (m n : nat) :
+  binomialz (Posz n) (Posz m) = (Posz (n ^_ m))%:Q / (Posz m`!)%:Q.
+Proof.
+apply/eqP; rewrite binz_nat_nat -bin_ffact !PoszM !rmorphM mulfK //=.
+by rewrite pnatr_eq0 lt0n_neq0 ?fact_gt0.
+Qed.
+
+Lemma binz_on_diag (n : int) : binomialz n n = (n >= 0)%:Q.
 Proof.
 case: n => n; last by rewrite binz_neg.
 by rewrite binz_nat_nat // binn le0z_nat.
@@ -129,8 +131,8 @@ wlog: m n / n <= 0.
   - rewrite binz_nat_nat bin_small //.
     rewrite -addrA -opprB opprK subzn // binz_nat_nat bin_small ?mulr0 //.
     by rewrite add1n subnSK // leq_subLR leq_addl.
-  - have {hnm} hnm : (Posz m) - (Posz n.+1) - 1 <= 0.
-      rewrite subr_le0 ler_subl_addl; apply: ler_trans hnm _.
+  - have {}hnm : (Posz m) - (Posz n.+1) - 1 <= 0.
+      rewrite subr_le0 ler_subl_addl; apply: le_trans hnm _.
       by rewrite ler_addl.
     rewrite [in RHS]hwlog //.
     rewrite opprB addrA addrAC -[Posz m + 1 - 1]addrA subrr addr0 opprB addrCA.
@@ -155,37 +157,36 @@ Qed.
 (* First, three weak versions of the recurrences verified by binomialz, *)
 (* on a half plane only.*)
 Lemma binzSS_weak (n k : int) : n >= 0 -> k + 1 != 0 ->
-  binomialz (n + 1) (k + 1) = (n%:~R + 1) / (k%:~R + 1) * binomialz n k.
+  binomialz (n + 1) (k + 1) = (n%:Q + 1) / (k%:Q + 1) * binomialz n k.
 Proof.
 move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
 have {hk hk1}: k >= 0 by goal_to_lia; intlia.
 case: n hn => n //; case: k => k // _ _.
 rewrite mulrAC; apply/eqP. 
 have -> m : Posz m + 1 = Posz m.+1 by rewrite -addn1 PoszD.
-have h m : (Posz m)%:~R + 1 = (Posz m.+1)%:~R.
-  by rewrite -[X in _ + X]/(Posz 1)%:~R -rmorphD -PoszD addn1.
+have h m : (Posz m)%:Q + 1 = (Posz m.+1)%:Q.
+  by rewrite -[X in _ + X]/(Posz 1)%:Q -rmorphD -PoszD addn1.
 rewrite !{}h eq_sym (can2_eq (divfK _) (mulfK _)) ?pnatr_eq0 //; apply/eqP.
 rewrite !binz_nat_nat -!rmorphM /= -!PoszM.
 by rewrite [(_ * _.+1)%N]mulnC addn1 mul_bin_diag.
 Qed.
 
 Lemma binzS_weak (n k : int) : n >= 0 -> k + 1 != 0 ->
-  binomialz n (k + 1) = (n%:~R - k%:~R) / (k%:~R + 1) * binomialz n k.
+  binomialz n (k + 1) = (n%:Q - k%:Q) / (k%:Q + 1) * binomialz n k.
 Proof.
 move=> hn hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
 have {hk1 hk}: k >= 0 by goal_to_lia; intlia.
 case: n hn => n //; case: k => k // hn hk.
-have -> : n%:~R - k%:~R = (n%:~R + 1) - (k%:~R + 1) :> rat.
-  rat_field.
-rewrite -mulrA mulrBl !mulrA -binzSS_weak //; last  by goal_to_lia; intlia.
+have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by rat_field.
+rewrite -mulrA mulrBl !mulrA -binzSS_weak //; last by goal_to_lia; intlia.
 rewrite divff ?mul1r; last first.
-  by rewrite -[1]/(1%:~R) -rmorphD -PoszD pnatr_eq0 addn1.
+  by rewrite -[1]/(1%:Q) -rmorphD -PoszD pnatr_eq0 addn1.
 by apply/eqP; rewrite eq_sym subr_eq; apply/eqP; rewrite Pascal_z.
 Qed.
 
@@ -194,18 +195,17 @@ Qed.
 (* only the non nullity of the denominator. *)
 
 Lemma binzSS (n k : int) : k + 1 != 0 ->
-binomialz (n + 1) (k + 1) = (n%:~R + 1) / (k%:~R + 1) * binomialz n k.
+binomialz (n + 1) (k + 1) = (n%:Q + 1) / (k%:Q + 1) * binomialz n k.
 Proof.
 case: (lerP 0 n); first exact: binzSS_weak.
 case: (lerP k (-1 - 1)) => hkN2.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hkN2 _.
+  rewrite binz_neg; last by apply: le_trans hkN2 _.
   by rewrite mulr0.
 move=> hn hk1.
 have {hkN2} hk : k >= 0 by goal_to_lia; intlia.
 rewrite [LHS]binNzz [in RHS]binNzz.
-have -> : k + 1 - (n + 1) - 1 = k - n - 1.
-  by rewrite -![in LHS]addrA [1 + (_ + - 1)]addrCA subrr addr0 opprD addrA.
+have -> : k + 1 - (n + 1) - 1 = k - n - 1 by intlia.
 rewrite binzS_weak //; last by goal_to_lia; intlia.
 rewrite !rmorphD !rmorphN /=; case: k hk1 hk => [k hk0 hk| //].
 rewrite -[Posz k + 1]PoszD addn1 exprSzr.
@@ -214,24 +214,23 @@ by rat_field; goal_to_lia; intlia.
 Qed.
 
 Lemma binzS (n k : int) : k + 1 != 0 ->
-  binomialz n (k + 1) = (n%:~R - k%:~R) / (k%:~R + 1) * binomialz n k.
+  binomialz n (k + 1) = (n%:Q - k%:Q) / (k%:Q + 1) * binomialz n k.
 Proof.
 move=> hk; case: (lerP k (-1 - 1)) => hk1.
   rewrite binz_neg; last by rewrite -ler_subr_addr.
-  rewrite binz_neg; last by apply: ler_trans hk1 _.
+  rewrite binz_neg; last by apply: le_trans hk1 _.
   by rewrite mulr0.
-have -> : n%:~R - k%:~R = (n%:~R + 1) - (k%:~R + 1) :> rat.
-  rat_field.
+have -> : n%:Q - k%:Q = (n%:Q + 1) - (k%:Q + 1) by rat_field.
 rewrite -mulrA mulrBl !mulrA -binzSS // divff ?mul1r; last first.
-  by rewrite -[1]/(1%:~R) -rmorphD /= intr_eq0.
+  by rewrite -[1]/(1%:Q) -rmorphD /= intr_eq0.
 by apply/eqP; rewrite eq_sym subr_eq; apply/eqP; rewrite Pascal_z.
 Qed.
 
 Lemma binSz (n k : int): (k != n + 1) ->
-  binomialz (n + 1) k = (n%:~R + 1) / (n%:~R + 1 - k%:~R) * binomialz n k.
+  binomialz (n + 1) k = (n%:Q + 1) / (n%:Q + 1 - k%:Q) * binomialz n k.
 Proof.
 move=> hkn; case: (altP (k =P 0)) hkn => [-> | hk0] hkn.
-  by rewrite !binz0 subr0 divff // -[1]/(1%:~R) -intrD intr_eq0 eq_sym.
+  by rewrite !binz0 subr0 divff // -[1]/(1%:Q) -intrD intr_eq0 eq_sym.
 have hk : k = (k - 1) + 1 by rewrite -addrA subrr addr0.
 rewrite hk binzSS; last by rewrite -hk.
 rewrite binzS; last by rewrite -hk.
@@ -267,9 +266,8 @@ case: k ltnk => // k ltnk.
 elim: n ltnk nge0 => [ltnk _ | n HIn ltSnk lt0Sn].
   by rewrite ltz_nat lt0n in ltnk; rewrite binz_nat_nat bin0n (negPf ltnk).
 rewrite -addn1 PoszD binSz ?HIn ?mulr0 //.
-  apply: (@ltr_trans _ (Posz n.+1)); first by rewrite ltz_nat ltnSn.
-  by rewrite ltSnk.
-by rewrite neqr_lt -PoszD addn1 ltSnk orbT.
+  by rewrite ltz_nat ltnW.
+by rewrite neq_lt -PoszD addn1 ltSnk orbT.
 Qed.
 
 
@@ -278,49 +276,26 @@ Qed.
 Lemma binzSn (n : nat) (m : int) :
   binomialz (Posz n + 1) m =
   if m == Posz n + 1 then 1
-  else ((Posz n)%:~R + 1) / ((Posz n)%:~R + 1 - m%:~R) * binomialz (Posz n) m.
+  else ((Posz n)%:Q + 1) / ((Posz n)%:Q + 1 - m%:Q) * binomialz (Posz n) m.
 Proof.
 case: ifP => [ | hnm]; first by move/eqP->; rewrite binz_on_diag.
 by apply: binSz; rewrite ?hnm.
 Qed.
 
 Lemma bin_nonneg (a b : int) : a >= 0 -> b >= 0 -> a >= b -> binomialz a b > 0.
-Proof.
-case: a => // n _.
-case: b => // k _.
-exact: binz_gt0.
-Qed.
+Proof. by case: a b => [] a [] b //= _ _; exact: binz_gt0. Qed.
 
 Lemma bin_int (a b : int) : a >= 0 -> b >= 0 ->
-  exists e : nat, binomialz a b = (Posz e)%:~R.
+  exists e : nat, binomialz a b = (Posz e)%:Q.
 Proof.
-case: a => // n _.
-case: b => // k _.
-rewrite binz_nat_nat.
-by exists 'C(n, k).
+by case: a b => [] a [] b //= _ _; rewrite binz_nat_nat; exists 'C(a, b).
 Qed.
 
 Lemma bin_nonneg_int (a b : int) : a >= 0 -> b >= 0 -> a >= b ->
-  exists e : int, binomialz a b = e%:~R /\ e > 0.
+  exists e : int, binomialz a b = e%:Q /\ e > 0.
 Proof.
-move=> ha hb hab.
-set m := binomialz a b.
-have : m > 0 by apply: bin_nonneg; intlia.
-have : exists n : nat, m = (Posz n)%:~R by apply: bin_int; intlia.
-case=> n m_is_n.
-have {m_is_n} n_is_m : n%:~R = m by rewrite m_is_n.
-rewrite -n_is_m.
-set j := Posz n => pos_j.
-exists j.
-split => //.
-have : j <> 0.
-  rewrite /not => j_eq_0.
-  move: pos_j.
-  by rewrite j_eq_0.
-move=> {pos_j} j_neq_0.
-have : j >= 0 by rewrite /j.
-move=> nonneg_j.
-intlia.
+case: a b => [] a [] b //= _ _ leba.
+by exists (Posz 'C(a, b)); rewrite binz_nat_nat [_ < _]bin_gt0.
 Qed.
 
 
@@ -332,14 +307,14 @@ Proof.
 apply/idP/idP=> h.
 case: (ltrP k 0) => //= hk.
 - case: (lerP 0 n) => /= hn.
-    apply: contraLR h; rewrite -lerNgt; move/(bin_nonneg hn hk).
+    apply: contraLR h; rewrite -leNgt; move/(bin_nonneg hn hk).
     by rewrite lt0r; case/andP.
   apply: contraLR h => _.
   rewrite binNzz; apply: mulf_neq0; first by rewrite expfz_eq0 andbF.
   suff: binomialz (k - n - 1) k > 0 by rewrite lt0r; case/andP.
-  have hnk : k <= k - n - 1 by goal_to_lia; intlia.
-  by apply: bin_nonneg => //; apply: ler_trans hnk.
-case/orP: h => [h | /andP [h1 h2]]; apply/eqP; first by apply: binz_neg; intlia.
+  have hnk : k <= k - n - 1 by intlia.
+  by apply: bin_nonneg => //; apply: le_trans hnk.
+case/orP: h => [h | /andP [h1 h2]]; apply/eqP; first by apply: binz_neg.
 exact: binz_geq.
 Qed.
 
@@ -351,6 +326,8 @@ move=> le0n; case/(bin_int le0n) => i ->; exact: rpred_int.
 Qed.
 
 (************* Experimental, old, unsed stuff below this ************)
+
+Module SignedFfact.
 
 (* Experiments around the falling factorial function *)
 Fixpoint ffact_rec (n : int) (m : nat) :=
@@ -402,11 +379,13 @@ Qed.
 
 Lemma ffact_small (n m : nat) : Posz n < Posz m -> n ^_ m = 0.
 Proof.
-move=> hnm; apply/eqP; rewrite eqr_le ffact_ge0 // lerNgt ffact_gt0 //.
-by rewrite -ltrNge andbT.
+move=> hnm; apply/eqP; rewrite eq_le ffact_ge0 // leNgt ffact_gt0 //.
+by rewrite -ltNge andbT.
 Qed.
 
 Lemma ffactnn (n : nat) : (Posz n) ^_ n = Posz n`!.
 Proof.
 by elim : n => [ | n Hn] //; rewrite ffactnS factS subzn // subn1 Hn PoszM.
 Qed.
+
+End SignedFfact.

@@ -12,14 +12,13 @@ Require harmonic_numbers.
 (* Partial sum of zeta(3). *)
 Definition ghn3 : int -> rat := harmonic_numbers.ghn 3.
 
-Definition c (n k : int) : rat :=
-  (binomialz n k) ^ 2 * (binomialz (n + k) k) ^ 2.
+Definition c (n k : int) : rat := binomialz n k ^ 2 * binomialz (n + k) k ^ 2.
 
 (* Sequence a of the Maple session: sum of c's. *)
 Definition a (n : int) : rat := \sum_(0 <= k < n + 1 :> int) (c n k).
 
 Definition d (n k m : int) : rat :=
-  (-1) ^ (m + 1) / (2%:Q * m%:~R ^ 3 * binomialz n m * binomialz (n + m) m).
+  (-1) ^ (m + 1) / (2%:Q * m%:Q ^ 3 * binomialz n m * binomialz (n + m) m).
 
 Definition s (n k : int) : rat := \sum_(1 <= m < k + 1 :> int) d n k m.
 

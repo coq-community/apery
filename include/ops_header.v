@@ -1,5 +1,3 @@
-Require Import Psatz.
-Require Import Field.
 Require Import ZArith.
 
 From mathcomp Require Import all_ssreflect all_algebra.
@@ -15,7 +13,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.

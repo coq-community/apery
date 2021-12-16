@@ -10,10 +10,8 @@ End precond.
 
 Load "include/ann_s.v".
 
-
 Record Ann s : Type := ann {
   Sn2_ : Sn2 s;
   SnSk_ : SnSk s;
   Sk2_ : Sk2 s
 }.
-

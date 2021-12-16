@@ -1,7 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
-(* Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq path div choice. *)
-(* Require Import fintype tuple finfun bigop prime finset binomial. *)
-(* Require Import ssralg ssrnum ssrint intdiv rat. *)
+From mathcomp Require Import all_ssreflect all_algebra all_field.
 
 From mathcomp Require Import bigenough.
 
@@ -9,121 +6,129 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
-Import BigEnough.
+Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
-Open Scope ring_scope.
+Section ExtraBinomial.
 
-Section AlgCMissing.
-
-Lemma ler1q (F : numFieldType) x: (1 <= ratr x :> F) = (1 <= x).
-Proof. by rewrite (_ : 1 = ratr 1) ?ler_rat ?rmorph1. Qed.
-
-Lemma lerq1 (F : numFieldType) x: (ratr x <= 1 :> F) = (x <= 1).
-Proof. by rewrite (_ : 1 = ratr 1) ?ler_rat ?rmorph1. Qed.
-
-Lemma ltrq1 (F : numFieldType) x: (ratr x < 1 :> F) = (x < 1).
-Proof. by rewrite (_ : 1 = ratr 1) ?ltr_rat ?rmorph1. Qed.
-
-Lemma ltr1q (F : numFieldType) x: (1 < ratr x :> F) = (1 < x).
-Proof. by rewrite (_ : 1 = ratr 1) ?ltr_rat ?rmorph1. Qed.
-
-End AlgCMissing.
-
-(* FIXME : are these lemmas missing in MathComp? *)
-
-(* Suggestions for alternative statements of lemmas in big_op: *)
-Section AltBigOp.
-
-Variables  (R : Type) (idx : R) (op : Monoid.law idx).
-
-Lemma big_nat_recr_alt (n m : nat) (F : nat -> R) : (m <= n)%N ->
-\big[op/idx]_(m <= i < n.+1) F i = op (\big[op/idx]_(m <= i < n) F i) (F n).
-Proof. by move=> lemn; rewrite (@big_cat_nat _ _ _ n) //= big_nat1. Qed.
-
-Lemma big_nat_recl_alt (n m : nat) (F : nat -> R) : (m <= n)%N ->
-  \big[op/idx]_(m <= i < n.+1) F i =
-     op (F m) (\big[op/idx]_(m <= i < n) F i.+1).
-Proof. by move=> lemn; rewrite big_ltn // big_add1. Qed.
-
-End AltBigOp.
-
-Section ExtraInt.
-
-Lemma expfV (R : idomainType) (x : R) (i : int) : (x ^ i) ^-1 = (x ^-1) ^ i.
-Proof. by rewrite invr_expz exprz_inv. Qed.
-
-End ExtraInt.
-
-
-Section ExtraRat.
-
-(* Two technical lemmas about rationals that are integers *)
-(* FIXME: They could be turned into equivalences although this is not needed*)
-(* here. We do not do this to avoid a side condition on d != 0, and because*)
-(* the other direction seems less usefull *)
-Lemma Qint_dvdz (m d : int) : (d %| m)%Z -> ((m%:~R / d%:~R : rat) \is a Qint).
+Lemma ffact_le_expn m p : p ^_ m <= p ^ m.
 Proof.
-case/dvdzP=> z ->; rewrite rmorphM /=; case: (altP (d =P 0)) => [->|dn0].
-  by rewrite mulr0 mul0r.
-by rewrite mulfK ?intr_eq0 // rpred_int.
+elim: m p => [|m IHm] p //.
+by rewrite ffactnSr expnSr; apply/leq_mul/leq_subr/IHm.
 Qed.
 
-Lemma Qnat_dvd (m d : nat) : (d %| m)%N -> ((m%:R / d%:R : rat) \is a Qnat).
-Proof.
-move=> h; rewrite Qnat_def divr_ge0 ?ler0n // -[m%:R]/(m%:~R) -[d%:R]/(d%:~R).
-by rewrite Qint_dvdz.
-Qed.
+End ExtraBinomial.
 
-Lemma denqVz (i : int) : i != 0 -> denq (i%:~R^-1) = `|i|.
-Proof.
-by move=> h; rewrite -div1r -[1]/(1%:~R) coprimeq_den /= ?coprime1n // (negPf h).
-Qed.
+Section ExtraPrime.
 
-End ExtraRat.
+Lemma lognn p (Hp : prime p) : logn p p = 1.
+Proof. exact: pfactorK 1 Hp. Qed.
+
+Lemma partp_dvdn p (Hprime : prime p) n m :
+  (0 < n) -> (p ^ m %| n) -> p ^ m %| n`_p .
+Proof. by move => Hn Hdiv; rewrite -(pfactorK m Hprime) -p_part partn_dvd. Qed.
+
+Lemma trunc_logn0 n : trunc_log n 0%N = 0%N. Proof. by case: n => // [] []. Qed.
+
+(* See also inlined stuff in proof of Lemma 2. *)
+
+End ExtraPrime.
+
+Local Open Scope ring_scope.
 
 Section ExtraSsrNum.
 
-Variable R : numDomainType.
+Implicit Types (R : numDomainType) (F : numFieldType).
 
-Lemma ler1z (n : int) : (1 <= n%:~R :> R) = (1 <= n).
-Proof. by rewrite -[1]/(1%:~R) ler_int. Qed.
+Lemma ltr_neq R (x y : R) : x < y -> x != y.
+Proof. by case: comparableP. Qed.
 
-Lemma ltr1z (n : int) : (1 < n%:~R :> R) = (1 < n).
-Proof. by rewrite -[1]/(1%:~R) ltr_int. Qed.
-
-Lemma ltr_neq (x y : R) : x < y -> x != y.
-Proof. by rewrite ltr_def eq_sym; case/andP. Qed.
-
-Lemma lt0r_neq0 (x : R) : 0 < x  -> x != 0.
-Proof. by move => ?; rewrite eq_sym ltr_neq. Qed.
-
-Lemma ltr0_neq0 (x : R) : x < 0  -> x != 0.
-Proof. by move => Hx; rewrite ltr_neq. Qed.
-
-Lemma expN1r (i : int) : (-1 : R) ^ i = (-1) ^+ `|i|.
+Lemma ltr_pmul_le_l R (x1 y1 x2 y2 : R) :
+   0 < x1 -> 0 < x2 -> x1 <= y1 -> x2 < y2 -> x1 * x2 < y1 * y2.
 Proof.
-case: i => n; first by rewrite exprnP absz_nat.
-by rewrite NegzE abszN  absz_nat -invr_expz expfV invrN1.
+rewrite le_eqVlt => posx1 posx2 /predU1P[<-|lt1] lt2.
+  by rewrite ltr_pmul2l.
+by apply: ltr_pmul=> //; exact: ltW.
 Qed.
 
-Lemma ltr_prod (E1 E2 : nat -> R) (n m : nat) :
-   (m < n)%N -> (forall i, (m <= i < n)%N -> 0 <= E1 i < E2 i) ->
-  \prod_(m <= i < n) E1 i < \prod_(m <= i < n) E2 i.
+Lemma ltr_pmul_le_r R (x1 y1 x2 y2 : R) :
+   0 < x1 -> 0 < x2 -> x1 < y1 -> x2 <= y2 -> x1 * x2 < y1 * y2.
 Proof.
-elim: n m => // n ihn m; rewrite ltnS leq_eqVlt; case/orP => [/eqP -> | ltnm hE].
-  by move/(_ n) => /andb_idr; rewrite !big_nat1 leqnn ltnSn /=; case/andP.
-rewrite big_nat_recr_alt ?[X in _ < X]big_nat_recr_alt ?leqW //=.
-move/andb_idr: (hE n); rewrite leqnn ltnW //=; case/andP => h1n h12n.
-rewrite big_nat_cond [X in _ < X * _]big_nat_cond; apply: ltr_pmul => //=.
-- apply: prodr_ge0 => i; rewrite andbT; case/andP=> hm hn.
-  by move/andb_idr: (hE i); rewrite hm /= ltnS ltnW //=; case/andP.
-rewrite -!big_nat_cond; apply: ihn => // i /andP [hm hn]; apply: hE.
-by rewrite hm ltnW.
+move=> Hx1 Hx2 Hx1y1 Hx2y2; rewrite mulrC [y1*y2]mulrC; exact: ltr_pmul_le_l.
 Qed.
+
+Lemma exp_incr_expp R (x : R) (H1x : 1 <= x) (m n : nat) :
+  (m <= n)%N -> x ^+ m <= x ^+ n.
+Proof.
+move/subnK => <-; rewrite exprD.
+exact/ler_pemull/exprn_ege1/H1x/exprn_ge0/le_trans/H1x.
+Qed.
+
+Lemma exp_incr_expn R (x : R) (H1x : 0 < x < 1) (m n : nat) :
+  (n <= m)%N -> x ^+ m <= x ^+ n.
+Proof.
+case/andP: H1x => lt0x ltx1 /subnK <-; rewrite exprD.
+exact/ler_pimull/exprn_ile1/ltW/ltx1/ltW/lt0x/exprn_ge0/ltW.
+Qed.
+
+Lemma ler1q F x: (1 <= ratr x :> F) = (1 <= x).
+Proof. by rewrite (_ : 1 = ratr 1) ?ler_rat ?rmorph1. Qed.
+
+Lemma lerq1 F x: (ratr x <= 1 :> F) = (x <= 1).
+Proof. by rewrite (_ : 1 = ratr 1) ?ler_rat ?rmorph1. Qed.
+
+Lemma ltrq1 F x: (ratr x < 1 :> F) = (x < 1).
+Proof. by rewrite (_ : 1 = ratr 1) ?ltr_rat ?rmorph1. Qed.
+
+Lemma ltr1q F x: (1 < ratr x :> F) = (1 < x).
+Proof. by rewrite (_ : 1 = ratr 1) ?ltr_rat ?rmorph1. Qed.
 
 End ExtraSsrNum.
+
+Section ExtraAlgC.
+
+Implicit Types x y z : algC.
+
+Lemma root_le_x (n : nat) x y :
+  (0 < n)%N -> 0 <= x -> 0 <= y -> (n.-root x <= y) = (x <= y ^+ n).
+Proof.
+move => Hn Hx Hy.
+have ->: (x <= y ^+ n) = (n.-root x ^+ n <= y ^+ n) by rewrite rootCK.
+by rewrite ler_pexpn2r // nnegrE rootC_ge0.
+Qed.
+
+Lemma root_x_le (n : nat) x y :
+  (0 < n)%N -> 0 <= x -> 0 <= y -> (x <= n.-root y) = (x ^+ n <= y).
+Proof.
+move => Hn Hx Hy.
+have ->: (x ^+ n <= y) = (x ^+ n <= n.-root y ^+ n) by rewrite rootCK.
+by rewrite ler_pexpn2r // nnegrE rootC_ge0.
+Qed.
+
+Lemma rootC_leq (m n : nat) x :
+  1 <= x -> (0 < n)%N -> (n <= m)%N -> m.-root x <= n.-root x.
+Proof.
+move=> Hx Hn Hmn.
+have x_ge0 : 0 <= x by apply: le_trans Hx.
+rewrite root_le_x -?rootCX ?root_x_le ?exprn_ge0 //; first exact: exp_incr_expp.
+by rewrite expr0n; case: eqP.
+Qed.
+
+(* Not sure if actually needed in library, but this lemma is helpful
+to prove one_plus_invx_expx below *)
+Lemma le_mrootn_n (m n : nat) : m.+1.-root n.+1%:R <= n.+1%:R :> algC.
+Proof. by rewrite root_le_x ?ler_eexpr // (ler0n, ler1n). Qed.
+
+Lemma prod_root m n x : (0 < m)%N -> (0 < n)%N -> 0 <= x ->
+                        (m * n)%N.-root x = m.-root (n.-root x).
+Proof.
+move => Hm Hn Hx.
+have Hmnpos : (0 < m * n)%N by rewrite muln_gt0 Hm Hn.
+suff: ((m * n).-root x) ^+ (m*n)%N = (m.-root (n.-root x)) ^+ (m * n)%N.
+  by apply: pexpIrn; rewrite // nnegrE ?rootC_ge0 //.
+by rewrite rootCK // exprM rootCK // rootCK.
+Qed.
+
+End ExtraAlgC.
 
 (*** Two lemmas about geometric sequences. We just use the second one. ***)
 Section ExtraGeom.
@@ -132,35 +137,29 @@ Section ExtraGeom.
 (* The proof uses bigenough so that's not strictly in MathComp, but *)
 (* as usual we could eliminate the pose_big_enough a posteriori. *)
 Lemma Gseqgt1 (r : rat)(E : rat) : 0 <= E -> 1 < r ->
-  exists N : nat, forall n : nat, (N <= n)%nat -> E < r ^ n.
+  exists N : nat, forall n : nat, (N <= n)%N -> E < r ^ n.
 Proof.
 move=> ge0E lt1r.
 pose_big_enough M.
   exists M => k hMk.
-  have le1r : 1 <= r by rewrite ltrW.
-  have {lt1r} lt1r : 0 < r - 1 by rewrite subr_gt0.
-  suff aux (n : nat) : n%:~R * (r - 1) - 1 <= r ^ n.
-    apply: ltr_le_trans (aux k); rewrite -ltr_sub_addr opprK -ltr_pdivr_mulr //.
-    have h : 0 <= (E + 1) / (r - 1).
-       apply: divr_ge0; by [exact:  addr_ge0 | exact: ltrW].
-    by apply: ltr_trans (archi_boundP h) _; rewrite ltr_nat.
-  elim: n => [|n ihn]; first by rewrite mul0r add0r expr0z.
-  have -> : n.+1%:~R * (r - 1) - 1 = n%:~R * (r - 1) - 1 + (r - 1).
-    by rewrite -addn1 PoszD rmorphD /= mulrDl mul1r addrAC.
-  have -> : r ^ n.+1 = r ^ n + (r ^ n.+1 - r ^ n) by rewrite addrCA addrN addr0.
-  apply: ler_add => //.
-  have -> : r ^ n.+1 - r ^ n = r ^ n * (r - 1).
-    by rewrite mulrDr mulrN mulr1 -exprnP exprSr.
-  case: n {ihn} => [| n ]; first by rewrite mul1r.
-  rewrite ler_pmull // -exprnP expr_ge1 //; exact: ler_trans le1r.
+  have le1r : 1 <= r by rewrite ltW.
+  have {}lt1r : 0 < r - 1 by rewrite subr_gt0.
+  suff aux (n : nat) : n%:Q * (r - 1) - 1 <= r ^ n.
+    apply: lt_le_trans (aux k); rewrite -ltr_sub_addr opprK -ltr_pdivr_mulr //.
+    have: 0 <= (E + 1) / (r - 1) by apply/divr_ge0/ltW/lt1r/addr_ge0.
+    by move/archi_boundP/lt_trans; apply; rewrite ltr_nat.
+  rewrite -pmulrn /exprz; elim: n => [|n ihn]; first by rewrite mul0r.
+  rewrite mulrSr mulrDl mul1r addrAC -ler_subr_addr; apply: le_trans ihn _.
+  rewrite exprSr -[r - 1]mul1r -[r in _ * r](subrK 1) mulrDr mulr1 addrAC.
+  by rewrite -mulrBl ler_addr pmulr_lge0 // subr_ge0 exprn_ege1.
 by close.
 Qed.
 
 Lemma Gseqlt1 (r : rat)(eps : rat) : 0 < eps -> 0 < r < 1 ->
-  exists N : nat, forall n : nat, (N <= n)%nat -> r ^ n < eps.
+  exists N : nat, forall n : nat, (N <= n)%N -> r ^ n < eps.
 Proof.
 move=> ge0eps /andP [lt0r ltr1].
-have hE : 0 <= eps ^-1 by apply/ltrW; rewrite invr_gt0.
+have hE : 0 <= eps ^-1 by apply/ltW; rewrite invr_gt0.
 have hr : 1 < r ^-1 by rewrite invf_gt1.
 have [M hM] := Gseqgt1 hE hr; exists M => n hMn.
 rewrite -ltf_pinv //; first by rewrite invr_expz -exprz_inv; exact: hM.
@@ -177,32 +176,28 @@ Variable R : zmodType.
 Lemma telescope_nat (a b : nat) (f : nat -> R) : (a <= b)%N ->
   \sum_(a <= k < b) (f (k + 1)%N - f k) = f b - f a.
 Proof.
-rewrite -{2}[a]add0n big_addn; elim: b => [ | b ihb].
-  by rewrite leqn0=> /eqP ->; rewrite subrr subnn big_mkord big_ord0.
-rewrite leq_eqVlt; case/orP=> [/eqP -> | a_lt_b1].
-  by rewrite subnn subrr big_geq.
-rewrite subSn ?big_nat_recr //= ihb ?subnK // addn1 addrC -addrA [- _ + _]addrA.
-by rewrite addNr sub0r.
+rewrite leq_eqVlt => /predU1P[->|]; first by rewrite big_geq // subrr.
+case: b => // b; rewrite ltnS => leab.
+rewrite big_split sumrN big_nat_recr //= addn1 [_ + f _]addrC big_nat_recl //=.
+rewrite opprD addrACA -[RHS]addr0; congr (_ + _).
+by rewrite -sumrN -big_split big1 => //= i _; rewrite addn1 subrr.
 Qed.
 
 End Telescope.
-
 
 Section TelescopeProd.
 
 Variable R : fieldType.
 
 Lemma telescope_prod_nat (a b : nat) (f : nat -> R) :
- (forall k, (a <= k < b)%N -> f k != 0) ->  (a < b)%N ->
+ (forall k, (a <= k < b)%N -> f k != 0) -> (a < b)%N ->
   \prod_(a <= k < b) (f (k + 1)%N / f k) = f b / f a.
 Proof.
-move=> hf; rewrite -{2}[a]add0n big_addn; elim: b hf => [ | b ihb] hf //.
-rewrite ltnS leq_eqVlt; case/orP=> [/eqP -> | a_lt_b1].
-  by rewrite subSn // subnn big_nat_recr //= big_nil mul1r add0n addn1.
-rewrite subSn ?big_nat_recr //= ihb ?subnK //; last first.
-  by move=> k /andP [hak hkb]; apply: hf; rewrite hak ltnS ltnW.
-rewrite addn1 -!mulrA mulrC -!mulrA mulVf; first by rewrite mulr1 mulrC.
-by apply: hf; rewrite ltnW //=.
+case: b => // b hf; rewrite ltnS => leab.
+rewrite big_split prodfV big_nat_recr //= addn1 [_ * f b.+1]mulrC.
+rewrite big_nat_recl //= invfM mulrACA -[RHS]mulr1; congr (_ * _).
+rewrite -prodfV -big_split big_nat_cond big1 => //= i /andP[/andP[leai ltib] _].
+by rewrite addn1 divff ?hf // ltnS ltib leqW.
 Qed.
 
 End TelescopeProd.
@@ -212,10 +207,10 @@ Section ExtraZip.
 
 Variables S T : Type.
 
-Lemma zip_nil_l  (t : seq T) : zip ([::] : seq S) t = [::].
+Lemma zip_nil_l  (t : seq T) : zip [::] t = [::] :> seq (S * T).
 Proof. by case: t. Qed.
 
-Lemma zip_nil_r  (s : seq S) : zip s ([::] : seq T) = [::].
+Lemma zip_nil_r  (s : seq S) : zip s [::] = [::] :> seq (S * T).
 Proof. by case: s. Qed.
 
 End ExtraZip.
@@ -239,12 +234,3 @@ by case: ifP=> //; rewrite Monoid.mulm1.
 Qed.
 
 End ExtraBigOp.
-
-Section ExtraTruncLog.
-
-Local Open Scope nat_scope.
-
-Lemma trunc_logn0 n : trunc_log n 0 = 0. Proof. by case: n => // [] []. Qed.
-
-(* See also inlined stuff in proof of Lemma 2. *)
-End ExtraTruncLog.

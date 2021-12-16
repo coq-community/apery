@@ -7,17 +7,16 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
-Import Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 (**** Properties of the sequence c ****)
 
 Fact lt_0_c (i j : int) : 0 <= j <= i -> 0 < c i j.
 Proof.
-case/andP=> h0j hji; rewrite /c -expfzMl; apply: exprz_gt0.
-by apply: mulr_gt0; apply: binz_gt0 => //; goal_to_lia; intlia.
+case/andP=> h0j hji; rewrite /c -expfzMl.
+by apply/exprz_gt0/mulr_gt0; apply/binz_gt0; intlia.
 Qed.
 
 (* c is monotonic wrt its first argument *)
@@ -28,4 +27,3 @@ case: n => // n _; case: i => // i _ lein; case: m => // m lenm; rewrite /c.
 rewrite -!PoszD !binz_nat_nat -!expfzMl -!rmorphM /= !exprz_pintl // ler_nat.
 by apply: leq_mul; apply: leq_mul; apply: leq_bin2l => //; rewrite leq_add2r.
 Qed.
-

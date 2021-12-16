@@ -1,8 +1,8 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import bigopz.
 Require Import shift.
-Import GRing.Theory.
-Import Num.Theory.
+
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -88,13 +88,13 @@ pose t2 :=
   \sum_(0 <= i < r)
     \sum_(int.shift i n + b <= k < int.shift r n + b :> int)
       cf_P i n * u (int.shift i n) k.
-have {step} step : P U n = t1 - t2.
+have {}step : P U n = t1 - t2.
   apply/eqP; rewrite eq_sym subr_eq; apply/eqP; rewrite {}step -big_split /=.
   rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i; simpl in i.
   rewrite andbT mem_index_iota; case/andP=> _ hi.
   rewrite -big_cat_int //= !int.shift2Z.
-  - by apply: ler_trans range_correct _; rewrite ler_add2r ler_addl.
-  - by rewrite ler_add2r ler_add2l ltrW.
+  - by apply: le_trans range_correct _; rewrite ler_add2r ler_addl.
+  - by rewrite ler_add2r ler_add2l ltW.
 have t1_step :
   t1 =
     \sum_(a <= k < int.shift r n + b :> int)
@@ -116,7 +116,7 @@ have t11_step :
   rewrite (bigID (fun k => not_D n k)) /=; congr (_ + _).
   rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i; simpl in i.
   by case/andP=> _ hi; rewrite -PeqDQ // /P horner_seqopP.
-have {t11_step} t11_step :
+have {}t11_step :
   t11 =
     Q u n (n + b) - Q u n a -
     \sum_(a <= k < n + b :> int | ~~ not_D n k)
@@ -127,7 +127,7 @@ have {t11_step} t11_step :
   rewrite {}t11_step; congr (_ + _).
   rewrite -(telescopez (Q u n)) //.
   by rewrite [X in _ = X - _](bigID (fun k => not_D n k)) /= -addrA subrr addr0.
-have {t1_step} t1_step :
+have {}t1_step :
   t1 = t11 +
     \sum_(n + b <= k < int.shift r n + b :> int)
       \sum_(0 <= i < r)
@@ -143,7 +143,7 @@ rewrite exchange_big /= -sumrN -big_split /=.
 rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i /andP [].
 rewrite mem_index_iota; case/andP=> _ hi _; rewrite !int.shift2Z.
 have hl : n + b <= n + i + b by rewrite ler_add2r ler_addl.
-have hr : n + i + b <= n + r + b by rewrite ler_add2r ler_add2l ltrW.
+have hr : n + i + b <= n + r + b by rewrite ler_add2r ler_add2l ltW.
 rewrite (big_cat_int _ _ _ hl hr) {hl hr} addrK [n + i + b]addrAC big_addz2l /=.
 rewrite eq_big_int_nat /=; apply: eq_bigr=> ? _.
 by rewrite int.shift2Z [n + b + _]addrC.
@@ -276,7 +276,7 @@ have PUnk_value :
   rewrite -big_cat_int ?cpr_add //=.
   by rewrite !int.shift2Z addrAC.
 
-have {PUnk_value} PUnk_value :
+have {}PUnk_value :
     PUnk =
     \sum_(a <= m < k + b :> int)
       \sum_(0 <= i < s)

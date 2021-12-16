@@ -1,14 +1,11 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import binomialz bigopz.
-Require Import field_tactics lia_tactics shift.
+Require Import binomialz.
+Require Import field_tactics.
 Require Import seq_defs.
 
 Require harmonic_numbers.
 
-Import GRing.Theory.
-Import Num.Theory.
-
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -66,7 +63,7 @@ Import ZArith.
 Lemma b0_eq : b 0 = 0.
 Proof. solve_b_evaluation. Qed.
 
-Lemma b1_eq : b 1 = 6%:~R.
+Lemma b1_eq : b 1 = 6%:Q.
 Proof. solve_b_evaluation. Qed.
 
 Lemma b2_eq : b 2 = rat_of_Z 351 / rat_of_Z 4.

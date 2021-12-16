@@ -8,11 +8,9 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-
 Import GRing.Theory.
-Import Num.Theory.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 (* rat_of_Z being locked, we cannot prove this with prefield only *)
 Lemma testZ0 : ((rat_of_Z Z0) + (rat_of_Z 0)) = 0.

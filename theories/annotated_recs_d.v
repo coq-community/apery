@@ -1,6 +1,5 @@
 Load "include/ops_header.v".
 
-
 Module precond.
 
 Definition Sn (n k m : int) := (n >= 0) /\ (m > 0) /\ (n >= m).
@@ -33,4 +32,3 @@ Record Ann d : Type := ann {
   Sk_  : Sk d;
   Sm_  : Sm d
 }.
-

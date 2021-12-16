@@ -2,12 +2,7 @@ From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import extra_mathcomp.
 
-
-
-Import GRing.Theory.
-Import Num.Theory.
-
-Open Scope nat_scope.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Notation "s `_ i" := (nth 0 s i) : nat_scope.
 
@@ -83,18 +78,18 @@ Notation "'BIG_op_P' op" :=
 (* For the sake of compatibility with hanson.
 Note that the sum and prod should be moved to a \sum_(j <- l)_ shape. *)
 Lemma eq_def_multiQ l :
-  'C[l]%:Q =
-  (\sum_(0 <= i < size l) l`_i)`!%N%:Q /
-  (\prod_(0 <= i < size l) (l`_i)`!)%N%:Q.
+  ('C[l]%:Q =
+   (\sum_(0 <= i < size l) l`_i)`!%:Q /
+   (\prod_(0 <= i < size l) (l`_i)`!)%N%:Q)%R.
 Proof.
-have dn0 : (\prod_(i <- l) i `!)%N%:Q != 0%:Q.
+have dn0 : ((\prod_(i <- l) i `!)%N%:Q != 0)%R.
   rewrite pnatr_eq0 -lt0n prodn_gt0 // => i; exact: fact_gt0.
 rewrite -(big_nth 0 xpredT) -(big_nth 0 xpredT id). (* booh *)
 by rewrite -multi_prod_fact !PoszM !rmorphM /= mulfK.
 Qed.
 
 (* Because it is basically mulnK *)
-Lemma whyIsThisNotProved (m d n : nat) : ((0 < d) ->  m * d = n -> m = n %/ d)%N.
+Lemma whyIsThisNotProved (m d n : nat) : 0 < d -> m * d = n -> m = n %/ d.
 Proof. by move=> d_gt0 <-; rewrite mulnK. Qed.
 
 (* Compatiblity again. *)
@@ -105,8 +100,7 @@ rewrite -(big_nth 0 xpredT) -(big_nth 0 xpredT id). (* booh *)
 exact: multi_prod_fact.
 Qed.
 
-
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 
 Section Monomials.
 
@@ -200,22 +194,11 @@ Qed.
 
 End GNewton.
 
-Section SSRalgMissingInOldButPresentInNew.
-
-Local Open Scope ring_scope.
-
-Variable R : ringType.
-Implicit Types x y : R.
-
-
-End SSRalgMissingInOldButPresentInNew.
-
 Section MultinomialIneq.
 
 Context  {R : comUnitRingType}.
 
-Open Scope nat_scope.
-
+Local Open Scope nat_scope.
 
 Lemma multinomial_ineq (l : seq nat) (p :=  \prod_(j <- l) j ^ j) (s := \sum_(j <- l) j) :
   'C[l] * p <= s ^ s.
@@ -233,7 +216,7 @@ Proof.
   pose tl := mktuple aux.
   have Heq : tmap_val tl = l.
     suff Heq1 (i : 'I_(size l)) : nth 0 (tmap_val tl) i = nth 0 l i.
-      apply: (@eq_from_nth nat 0 _ _ ); rewrite size_map size_tuple // .
+      apply: (@eq_from_nth nat 0 _ _); rewrite size_map size_tuple // .
       move => i Hisize.
       suff -> : nth 0 (tmap_val tl) (Ordinal Hisize) = nth 0 l (Ordinal Hisize) by [].
       exact: Heq1.
