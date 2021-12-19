@@ -12,7 +12,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 
 
 
-This project contains a formal proof that the real number zeta(3),
+This project contains a formal proof that the real number ζ(3),
 also known as Apéry's constant, is irrational. It follows roughly
 Apéry's original sketch of a proof. However, the recurrence
 relations constituting the crux of the proof have been guessed by a
@@ -32,13 +32,13 @@ remains the sole trusted code base.
   - [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
   - [MathComp algebra](https://math-comp.github.io)
   - [MathComp field](https://math-comp.github.io)
-  - [CoqEAL 1.0.5 or later](https://github.com/CoqEAL/CoqEAL)
+  - [CoqEAL 1.0.5 or later](https://github.com/coq-community/coqeal)
   - [MathComp real closed fields 1.1.2 or later](https://github.com/math-comp/real-closed)
   - [MathComp bigenough 1.0.0 or later](https://github.com/math-comp/bigenough)
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 
-  - [A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)](https://software.imdea.org/~aleks/papers/reflect/reflect.pdf) doi:[10.1007/978-3-319-08970-6_11](https://doi.org/10.1007/978-3-319-08970-6_11)
+  - [A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)](https://hal.inria.fr/hal-00984057) doi:[10.1007/978-3-319-08970-6_11](https://doi.org/10.1007/978-3-319-08970-6_11)
 
 ## Building and installation instructions
 

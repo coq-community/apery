@@ -1,4 +1,5 @@
--R . mathcomp.apery
+-R theories mathcomp.apery
+-R include mathcomp.apery
 -arg -w -arg -notation-overridden
 -arg -w -arg -ambiguous-paths
 theories/a_props.v
