@@ -134,7 +134,7 @@ have -> : around_n_0 = 0.
   rewrite /v.Q_cf1_0 /v.Sk2_cf0_0 /v.Sk2_cf0_1.
   rewrite /v.Sn2_cf0_0 /v.Sn2_cf0_1 /v.Sn2_cf1_0.
   rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
-  rewrite hn1 hn2.
+  rewrite {n1}hn1 {n2}hn2.
   field; ring_lia.
   (* above: Finished transaction in 16. secs (16.761047u,0.s) *)
 (* Now the normalization of the second part of the expression causes
@@ -239,7 +239,7 @@ rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
 (* These rewriting catch the occurrences of p*%:~R modulo conversion, even *)
 (* those that are not folded and display other forms in terms of nested *)
 (* shift and shift1, because the head symbols in the rhs of kp* is _%:~R. *)
-rewrite kp1 kp2 kp3 kp4 kp5.
+rewrite {p1}kp1 {p2}kp2 {p3}kp3 {p4}kp4 {p5}kp5.
 field; ring_lia.
 (* above: Finished transaction in 157. secs (156.849802u,0.252016s) *)
 Qed.
