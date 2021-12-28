@@ -98,9 +98,9 @@ dependencies:
     [MathComp bigenough 1.0.0 or later](https://github.com/math-comp/bigenough)
 - opam:
     name: coq-mathcomp-zify
-    version: '{(>= "1.1.0") | (= "dev")}'
+    version: '{(>= "1.2.0") | (= "dev")}'
   description: |-
-    [Mczify](https://github.com/math-comp/mczify) 1.1.0 or later
+    [Mczify](https://github.com/math-comp/mczify) 1.2.0 or later
 - opam:
     name: coq-mathcomp-algebra-tactics
     version: '{(>= "0.2.0") | (= "dev")}'

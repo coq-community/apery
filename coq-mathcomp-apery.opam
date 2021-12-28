@@ -30,7 +30,7 @@ depends: [
   "coq-coqeal" {>= "1.0.5"}
   "coq-mathcomp-real-closed" {>= "1.1.2"}
   "coq-mathcomp-bigenough" {>= "1.0.0"}
-  "coq-mathcomp-zify" {(>= "1.1.0") | (= "dev")}
+  "coq-mathcomp-zify" {(>= "1.2.0") | (= "dev")}
   "coq-mathcomp-algebra-tactics" {(>= "0.2.0") | (= "dev")}
 ]
 

@@ -48,7 +48,7 @@ remains the sole trusted code base.
   - [CoqEAL 1.0.5 or later](https://github.com/coq-community/coqeal)
   - [MathComp real closed fields 1.1.2 or later](https://github.com/math-comp/real-closed)
   - [MathComp bigenough 1.0.0 or later](https://github.com/math-comp/bigenough)
-  - [Mczify](https://github.com/math-comp/mczify) 1.1.0 or later
+  - [Mczify](https://github.com/math-comp/mczify) 1.2.0 or later
   - [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 0.2.0 or later
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):

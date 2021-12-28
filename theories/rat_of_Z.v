@@ -64,6 +64,12 @@ Lemma rat_of_Z_Zpos (z : positive) : 0 < rat_of_Z (Zpos z).
 Proof. by ring_lia. Qed.
 #[export] Hint Resolve rat_of_Z_Zpos : core.
 
+Fact lt_rat_of_Z (n m : Z) : (n < m)%Z -> rat_of_Z n < rat_of_Z m.
+Proof. by ring_lia. Qed.
+
+Fact le_rat_of_Z (n m : Z) : (n <= m)%Z -> rat_of_Z n <= rat_of_Z m.
+Proof. by ring_lia. Qed.
+
 Lemma rat_of_Z_ZposW z : 0 <= rat_of_Z (Zpos z).
 Proof. exact: ltW. Qed.
 
