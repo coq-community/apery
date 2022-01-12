@@ -10,9 +10,9 @@ dev-repo: "git+https://github.com/math-comp/apery.git"
 bug-reports: "https://github.com/math-comp/apery/issues"
 license: "CECILL-C"
 
-synopsis: "A formally verified proof, by computer algebra, that ζ(3) is irrational"
+synopsis: "A formally verified proof in Coq, by computer algebra, that ζ(3) is irrational"
 description: """
-This project contains a formal proof that the real number zeta(3),
+This project contains a formal proof that the real number ζ(3),
 also known as Apéry's constant, is irrational. It follows roughly
 Apéry's original sketch of a proof. However, the recurrence
 relations constituting the crux of the proof have been guessed by a
@@ -33,7 +33,7 @@ depends: [
 ]
 
 tags: [
-  "category:Math/Arith/Number theory"
+  "category:Mathematics/Arithmetic and Number Theory/Number theory"
   "keyword:apery recurrence"
   "keyword:irrationality"
   "keyword:creative telescoping"

@@ -7,10 +7,10 @@ action: true
 coqdoc: false
 
 synopsis: >-
-  A formally verified proof, by computer algebra, that ζ(3) is irrational
+  A formally verified proof in Coq, by computer algebra, that ζ(3) is irrational
 
 description: |-
-  This project contains a formal proof that the real number zeta(3),
+  This project contains a formal proof that the real number ζ(3),
   also known as Apéry's constant, is irrational. It follows roughly
   Apéry's original sketch of a proof. However, the recurrence
   relations constituting the crux of the proof have been guessed by a
@@ -21,7 +21,7 @@ description: |-
 publications:
 - pub_url: https://arxiv.org/abs/1912.06611
   pub_title: A Formal Proof of the Irrationality of ζ(3)
-- pub_url: https://software.imdea.org/~aleks/papers/reflect/reflect.pdf
+- pub_url: https://hal.inria.fr/hal-00984057
   pub_title: A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)
   pub_doi: 10.1007/978-3-319-08970-6_11
 
@@ -94,7 +94,7 @@ dependencies:
     name: coq-coqeal
     version: '{>= "1.0.5"}'
   description: |-
-    [CoqEAL 1.0.5 or later](https://github.com/CoqEAL/CoqEAL)
+    [CoqEAL 1.0.5 or later](https://github.com/coq-community/coqeal)
 - opam:
     name: coq-mathcomp-real-closed
     version: '{>= "1.1.2"}'
@@ -114,4 +114,4 @@ keywords:
 - name: creative telescoping
 
 categories:
-- name: Math/Arith/Number theory
+- name: Mathematics/Arithmetic and Number Theory/Number theory
