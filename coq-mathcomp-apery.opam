@@ -5,9 +5,9 @@ opam-version: "2.0"
 maintainer: "assia.mahboubi@inria.fr"
 version: "dev"
 
-homepage: "https://github.com/math-comp/apery"
-dev-repo: "git+https://github.com/math-comp/apery.git"
-bug-reports: "https://github.com/math-comp/apery/issues"
+homepage: "https://github.com/coq-community/apery"
+dev-repo: "git+https://github.com/coq-community/apery.git"
+bug-reports: "https://github.com/coq-community/apery/issues"
 license: "CECILL-C"
 
 synopsis: "A formally verified proof in Coq, by computer algebra, that ζ(3) is irrational"
