@@ -45,7 +45,7 @@ Qed.
 Fact lt_0_a (k : int) : 0 <= k -> 0 < a k.
 Proof.
 move=> h0k; rewrite /a big_int_recl /=; last by intlia.
-rewrite -[X in X < _]addr0; apply: ltr_le_add; first exact: lt_0_c.
+apply: ltr_paddr; last exact: lt_0_c.
 rewrite big_int_cond; apply: sumr_ge0 => i; rewrite andbT => /andP [] *.
 by apply/ltW/lt_0_c/andP; intlia.
 Qed.
@@ -135,10 +135,7 @@ Definition beta (x : rat) : rat :=
 
 Fact lt_0_beta (x : rat) : 0 <= x -> 0 < beta x.
 Proof.
-move=> le0i; rewrite /beta exprn_gt0 //.
-apply/divr_gt0/ltr_paddl/lt_0_rat_of_positive => //.
-rewrite -[rat_of_positive _]opprK subr_gt0; apply: lt_le_trans le0i.
-by rewrite oppr_lt0 lt_0_rat_of_positive.
+by move=> le0i; apply/exprn_gt0/divr_gt0; apply/ltr_paddl/lt_0_rat_of_positive.
 Qed.
 
 Fact lt_beta_1 (x : rat) : 0 <= x -> beta x < 1.
@@ -274,15 +271,13 @@ Proof. by []. Qed.
 (*FIXME : Why a /= after goal_to_lia? *)
 Lemma rho_rec (i : int) : Posz 2 <= i -> rho (i + 1) = h i%:Q (rho i).
 Proof.
-move=> le2i. rewrite hE -[alpha i%:Q]mulr1.
+move=> le2i. rewrite hE.
 have rhoi_neq0 : rho i != 0 by apply/lt0r_neq0/lt_0_rho/le_trans/le2i.
 have ai_neq0 : a i != 0 by apply/a_neq0/le_trans/le2i.
-rewrite -[X in _ * X - _](@mulfV _ (rho i)) // mulrA -mulrBl; apply/eqP.
-rewrite -(can2_eq (mulfK _) (divfK _)) //.
+rewrite -[alpha i%:Q](mulfK rhoi_neq0) -mulrBl; apply: canRL (mulfK _) _ => //.
 have -> : rho (i + 1) * rho i = a (i + 2) / a i.
   by rewrite /rho mulrA mulfVK -?addrA //; apply/a_neq0; intlia.
-rewrite (can2_eq (divfK _) (mulfK _)) // mulrDl -mulrA mulNr.
-have -> : rho i * a i = a (i + 1) by rewrite /rho divfK.
+apply: canLR (mulfK _) _; rewrite // mulrDl -mulrA mulNr /rho divfK //.
 have c2_neq0 : annotated_recs_c.P_cf2 i != 0.
   rewrite /annotated_recs_c.P_cf2; apply: lt0r_neq0. rewrite exprn_gt0 //.
   apply: addr_gt0; last by rewrite rat_of_ZEdef.
@@ -290,14 +285,12 @@ have c2_neq0 : annotated_recs_c.P_cf2 i != 0.
 have -> : a (i + 2) = - (annotated_recs_c.P_cf1 i * a (i + 1) +
                           annotated_recs_c.P_cf0 i * a i)
                           / annotated_recs_c.P_cf2 i.
-  apply/eqP; rewrite -(can2_eq (mulfK _) (divfK _)) //.
-  rewrite [X in X == _]mulrC -subr_eq0 opprK addrA.
+  apply: canRL (mulfK _) _; rewrite // [LHS]mulrC.
+  apply/eqP; rewrite -subr_eq0 opprK addrA; apply/eqP.
   have := a_Sn2 le2i; rewrite /annotated_recs_c.P_horner.
-  rewrite /punk.horner_seqop /annotated_recs_c.P_seq /=.
-  by rewrite !int.shift2Z -[_ + 1 + 1]addrA;  move->.
+  by rewrite /punk.horner_seqop /= !int.shift2Z -[_ + 1 + 1]addrA.
 rewrite /annotated_recs_c.P_cf2 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf0.
-rewrite /alpha /beta -!rat_of_Z_rat_of_positive !exprnP; apply/eqP.
-rat_field.
+rewrite /alpha /beta -!rat_of_Z_rat_of_positive !exprnP; rat_field.
 rewrite {}/emb; move: le2i; goal_to_lia; rewrite /=; intlia.
 Qed.
 
@@ -318,28 +311,26 @@ move=> le2k {i j le0i le0j leij}.
 pose Ralpha i : realalg := QtoR (alpha i).
 pose Rbeta i : realalg := QtoR (beta i).
 have lt_0_Rbeta (i : int) : 0 <= i -> 0 < Rbeta i%:Q.
-  by move=> *; rewrite RealAlg.ltr_to_alg; apply: lt_0_beta; rewrite ler0z.
-have lt_Rbeta_1 (i : int) : (0 <= i) -> Rbeta i%:Q < 1.
-  by move=> *; rewrite RealAlg.ltr_to_alg; apply: lt_beta_1; rewrite ler0z.
+  by move=> *; rewrite RealAlg.ltr_to_alg lt_0_beta ?ler0z.
+have lt_Rbeta_1 (i : int) : 0 <= i -> Rbeta i%:Q < 1.
+  by move=> *; rewrite RealAlg.ltr_to_alg lt_beta_1 ?ler0z.
 have lt_Ralpha_0 (i : int) : 0 <= i -> 0 < Ralpha i%:Q.
-  by move=> *; rewrite RealAlg.ltr_to_alg; apply: lt_0_alpha; rewrite ler0z.
-pose hr (i : int) (x : realalg) : realalg := Ralpha i%:Q - (Rbeta i%:Q) / x.
+  by move=> *; rewrite RealAlg.ltr_to_alg lt_0_alpha ?ler0z.
+pose hr (i : int) (x : realalg) : realalg := Ralpha i%:Q - Rbeta i%:Q / x.
 have h2hr (j : int) (x : rat) : QtoR (h j%:Q x) = hr j (QtoR x).
   rewrite /hr rmorphB /= [QtoR _]lock; congr (_ - _).
-  - by rewrite -lock. 
+  - by rewrite -lock.
   - by rewrite rmorphM /= [QtoR x^-1]fmorphV.
 pose p (i : int) (x : realalg) := - (x * x) + Ralpha i%:Q * x - Rbeta i%:Q.
 have hr_p (i : int) (x : realalg) : x != 0 -> hr i x - x = (p i x) / x.
-  move=> xneq0; rewrite /hr /p !mulrDl -[- (x * x)]mulNr !mulfK // addrC mulNr.
-  by rewrite addrA. 
+  by move=> xneq0; rewrite !mulrDl !mulNr !mulfK // addrC addrA.
 have lt0k : 0 < k by apply: lt_le_trans le2k.
 have le0k : 0 <= k by apply: ltW.
-have rhok_pos : 0 < rho k by apply/lt_0_rho/ltW.
 suff toR : 0 <= p k (QtoR (rho k)).
   rewrite -RealAlg.ler_to_alg -subr_ge0.
   rewrite rho_rec // h2hr hr_p; last first.
-    by apply: lt0r_neq0; rewrite RealAlg.ltr_to_alg.
-  apply: divr_ge0; rewrite ?toR // RealAlg.ler_to_alg; exact: ltW.
+    by apply: lt0r_neq0; rewrite RealAlg.ltr_to_alg lt_0_rho.
+  by apply: divr_ge0; rewrite ?toR // RealAlg.ler_to_alg ltW // lt_0_rho.
 pose deltap (i : int) := QtoR (delta i%:Q).
 have deltapE (i : int) : 
   deltap i = (Ralpha i%:Q) ^+ 2 - QtoR (rat_of_positive 4) * (Rbeta i%:Q).
@@ -376,8 +367,8 @@ have hr_p_pos i t (le0i : 0 <= i) : yp i <= t -> t <= xp i -> 0 <= p i t.
   move=> leypt letxp.
   by rewrite fac_p // oppr_ge0; apply: mulr_le0_ge0; rewrite subr_cp0.
 suff rho_in_Iyx i (le2i : 2%:~R <= i) : yp i <= QtoR (rho i) <= xp i.
-  by case/andP: (rho_in_Iyx _ le2k) => yr rx; apply: hr_p_pos.
-have lt_0_xp j : (0 <= j) -> 0 < xp j.
+  by have /andP[yr rx] := rho_in_Iyx _ le2k; apply: hr_p_pos.
+have lt_0_xp j : 0 <= j -> 0 < xp j.
   move=> le0j; rewrite /xp; apply: divr_gt0.
     exact/ltr_paddr/lt_Ralpha_0/le0j/sqrtr_ge0.
   rewrite RealAlg.ltr_to_alg; exact: lt_0_rat_of_positive.
@@ -387,17 +378,13 @@ have le_1_xp j (le0j : 0 <= j) : 1 <= xp j.
   have trans : QtoR (rat_of_positive 2) <= Ralpha j%:Q.
     by apply: ltW; rewrite RealAlg.ltr_to_alg lt_2_alphaN // ler0z.
   apply: le_trans trans _; rewrite ler_addl; exact: sqrtr_ge0.
-have le_yp_1 j :  2%:~R <= j -> yp j <= 1.
+have le_yp_1 j : 2%:~R <= j -> yp j <= 1.
   move=> le2j.
   have le0j : 0 <= j by apply: le_trans le2j; rewrite le0z_nat.
-  have -> : yp j = (Rbeta j%:Q) / (xp j).
+  have -> : yp j = Rbeta j%:Q / xp j.
     by rewrite -xyp // mulrAC mulfV ?mul1r //; apply/lt0r_neq0/lt_0_xp.
-  rewrite -[X in _ <= X]mulr1; apply: ler_pmul.
-  - exact/ltW/lt_0_Rbeta.
-  - by rewrite invr_ge0; exact/ltW/lt_0_xp.
-  - exact/ltW/lt_Rbeta_1.
-  - rewrite invf_le1; last exact: lt_0_xp.
-    exact: le_1_xp.
+  rewrite ler_pdivr_mulr ?lt_0_xp // mul1r.
+  by apply/le_trans/le_1_xp/le0j/ltW/lt_Rbeta_1.
 have hr_incr j x y : 0 <= j -> 0 < x -> x <= y -> hr j x <= hr j y.
   move=> le0j lt0x lexy; rewrite -subr_ge0 /hr addrAC [- (Ralpha _ - _)]opprD.
   rewrite opprK addrA addrN add0r -mulrBr; apply: mulr_ge0.
@@ -407,21 +394,19 @@ suff rho_in_I1x : 1 <= QtoR (rho i) <= xp i.
   by case/andP: rho_in_I1x => h1 ->; rewrite andbT; exact/le_trans/h1/le_yp_1.
 suff lerx : QtoR (rho i) <= xp i.
   by rewrite [X in X && _]RealAlg.ler_to_alg le_1_rho //=; apply: le_trans le2i.
-suff im_hr j x (le0j : 0 <= j) (lt0x : 0 < x) : x <= xp j ->
-                                                hr j x <= xp (j + 1).
+suff im_hr j x : 0 <= j -> 0 < x -> x <= xp j -> hr j x <= xp (j + 1).
   have base_case : QtoR (rho 2) <= xp 2.
-    suff squared (prat2 := rat_of_positive 2) : 
-      (rho 2 * rat_of_positive 2 - alpha prat2) ^+ 2 <= delta prat2.
-      rewrite /xp ler_pdivl_mulr; last first. 
-       - by rewrite RealAlg.ltr_to_alg lt_0_rat_of_positive.
-       rewrite -ler_subl_addl; set lhs := (X in X <= _).
-       have [le_lhs_0 | lt_0_lhs] := ler0P lhs.
-         exact/le_trans/sqrtr_ge0/le_lhs_0.
-       rewrite -[lhs]gtr0_norm // -sqrtr_sqr; apply: ler_wsqrtr; rewrite /lhs.
-       rewrite -rmorphM /Ralpha -rmorphB -rmorphX /deltap RealAlg.ler_to_alg.
-       by rewrite -[2%N]/(Pos.to_nat 2) -rat_of_positiveE.
-       - rewrite /delta rho2_eq /alpha /beta /prat2 [_ <= _]refines_eq. 
-         by vm_compute. 
+    have squared (prat2 := rat_of_positive 2) :
+        (rho 2 * prat2 - alpha prat2) ^+ 2 <= delta prat2.
+      by rewrite /delta rho2_eq /alpha /prat2 [_ <= _]refines_eq; vm_compute.
+    rewrite /xp ler_pdivl_mulr; last first.
+    - by rewrite RealAlg.ltr_to_alg lt_0_rat_of_positive.
+    rewrite -ler_subl_addl; set lhs := (X in X <= _).
+    have [le_lhs_0 | lt_0_lhs] := ler0P lhs.
+      exact/le_trans/sqrtr_ge0/le_lhs_0.
+    rewrite -[lhs]gtr0_norm // -sqrtr_sqr; apply: ler_wsqrtr; rewrite /lhs.
+    rewrite -rmorphM /Ralpha -rmorphB -rmorphX /deltap RealAlg.ler_to_alg.
+    by rewrite -[2%N]/(Pos.to_nat 2) -rat_of_positiveE.
   case: i le2i; last by discriminate.
   case; first by discriminate.
   case; first by discriminate.
@@ -432,7 +417,7 @@ suff im_hr j x (le0j : 0 <= j) (lt0x : 0 < x) : x <= xp j ->
     rewrite rho_rec // h2hr // ; exact: lt_0_rho.
   apply: le_trans (im_hr _ _ _ _ ler3x) _ => //.
   rewrite RealAlg.ltr_to_alg; exact: lt_0_rho.
-move/(hr_incr j _ _ le0j lt0x) => {i le2i}.
+move=> le0j lt0x /(hr_incr j _ _ le0j lt0x) {i le2i}.
 have -> : hr j (xp j) = xp j.
   apply/eqP; rewrite -subr_eq0 hr_p; last exact/lt0r_neq0/lt_0_xp.
   suff -> : p j (xp j) = 0 by rewrite mul0r.
@@ -496,14 +481,13 @@ rewrite -[X in _ < X](@telescope_prod_int _ 1 i (fun i => a i)) //; last first.
   by move=> /= k /andP [le1k ltki]; apply/a_neq0/le_trans/le1k.
 rewrite (big_cat_int _ _ _ _ (ltW ltiNrho)) /=; last by rewrite ler_addr.
 suff hrho_maj : 33%:Q ^ i / 33%:Q ^+ N_rho.+1 < 
-       \prod_(Posz N_rho + 1 <= i0 < i :> int) (a (i0 + 1) / a i0).
+                  \prod_(Posz N_rho + 1 <= i0 < i :> int) (a (i0 + 1) / a i0).
   rewrite /Ka' mulrAC -mulrA ltr_pmul2l; first exact: hrho_maj.
   rewrite big_int_cond; apply: prodr_gt0 => j; rewrite andbT => /andP [hj _].
   exact/lt_0_rho/le_trans/hj.
-rewrite -PoszD; case: i lt1i ltiNrho => i //; rewrite !ltz_nat => lt1i.
-rewrite addn1 => ltiNrho; rewrite eq_big_int_nat /= -expfB //.
-have -> : 33%:Q ^+ (i - N_rho.+1) = \prod_(N_rho.+1 <= i0 < i) 33%:Q.
-  by rewrite big_const_nat -bigop.Monoid.iteropE //=.
+rewrite -PoszD; case: i lt1i ltiNrho => i //.
+rewrite !ltz_nat addn1 => lt1i ltiNrho.
+rewrite eq_big_int_nat /= -expfB // -prodr_const_nat.
 by apply: ltr_prod_nat=> [// | j /andP[h51j hji]]; rewrite rho_maj 1?h51j. 
 Qed.
 
