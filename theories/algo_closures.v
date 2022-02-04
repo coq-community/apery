@@ -146,5 +146,5 @@ Proof. exact: ops_for_v.v_Sk2 c_ann u_ann. Qed.
 
 Definition v_ann := annotated_recs_v.ann v_Sn2 v_SnSk v_Sk2.
 
-Lemma b_Sn4 (n : int) : n >= (2 : int) -> annotated_recs_v.P_horner b n = 0.
-Proof. by move=> h; exact: (ops_for_b.recAperyB v_ann h). Qed.
+Lemma b_Sn4 (n : int) : 2 <= n :> int -> annotated_recs_v.P_horner b n = 0.
+Proof. exact: ops_for_b.recAperyB v_ann _. Qed.

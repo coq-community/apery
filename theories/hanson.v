@@ -74,27 +74,25 @@ Qed.
 
 (* This one would ideally be entirely automated *)
 Lemma remark_7_4 :
-  let r := (n.+1 - a i)%N%:Q / (a i - 1)%N%:Q in
+  let r := (a i - 1)%N%:Q / (n.+1 - a i)%N%:Q in
   (exp_quo (n%:Q / (a i)%:Q) n (a i) /
            exp_quo ((n.+1 - a i)%N%:Q / (a i)%:Q) (n.+1 - a i) (a i)) ^+ a i =
-  exp_quo (1 + 1 / r) (n.+1 - a i) (a i) ^+ a i *
+  exp_quo (1 + r) (n.+1 - a i) (a i) ^+ a i *
   ((n%:Q / (a i)%:Q) ^ (a i - 1)%N)%:C.
 Proof.
 move => r.
-have Hapos := a_pos i.
-have npos : (0 < n)%N by exact: leq_trans Hapos _.
-have helper1 : (n < a i + n)%N by rewrite -{1}[n]add0n ltn_add2r.
-have {r} ->: (1 + 1 / r) = n%:Q / (n.+1 - a i)%N%:Q. (* automation missing...*)
+have npos : (0 < n)%N by exact: leq_trans Hain.
+have {r} ->: (1 + r) = n%:Q / (n.+1 - a i)%N%:Q. (* automation missing...*)
   have Hneq0: (Posz n.+1 - Posz (a i))%:~R != 0 :> rat.
     by rewrite intq_eq0 subr_eq0 neq_ltn ltnS Hain orbT.
   rewrite /r -!subzn //; last exact: leq_trans Hain _.
-  rewrite mul1r invfM invrK mulrC; apply: canRL (mulfK Hneq0) _.
+  apply: canRL (mulfK Hneq0) _.
   by rewrite mulrDl mul1r divfK // !mulrzBr addrA subrK -mulrnBr ?subn1.
 case: (a i) (a_pos i) Hain => // ai' _ Hain'.
-rewrite subn1 subSS /= /exp_quo rmorphX 4!rmorphM 2!fmorphV /= !ratr_int.
-rewrite 2!exprMn 2!exprVn ![_ ^+ _ ^+ ai'.+1]exprAC !rootCK //.
-rewrite 3!exprMn 3!exprVn !exprnP -subzn; last exact: ltnW.
-rewrite !expfzDr -?invr_expz ?intr_eq0 //; last first.
+rewrite subn1 subSS exprMn exprVn ![exp_quo _ _ _ ^+ ai'.+1]exprAC !rootCK //.
+rewrite rmorphX !rmorphM !fmorphV !rmorph_int !exprMn !exprVn !exprnP /=.
+rewrite -subzn ?expfzDr -?invr_expz // ?intr_eq0 //; last first.
+- exact: ltnW.
 - by rewrite subr_eq0 neq_ltn Hain' orbT.
 - by rewrite -lt0n; apply: leq_trans _ Hain'.
 rewrite !invfM !invrK -!mulrA /exprz; congr (_ * _).
@@ -115,11 +113,10 @@ Lemma l7 n i (Hain : (a i <= n)%N) :
   exp_quo (n%:Q / (a i)%:Q) n (a i) / ((n %/ a i) ^ (n %/ a i))%N%:Q%:C <
   exp_quo (10%:Q * n%:Q / (a i)%:Q) (a i - 1) (a i).
 Proof.
-have Hapos := a_pos i.
 have posai_rat : 0 < (a i)%:Q by rewrite ltr0n.
 pose posai := PosNumDef posai_rat.
 have -> : (a i)%:Q = num_of_pos posai by [].
-have lt0n : (0 < n)%N by exact: leq_trans Hapos _.
+have lt0n : (0 < n)%N by exact: leq_trans Hain.
 have lt0n_rat : 0 < n%:Q by rewrite ltr0n.
 pose posn := PosNumDef lt0n_rat.
 have -> : n%:Q = num_of_pos posn by [].
@@ -129,36 +126,17 @@ suff : lhs ^+ a i < rhs ^+ a i.
   rewrite ltr_pexpn2r // nnegrE; last exact: exp_quo_ge0.
   (* roots, hence alg. numbers prevent using posnum based automation *)
   by rewrite /lhs divr_ge0 // exp_quo_ge0 // divr_ge0 // ler0z.
-rewrite remark_7_4 // /rhs.
-rewrite -mulrA -exp_quo_mult_distr // exprMn.
-have -> : exp_quo 10%:Q (a i - 1) (a i) ^+ a i = exp_quo 10%:Q (a i - 1)%N 1.
-  by rewrite /exp_quo exprAC rootCK // root1C.
-have -> : exp_quo (n%:Q / (a i)%:Q) (a i - 1) (a i) ^+ a i =
-          ((n%:Q / (a i)%:Q) ^ (a i - 1)%N)%:C.
-  by rewrite /exp_quo exprAC rootCK // rmorphX.
-rewrite -lter_pdivr_mulr //; last first.
-  by rewrite ltr0q exprz_gt0 // divr_gt0.
-rewrite -mulrA divrr; last first.
-  by rewrite unitf_gt0 // ltr0q exprz_gt0 // divr_gt0.
-rewrite mulr1 -exp_quo_r_nat rmorphX /= ratr_int.
+rewrite remark_7_4 // /rhs -mulrA ![_ ^+ _ ^+ a i]exprAC !rootCK //.
+rewrite rmorphD rmorphX 15!(rmorph1, rmorph_int, rmorphM, fmorphV) /=.
+rewrite [(10%:~R * _) ^+ _]exprMn ltr_pmul2r ?exprn_gt0 ?divr_gt0 ?ltr0n //.
 set x := (n.+1 - a i)%N.
 set y := (a i - 1)%N.
-set z := a i.
-have Hx : (0 < x)%N by rewrite subn_gt0.
-have Hy : (0 < y)%N by rewrite subn_gt0.
-have Hxy : (0 < x * y)%N by rewrite muln_gt0 Hx.
-have Hzy : (0 < z * y)%N by rewrite muln_gt0 Hapos.
-have -> : exp_quo (1 + 1 / (x%:Q / y%:Q)) x z =
-          exp_quo (1 + 1 / (x%:Q / y%:Q)) (x * y)%N (z * y)%N.
-  apply: exp_quo_equiv => //; last by rewrite -mulnA [(y * z)%N]mulnC.
-  by rewrite addr_ge0 ?divr_ge0 ?ler0n.
-have side1 : 0 <= (1 + 1 / (x%:Q / y%:Q))%:C.
-  by rewrite ler0q addr_ge0 ?divr_ge0 ?ler0n.
-rewrite /exp_quo prod_root // exprM -rootCX ?rootC_ge0 // -exprAC rootCK //.
-rewrite ltr_pexpn2r ?nnegrE //; last by apply/exprn_ge0; rewrite rootC_ge0.
-apply: le_lt_trans.
-- by apply: one_plus_invx_expx; rewrite // divr_gt0 ?ltr0n.
-- by rewrite ratr_int ltr_nat.
+rewrite -root_lt_x ?exprn_ge0 ?addr_ge0 ?divr_ge0 ?ler0n ?subn_gt0 //.
+have: 9%:~R < 10%:~R :> algC by rewrite ltr_nat.
+have/one_plus_invx_expx: 0 < x%:~R / y%:~R :> rat.
+  by rewrite divr_gt0 // ltr0n subn_gt0.
+rewrite /exp_quo rmorphD rmorphM fmorphV !rmorph1 !rmorph_int.
+by rewrite rootCX ?addr_ge0 ?divr_ge0 ?ler0n ?subn_gt0 //; exact: le_lt_trans.
 Qed.
 
 
@@ -170,30 +148,17 @@ Lemma l10 n k (Hank : (a k <= n)%N) :
   \prod_(i < k.+1) exp_quo (n%:Q / (a i)%:Q) n (a i).
 Proof.
 have lt0n : (0 < n)%N by exact: leq_trans (a_pos k) _.
-suff Hinterm :
-  ((n ^ n)%N%:Q / (\prod_(i < k.+1) (n %/ (a i)) ^ (n %/ a i))%N%:Q)%:C
-  < (n ^ n)%N%:Q %:C *
-   \prod_(i < k.+1) exp_quo (10%:Q * n%:Q / (a i)%:Q) (a i).-1 (a i) /
-   \prod_(i < k.+1) exp_quo (n%:Q / (a i)%:Q) n (a i).
-  apply: le_lt_trans Hinterm.
-  rewrite !CratrE /= ler_pdivl_mulr.
-    rewrite mulrC -natrM ler_nat.
-    by move: (l8 n k.+1); rewrite big_mkord.
-  rewrite ltr0n prodn_gt0 // => i; rewrite expn_gt0.
-  by case: (posnP (n %/ a i)%N).
-rewrite ltr_pdivl_mulr; last first.
+
+have Hinterm : (C n k.+1)%:~R <=
+    ((n ^ n)%N%:~R / (\prod_(i < k.+1) (n %/ a i) ^ (n %/ a i))%N%:~R) :> algC.
+  rewrite ler_pdivl_mulr.
+    by move: (l8 n k.+1); rewrite big_mkord mulrC -natrM ler_nat.
+  by rewrite ltr0n prodn_gt0 // => i; rewrite expn_gt0; case: (n %/ a i)%N.
+rewrite !ratr_int -mulrA; apply: le_lt_trans Hinterm _.
+rewrite ltr_pmul2l ?ltr0n ?expn_gt0 ?lt0n //= ltr_pdivl_mulr; last first.
   apply: prodr_gt0 => i _.
-  by rewrite exp_quo_gt0  ?divr_ge0 ?divr_gt0 ?ltr0n ?a_pos.
-rewrite -lter_pdivr_mulr; last first.
-  apply: prodr_gt0 => i _.
-  by rewrite exp_quo_gt0  ?divr_ge0 1?divr_gt0 1?mulr_gt0 ?ltr0n.
-rewrite CratrE /= -2!mulrA.
-rewrite gtr_pmulr; last first.
-  by rewrite ltr0q ltr0n expn_gt0 lt0n.
-rewrite mulrA lter_pdivr_mulr; last first.
-  apply: prodr_gt0 => i _.
-  by rewrite exp_quo_gt0  ?divr_ge0 1?divr_gt0 1?mulr_gt0 ?ltr0n.
-rewrite mul1r mulrC !CratrE /= natr_prod -prodfV -big_split /=.
+  by rewrite exp_quo_gt0 ?divr_ge0 ?divr_gt0 ?ltr0n ?a_pos.
+rewrite prodMz /= mulrC -prodf_div.
 apply: ltr_prod; first by apply/hasP; exists ord0; rewrite // mem_index_enum.
 move=> [i /= Hi] _; rewrite divr_ge0 ?exp_quo_ge0 ?a_pos ?divr_ge0 ?ler0n //=.
 suff/l7: (a i <= n)%N by rewrite !CratrE subn1.
@@ -254,7 +219,7 @@ Proof. exact/ltW/w_seq_gt0. Qed.
 
 Lemma w_seq_le_S k : w_seq k <= w_seq k.+1.
 Proof.
-rewrite /w_seq big_ord_recr /= .
+rewrite /w_seq big_ord_recr /=.
 by rewrite ler_pmulr 1?ltW ?a'_gt1 // prodr_gt0 // => i _.
 Qed.
 
@@ -275,22 +240,19 @@ rewrite addnS /w_seq big_ord_recr /=.
 suff -> : exp_quo (a k)%:Q (2 ^ l.+2 - 2) (2 ^ l.+1 * a k) =
           exp_quo (a k)%:Q (2 ^ l.+1 - 2) (2 ^ l * a k) * (2 ^ l).-root (a' k).
   rewrite mulrA.
-  apply: ler_pmul; rewrite ?a'_bound // ?rootC_ge0 ?CratrE ?a_pos ?ler0n // .
+  apply: ler_pmul; rewrite ?a'_bound // ?rootC_ge0 ?CratrE ?a_pos ?ler0n //.
   by rewrite prodr_ge0 // => i _ ; exact: a'_ge0.
 rewrite -prod_root ?CratrE ?expn_gt0 ?a_pos ?ler0n // .
 have -> : (2 ^ l * a k).-root (a k)%:R = exp_quo (a k)%:R 1%N (2 ^ l * a k).
-  by rewrite /exp_quo expr1 !CratrE.
-rewrite -exp_quo_plus ?ler0n // ?muln_gt0 ?a_pos ?expn_gt0 // .
-rewrite [(2^l.+1)%N]expnS -mulnA.
-set m := (2^l * a k)%N.
-have Hm : (0 < m)%N.
-  by rewrite muln_gt0 a_pos expn_gt0.
+  by rewrite /exp_quo expr1 2!CratrE.
+rewrite -exp_quo_plus ?ler0n // ?muln_gt0 ?a_pos ?expn_gt0 //.
+rewrite [(2 ^ l.+1)%N]expnS -mulnA -mulnDl -subnA ?leq_pmulr ?expn_gt0 //=.
+set m := (2 ^ l * a k)%N.
 apply: exp_quo_equiv; last first.
-- rewrite -mulnDl -subnA ?leq_pmulr ?expn_gt0 //= subn1 /=.
-  by rewrite mulnAC 2!mulnA [in RHS]mulnBl -expnS -expnSr.
+- by rewrite mulnACA [in RHS]mulnBl -expnS -expnSr.
 - by rewrite ler0n.
-- by rewrite muln_gt0 Hm.
-- by rewrite muln_gt0 Hm.
+- by rewrite !muln_gt0 ?a_pos ?expn_gt0.
+- by rewrite !muln_gt0 ?a_pos ?expn_gt0.
 Qed.
 
 Lemma w_seq_bound_tail k (Hk : (2 <= k)%N) l :
@@ -358,7 +320,7 @@ Hint Resolve rat_of_Z_ZposW.
 
 Definition w : rat := a'0_ub * a'1_ub * a'2_ub * a'3_ub * a'4_ub ^ 2.
 
-Lemma w_val : w = rat_of_Z 5949909309448377 / rat_of_Z (2 * 10 ^ 15)%coqZ.
+Lemma w_val : w = rat_of_Z 5949909309448377 / rat_of_Z (2 * 10 ^ 15).
 Proof.
 rewrite /w /a'0_ub /a'1_ub /a'2_ub /a'3_ub /a'4_ub.
 rat_field.
@@ -556,13 +518,10 @@ Lemma prod_is_exp_sum (n k : nat) (tenn := (10 * n)%N%:Q) :
   \prod_(i < k.+1) exp_quo tenn (a i).-1 (a i) =
   tenn%:C ^+ k * exp_quo tenn 1 (a k.+1 - 1).
 Proof.
-elim: k => [|k ihk]; first by rewrite expr0 big_ord_recr big_ord0 /= !mul1r.
+elim: k => [|k ihk]; first by rewrite expr0 big_ord_recr big_ord0 /=.
 have pos_tenn : 0 <= tenn by rewrite /tenn ler0n.
-have h l : tenn%:C ^+ l = exp_quo tenn l 1.
-  by rewrite -exp_quo_r_nat -!CratrE.
-rewrite h -exp_quo_plus 1?subn_gt0 ?a_gt1 // big_ord_recr /=.
-have side : (0 < a k.+1 - 1)%N by rewrite subn_gt0.
-rewrite ihk h -!exp_quo_plus // mul1n // [a k.+1]aS !subn1 /=.
+have h l : tenn%:C ^+ l = exp_quo tenn l 1 by rewrite -exp_quo_r_nat -!CratrE.
+rewrite big_ord_recr ihk /= !h !subn1 -!exp_quo_plus ?ltnS ?muln_gt0 ?a_pos //=.
 congr exp_quo; ring.
 Qed.
 
@@ -608,49 +567,35 @@ End PreliminaryRemarksTheorem2.
 Theorem t2 n k (Hank : (a k <= n < (a k.+1))%N) :
   (C n k.+1)%:Q%:C < exp_quo (10%:Q * n%:Q) (2*k.+1 - 1) 2 * (w%:C ^+ n.+1).
 Proof.
-have n_ge1 : (1 <= n)%N.
+have n_gt0 : (0 < n)%N.
   by case/andP: Hank => + _; apply/leq_trans/a_pos.
 have lt0nC : 0 < n%:Q%:C.
   by rewrite ltr0q ltr0n.
 have le0nR : 0 <= n%:Q.
   by rewrite ler0n.
-have le0nC : 0 <= n%:Q%:C.
-  by rewrite ler0q le0nR.
-have n_unit :  n%:Q%:C \is a GRing.unit.
-  by rewrite unitf_gt0.
-have H10_ge1 : 1 <= 10%:Q * n%:Q.
-  by rewrite mulr_ege1 ?ler1n.
-have Hprod := (prod_is_exp_sum n k).
-have l10 := (l10 (proj1 (andP Hank))).
-move: 10%N H10_ge1 Hprod l10 => ten H10_ge1 Hprod l10.
-have H10n_ge0 : 0 <= ten%:Q * n%:Q by rewrite mulr_ge0 ?ler0n.
-set cn := (C _ _)%:Q%:C; set t10n_to := exp_quo (ten%:Q * n%:Q).
-have Hexp_1_aS_ge0 : 0 <= t10n_to 1%N (a k.+1).-1.
-  by rewrite exp_quo_ge0.
-have t_pos a b : (0 < b)%N -> 0 <= t10n_to a b.
-  by move=> hb; rewrite /t10n_to; apply: exp_quo_ge0.
-have wq_gt0 m : 0 < w%:C ^+ m by rewrite exprn_gt0 // ltr0q.
-have wq_ge0 m : 0 <= w%:C ^+ m by exact/ltW.
+have H10_ge1 : 1 <= (10 * n)%N%:Q.
+  by rewrite ler1n muln_gt0.
+have H10n_ge0 : 0 <= (10 * n)%N%:Q by rewrite ler0n.
+set cn := (C _ _)%:Q%:C.
+set t10n_to := exp_quo (10 * n)%N%:Q.
+have wq_ge0 m : 0 <= w%:C ^+ m by rewrite exprn_ge0 // ler0q.
 suff step1 : cn < t10n_to (2 * k.+1 - 1)%N 2 * w%:C ^+ n * w_seq k.+1.
-apply: lt_le_trans step1 _; rewrite -mulrA; apply: ler_pmul => //.
-  + exact: t_pos.
-  + apply: mulr_ge0 => //; exact: wq_pos.
-  + by rewrite exprSr ler_pmul // w_upper_bounded.
+  apply: lt_le_trans step1 _; rewrite -intrM exprSr mulrA.
+  apply/ler_pmul/w_upper_bounded => //.
+  by rewrite mulr_ge0 // exp_quo_ge0 // ler0n.
 rewrite -mulrA; set tw := (X in _ < _ * X).
-have tw_pos : 0 <= tw by rewrite /tw; apply: mulr_ge0.
-have tenn_to_pos : 0 <= ((ten%:Q * n%:Q) ^+ k)%:C.
-  by rewrite ler0q exprn_ge0.
-suff step2 : cn < ((ten%:Q * n%:Q) ^+ k)%:C *
-       t10n_to 1%N ((a k.+1).-1)%N * tw.
-  apply: lt_le_trans step2 _; apply: ler_pmul => // .
-  - exact/mulr_ge0/t_pos.
-  - have ->: t10n_to (2 * k.+1 - 1)%N 2 = t10n_to (k)%N 1%N * t10n_to (1)%N 2.
-      rewrite -exp_quo_plus //; apply:exp_quo_equiv => // .
-      by rewrite  -[k.+1]addn1 mulnDr addn2 subn1 /= [(k * 2)%N]mulnC addn1.
-    apply/ler_pmul => //; first by rewrite exp_quo_r_nat.
-    by rewrite exp_quo_lessn // !mul1n.
+have tw_pos : 0 <= tw by apply: mulr_ge0.
+have tenn_to_pos : 0 <= ((10 * n)%N%:Q ^+ k)%:C.
+  by rewrite ler0q exprn_ge0 ?ler0n.
+suff step2 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1%N * tw.
+  apply: lt_le_trans step2 _; rewrite exp_quo_r_nat.
+  have ->: t10n_to (2 * k.+1 - 1)%N 2 = t10n_to k 1%N * t10n_to 1%N 2.
+    rewrite -exp_quo_plus ?ler0n //; apply:exp_quo_equiv => //.
+    by rewrite  -[k.+1]addn1 mulnDr addn2 subn1 /= [(k * 2)%N]mulnC addn1.
+  apply/ler_wpmul2r/ler_wpmul2l/exp_quo_lessn => //; last by rewrite !mul1n.
+  by rewrite exp_quo_ge0 // ler0n.
 have ->: tw = w%:C ^+ n * n%:Q%:C * (w_seq k.+1 / n%:Q%:C).
-  by rewrite mulrACA divrr // mulr1.
+  by rewrite mulrACA divff ?lt0r_neq0 // mulr1.
 have Helper0 : 0 < \prod_(i < k.+1) (a i)%:~R :> algC by rewrite prodr_gt0.
 have Helper1 : 0 < \prod_(i < k.+1) a' i by rewrite prodr_gt0.
 have step3 : w_seq k.+1 / n%:Q%:C >=
@@ -659,98 +604,47 @@ have step3 : w_seq k.+1 / n%:Q%:C >=
   rewrite ler_pdivr_mulr // -mulrA ler_pmulr // mulrC ler_pdivl_mulr // mul1r.
   case/andP: Hank => _; rewrite a_rec addn1 ltnS big_mkord => H.
   by rewrite -prodMz 2!CratrE ler_nat.
-have ler0_10npow : 0 <= ((ten%:Q * n%:Q) ^+ k)%:C * t10n_to 1%N (a k.+1).-1.
-  by rewrite mulr_ge0.
+have ler0_10npow : 0 <= ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1.
+  by rewrite mulr_ge0 ?exp_quo_ge0 ?ler0n.
 have t_ge0_0 : 0 <= \prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i).
   by rewrite prodr_ge0 // => i _; rewrite exp_quo_ge0 // ler0n.
-have t_ge0_1 : 0 <= (\prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i))^-1.
-  by rewrite invr_ge0.
-have t_ge0_2 : 0 <= w%:C ^+ n * n%:Q%:C.
-  by rewrite mulr_ge0.
-have t_ge0_3 : 0 <=
-   w%:C ^+ n * n%:Q%:C / \prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i).
-  by rewrite mulr_ge0 // invr_ge0.
-
-have t_ge0_4 : 0 < exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1.
+have t_ge0_1 : 0 < exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1.
   by rewrite exp_quo_gt0 // ltr0n.
-have t_ge0_5 : 0 < (exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1)^-1.
-  by rewrite invr_gt0.
-have t_ge0_6 : 0 <= (n ^ n)%N%:Q%:C.
+have t_ge0_2 : 0 <= (n ^ n)%N%:Q%:C.
   by rewrite ler0q ler0n.
-have t_ge0_7 : 0 <= w%:C ^+ n *
-   ((n ^ n)%N%:Q%:C / exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1) /
-   \prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i).
-  by rewrite mulr_ge0 // mulr_ge0 // mulr_ge0 // invr_ge0 // ltW.
-have t_ge0_8 : 0 <= (w_seq k.+1) ^+ n.
+have t_ge0_3 : 0 <= w_seq k.+1 ^+ n.
   by rewrite exprn_ge0.
-have t_ge0_9 : 0 <=
+have t_ge0_4 : 0 <=
    w_seq k.+1 ^+ n *
    ((n ^ n)%N%:Q%:C / exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1).
-  by rewrite mulr_ge0 // divr_ge0 // exp_quo_ge0 // ler0n.
-have t_ge0_10 : 0 <=
-   w_seq k.+1 ^+ n *
-   ((n ^ n)%N%:Q%:C / exp_quo n%:Q (n * (a k.+1).-2) (a k.+1).-1) /
-   \prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i).
-  by rewrite mulr_ge0 // mulr_ge0 // ltrW.
-have Hbound :
-  (expn n n)%:Q%:C / exp_quo n%:Q (n * (a k.+1).-2)%N ((a k.+1).-1) <= n%:Q%:C.
-  by rewrite ler_pdivr_mulr //; exact: (remark_t2_1 Hank).
-
-suff step4 : cn < ((ten%:Q * n%:Q) ^+ k)%:C * t10n_to 1%N (a k.+1).-1 *
+  by apply/mulr_ge0/divr_ge0/exp_quo_ge0.
+suff step4 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1 *
    ((w_seq k.+1) ^+ n *
     ((n ^ n)%N%:Q%:C / exp_quo n%:Q (n * (a k.+1).-2)%N ((a k.+1).-1)) /
     (\prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i))).
-  apply: lt_le_trans step4 _; apply/ler_pmul/ler_pmul/step3/ler_pmul => //.
-    by rewrite mulr_ge0 // ltW.
-  by apply/ler_expn2r/w_upper_bounded; rewrite nnegrE // ler0q.
-have other_prod_is_exp_sum k1 : \prod_(i < k1.+1) exp_quo (n%:Q) n (a i)
-          = exp_quo n%:Q (n * (a k1.+1).-2) (a k1.+1).-1.
-  elim: k1 => [|k1 HIk1].
-    by rewrite big_ord_recr big_ord0 /= mul1r muln1; congr exp_quo.
-  rewrite big_ord_recr /= HIk1 -exp_quo_plus //=; last first.
-    by rewrite muln_gt0; apply/andP.
-  apply: exp_quo_equiv => //=.
-  - by rewrite muln_gt0 andbT muln_gt0; apply/andP.
+  apply: lt_le_trans step4 _; apply/ler_wpmul2l/ler_pmul/step3/ler_pmul => //.
+  - by rewrite invr_ge0.
+  - by rewrite divr_ge0 // ltW.
+  - by apply/ler_expn2r/w_upper_bounded; rewrite nnegrE // ler0q.
+  - by rewrite ler_pdivr_mulr //; exact: remark_t2_1.
+congr (_ < _): (l10 (proj1 (andP Hank))).
+have -> : forall k1, exp_quo n%:Q (n * (a k1.+1).-2) (a k1.+1).-1
+                     = \prod_(i < k1.+1) exp_quo n%:Q n (a i).
+  elim=> [|k1 HIk1]; first by rewrite big_ord_recr big_ord0 /= mul1r muln1.
+  rewrite big_ord_recr /= -HIk1 -exp_quo_plus //; apply: exp_quo_equiv => //=.
   - by rewrite muln_gt0 /= muln_gt0; apply/andP.
+  - by rewrite muln_gt0 andbT muln_gt0; apply/andP.
   set x := (a k1 * (a k1).-1).-1%N.
   have -> : (a k1 * ((a k1).-1) = x.+1)%N.
     by rewrite /x prednK // muln_gt0; apply/andP.
-  rewrite -mulnA -mulnDr; congr (_ * _ * _)%N; last by rewrite mulnC.
-  by apply/esym; rewrite mulnS addSn /= addnC mulnC.
-rewrite -other_prod_is_exp_sum.
-rewrite /t10n_to.
-have -> : ((ten%:Q * n%:Q) ^+ k)%:C * exp_quo (ten%:Q * n%:Q) 1 (a k.+1).-1 =
-          \prod_(i < k.+1) exp_quo (ten%:Q * n%:Q) (a i).-1 (a i).
-  by rewrite -rmorphM /= Hprod !CratrE subn1.
-set rhs := (X in _ < X).
-suff Hfinal : rhs = (n ^ n)%N%:Q %:C *
-\prod_(i < k.+1) exp_quo (ten%:Q * n%:Q / (a i)%:Q) (a i).-1 (a i) /
-\prod_(i < k.+1) exp_quo (n%:Q / (a i)%:Q) n (a i).
-  rewrite Hfinal {Hfinal}.
-  case/andP: Hank => Hle Hlt.
-  exact: l10.
-rewrite /rhs /w_seq.
-rewrite mulrAC [ratr (n ^ n)%N%:Q / _]mulrC 2!mulrA.
-rewrite -[in RHS]mulrA [in RHS]mulrC .
-congr (_ * ratr (n ^ n)%N%:Q).
-rewrite [_ ^+ n / _]mulrC mulrA.
-have ai_pos i : 0 < (a i)%:Q by rewrite ltr0n.
-have ai_ge0 i : 0 <= (a i)%:Q by rewrite ler0n.
-have ->: \prod_(i < k.+1) exp_quo (ten%:Q * n%:Q) (a i).-1 (a i) /
-          \prod_(i < k.+1) exp_quo (a i)%:Q (a i).-1 (a i) =
-          \prod_(i < k.+1) exp_quo (ten%:Q * n%:Q / (a i)%:Q) (a i).-1 (a i).
-  rewrite -prodf_div; apply: eq_bigr => i _.
-  have en0 : exp_quo (a i)%:Q (a i).-1 (a i) != 0.
-    by rewrite eq_sym; apply/ltr_neq/exp_quo_gt0.
-  apply: (canLR (mulfK en0)).
-  by rewrite exp_quo_mult_distr // mulfVK // eq_sym ltr_neq.
-rewrite -mulrA; congr (_ * _).
-rewrite -2!prodfV -prodrXl -big_split /=; apply: eq_bigr => i _.
-rewrite -[a' i ^+ n]invrK -invfM.
-rewrite -exp_quo_mult_distr; last by rewrite invr_ge0.
-rewrite -exprVn /a' /exp_quo -rootCV // ?ler0q //.
-set x := _.-root _; set y := _.-root _.
-by rewrite CratrE /= -/x mulrC.
+  rewrite -[in RHS]mulnA -mulnDr; congr (_ * _ * _)%N; last by rewrite mulnC.
+  by rewrite mulnS addSn /= addnC mulnC.
+rewrite /w_seq /t10n_to rmorphX -subn1 -prod_is_exp_sum.
+rewrite -3!mulrA ![_ * (_%:C * _)]mulrCA; congr (_ * _).
+rewrite -prodrXl -!prodfV -!big_split /=; apply: eq_bigr => i _.
+rewrite -exprM mul1n [_^-1 / _ in RHS]mulrC [RHS]mulrA [RHS]mulrACA.
+rewrite -!exp_quoV ?divr_ge0 // -intrM -!exp_quoMl ?ler0n //.
+by rewrite invfM invrK [_ * (a i)%:~R]mulrC.
 Qed.
 
 

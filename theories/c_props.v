@@ -23,7 +23,7 @@ Qed.
 Fact c_incr (n m i : int) : 0 <= n -> 0 <= i -> i <= n -> n <= m ->
                             c n i <= c m i.
 Proof.
-case: n => // n _; case: i => // i _ lein; case: m => // m lenm; rewrite /c.
+case: n m i => [] // n [] // m [] // i _ _ lein lenm; rewrite /c.
 rewrite -!PoszD !binz_nat_nat -!expfzMl -!rmorphM /= !exprz_pintl // ler_nat.
 by apply: leq_mul; apply: leq_mul; apply: leq_bin2l => //; rewrite leq_add2r.
 Qed.

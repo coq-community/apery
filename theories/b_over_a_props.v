@@ -38,12 +38,12 @@ pose v (k : int) : rat := 6%:Q / (k%:Q + 1) ^ 3.
 pose c1 := annotated_recs_c.P_cf2.
 pose c0 := annotated_recs_c.P_cf0.
 pose Urec (v : int -> rat) := forall (k : int), 2%:~R <= k ->
-                      (c1 k) * v (int.shift 1 k) - (c0 k) * v k = 0.
+                      c1 k * v (int.shift 1 k) - c0 k * v k = 0.
 have uUrec : Urec ba_casoratian.
   move=> k le2k; have le0k : 0 <= k by exact: le_trans le2k.
   have brec := b_Sn2 le0k; have arec := a_Sn2 le2k.
-  have -> : 0 = a (int.shift 1 k) *  annotated_recs_c.P_horner b k
-                - b  (int.shift 1 k) *  annotated_recs_c.P_horner a k.
+  have -> : 0 = a (int.shift 1 k) * annotated_recs_c.P_horner b k
+                - b (int.shift 1 k) * annotated_recs_c.P_horner a k.
     by rewrite brec arec !mulr0 subrr.
   rewrite /annotated_recs_c.P_horner /annotated_recs_c.P_seq /c1 /c0.
   by rewrite /punk.horner_seqop /= /ba_casoratian; rat_field.
@@ -60,12 +60,11 @@ suff {uUrec vUrec v} Urec1P (w1 w2 : int -> rat) : w1 2 = w2 2 ->
   rat_field; do 2! (split; first by move/eqP; rewrite rat_of_Z_eq0).
   by move/eqP; rewrite rat_of_Z_eq0.
 have hUrec w k : Urec w -> 2%:~R <= k -> w (int.shift 1 k) = (c0 k / c1 k) * w k.
-  move=> wUrec le2k; move/wUrec/eqP: (le2k); rewrite subr_eq0.
-  have c1kn0 : c1 k != 0.
+  move=> wUrec le2k; rewrite mulrAC; apply: canRL (mulfK _) _.
     rewrite /c1 /annotated_recs_c.P_cf2 expf_eq0 /= rat_of_ZEdef.
-    rewrite  -[rat_of_Z_ 2]/(2%:Q) -rmorphD /= intr_eq0;  intlia.
-  by rewrite mulrC (can2_eq (mulfK _) (mulfVK _)) // mulrAC; move/eqP.
-move=> ic Uw1 Uw2; case=> //; elim => // [[]] // [] // k ihk _.
+    rewrite  -[rat_of_Z_ 2]/(2%:Q) -rmorphD /= intr_eq0; intlia.
+  by apply/eqP; rewrite [_ * c1 k]mulrC -subr_eq0 wUrec.
+move=> ic Uw1 Uw2 [] //; elim => // [[]] // [] // k ihk _.
 by rewrite -[_.+3]addn1 PoszD -int.zshiftP !hUrec // ihk.
 Qed.
 
@@ -73,10 +72,7 @@ Qed.
 (* A technical (trivial) fact to be used in the proof creal_bovera_seq *)
 (* that b / a is Cauchy convergent. *)
 Fact lt_0_ba_casoratian (n : nat) : 0 < 6%:Q / (n%:Q + 1%:Q) ^ 3.
-Proof.
-apply: mulr_gt0 => //; rewrite invr_gt0; apply: exprz_gt0.
-by rewrite -rmorphD /= -[0]/0%:Q ltr_int ltz_nat addn1.
-Qed.
+Proof. by apply/divr_gt0/exprn_gt0 => //; rewrite -rmorphD ltr0n addn1. Qed.
 
 
 (**** We now define and study the sequence b n / a n ****)
@@ -91,12 +87,9 @@ Lemma Db_over_a_casoratian (i j : nat) : (2 <= j)%N -> (j <= i)%N ->
   \sum_(j <= k < i) 6%:Q / (k%:Q + 1) ^ 3 / (a (int.shift 1 k) * a k).
 Proof.
 move=> le2j leji; rewrite -(telescope_nat (fun k => b_over_a_seq (Posz k))) //.
-have -> : \sum_(j <= k < i) (b_over_a_seq (k + 1)%N - b_over_a_seq k) =
-          \sum_(j <= k < i) ba_casoratian k / ((a (int.shift 1 k) * a k)).
-  rewrite [RHS]big_nat_cond [LHS]big_nat_cond; apply: eq_bigr => k.
-  rewrite PoszD -int.zshiftP andbT; case/andP=> lejk ltki; rewrite /b_over_a_seq.
-  by rewrite /ba_casoratian; rat_field; split; apply/eqP; apply: a_neq0.
-rewrite [RHS]big_nat_cond [LHS]big_nat_cond; apply: eq_bigr => k; rewrite andbT.
-case/andP=> lejk _; apply: (f_equal (fun x => x / _)); apply: ba_casoratianE.
+rewrite [RHS]big_nat_cond [LHS]big_nat_cond.
+apply: eq_bigr => k /andP[/andP[lejk ltki] _].
+rewrite -ba_casoratianE /b_over_a_seq /ba_casoratian.
+  by rewrite PoszD int.zshiftP; rat_field; split; apply/eqP; apply: a_neq0.
 by rewrite lez_nat; apply: leq_trans lejk.
 Qed.

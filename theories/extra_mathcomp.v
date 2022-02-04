@@ -91,17 +91,25 @@ Implicit Types x y z : algC.
 Lemma root_le_x (n : nat) x y :
   (0 < n)%N -> 0 <= x -> 0 <= y -> (n.-root x <= y) = (x <= y ^+ n).
 Proof.
-move => Hn Hx Hy.
-have ->: (x <= y ^+ n) = (n.-root x ^+ n <= y ^+ n) by rewrite rootCK.
-by rewrite ler_pexpn2r // nnegrE rootC_ge0.
+by move => Hn Hx Hy; rewrite -(ler_pexpn2r Hn) ?rootCK // nnegrE rootC_ge0.
 Qed.
 
 Lemma root_x_le (n : nat) x y :
   (0 < n)%N -> 0 <= x -> 0 <= y -> (x <= n.-root y) = (x ^+ n <= y).
 Proof.
-move => Hn Hx Hy.
-have ->: (x ^+ n <= y) = (x ^+ n <= n.-root y ^+ n) by rewrite rootCK.
-by rewrite ler_pexpn2r // nnegrE rootC_ge0.
+by move => Hn Hx Hy; rewrite -[LHS](ler_pexpn2r Hn) ?rootCK // nnegrE rootC_ge0.
+Qed.
+
+Lemma root_lt_x (n : nat) x y :
+  (0 < n)%N -> 0 <= x -> 0 <= y -> (n.-root x < y) = (x < y ^+ n).
+Proof.
+by move=> Hn Hx Hy; rewrite -(ltr_pexpn2r Hn) ?rootCK // nnegrE rootC_ge0.
+Qed.
+
+Lemma root_x_lt (n : nat) x y :
+  (0 < n)%N -> 0 <= x -> 0 <= y -> (x < n.-root y) = (x ^+ n < y).
+Proof.
+by move => Hn Hx Hy; rewrite -[LHS](ltr_pexpn2r Hn) ?rootCK // nnegrE rootC_ge0.
 Qed.
 
 Lemma rootC_leq (m n : nat) x :

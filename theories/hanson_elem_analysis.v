@@ -20,7 +20,7 @@ Notation "r '%:C'" := (ratr r : algC) (at level 8). (* random level *)
 taking a rational exponent of a complex algebraic number *)
 Section RationalPower.
 
-Definition exp_quo r p q := (q.-root r%:C) ^+ p.
+Definition exp_quo r p q := q.-root r%:C ^+ p.
 
 Arguments exp_quo r p%nat q%nat : simpl never.
 
@@ -30,14 +30,37 @@ Proof. by rewrite /exp_quo /ratr mul0r rootC0 expr0n. Qed.
 Lemma exp_quo_1 p q : (0 < q)%N -> exp_quo 1 p q = 1.
 Proof. by move => Hq; rewrite /exp_quo rmorph1 rootC1 // expr1n. Qed.
 
+Lemma exp_quoMl r1 r2 p1 q1 (Hr1 : 0 <= r1) :
+  exp_quo (r1 * r2) p1 q1 = exp_quo r1 p1 q1 * exp_quo r2 p1 q1.
+Proof. by rewrite /exp_quo rmorphM /= rootCMl ?exprMn ?ler0q. Qed.
+
+Lemma exp_quoMr r1 r2 p1 q1 (Hr2 : 0 <= r2) :
+  exp_quo (r1 * r2) p1 q1 = exp_quo r1 p1 q1 * exp_quo r2 p1 q1.
+Proof. by rewrite mulrC exp_quoMl // mulrC. Qed.
+
+Lemma exp_quoV r p q : 0 <= r -> exp_quo r^-1 p q = (exp_quo r p q)^-1.
+Proof.
+rewrite /exp_quo fmorphV /=; case: q => [|q] r_ge_0.
+  by rewrite !root0C expr0n; case: eqP; rewrite (invr0, invr1).
+by rewrite rootCV ?ler0q // exprVn.
+Qed.
+
+Lemma exp_quo_lessE r1 r2 p1 q1 p2 q2 :
+    0 <= r1 -> 0 <= r2 -> (0 < q1)%N -> (0 < q2)%N ->
+    (exp_quo r1 p1 q1 <= exp_quo r2 p2 q2) =
+    (r1%:C ^+ (p1 * q2) <= r2%:C ^+ (p2 * q1)).
+Proof.
+move=> Hr1 Hr2 Hq1 Hq2; rewrite /exp_quo -!rootCX ?ler0q //.
+rewrite root_le_x // ?rootC_ge0 ?exprn_ge0 ?ler0q //.
+by rewrite -rootCX ?root_x_le ?exprn_ge0 ?ler0q // -!exprM.
+Qed.
+
 Lemma exp_quo_less r1 r2 p q :
   (0 < q)%N -> 0 <= r1 -> 0 <= r2 -> r1 <= r2 ->
   exp_quo r1 p q <= exp_quo r2 p q.
 Proof.
-move => Hq H1 H2 Hleq; apply: ler_expn2r.
-- by rewrite nnegrE rootC_ge0 // ler0q.
-- by rewrite nnegrE rootC_ge0 // ler0q.
-- by rewrite ler_rootCl ?ler_rat // nnegrE ler0q.
+move => Hq H1 H2 Hleq.
+by rewrite exp_quo_lessE // ler_expn2r ?ler_rat // nnegrE ler0q.
 Qed.
 
 Lemma exp_quo_lessn r1 (p1 q1 p2 q2 : nat) :
@@ -46,12 +69,7 @@ Lemma exp_quo_lessn r1 (p1 q1 p2 q2 : nat) :
 Proof.
 move => Hq1 Hq2 H1r Hle.
 have H0r : 0 <= r1 by apply/le_trans/H1r/ler01.
-have Hprodpos : (0 < q1 * q2)%N by rewrite muln_gt0 Hq1 Hq2.
-suff : (q1.-root r1%:C ^+ p1) ^+ (q1 * q2) <=
-       (q2.-root r1%:C ^+ p2) ^+ (q1 * q2).
-  by rewrite ler_pexpn2r // nnegrE; apply: exprn_ge0; rewrite rootC_ge0 ?ler0q.
-rewrite !exprM [_ ^+ _ ^+ q1]exprAC -exprM ![_ ^+ _ ^+ q2]exprAC !rootCK //.
-by rewrite -exprM; apply: ler_weexpn2l; rewrite // ler1q.
+by rewrite exp_quo_lessE // exp_incr_expp ?ler1q.
 Qed.
 
 Lemma exp_quo_r_nat r i : (r ^+ i)%:C = exp_quo r i 1.
@@ -60,30 +78,14 @@ Proof. by rewrite /exp_quo root1C CratrE /=. Qed.
 Lemma exp_quo_nat_nat i j : (i ^ j)%:R%:C = exp_quo i%:Q j 1.
 Proof. by rewrite natrX exp_quo_r_nat. Qed.
 
-Lemma exp_quo_mult_distr r1 r2 p1 q1 (Hr2 : 0 <= r2) :
-  exp_quo r1 p1 q1 * exp_quo r2 p1 q1 = exp_quo (r1 * r2) p1 q1.
-Proof. by rewrite /exp_quo rmorphM /= [in RHS]rootCMr ?exprMn ?ler0q. Qed.
-
 Lemma exp_quo_plus r1 p1 q1 p2 q2 :
   (0 < q1)%N -> (0 < q2)%N -> 0 <= r1 ->
   exp_quo r1 (p1 * q2 + p2 * q1) (q1 * q2) =
   exp_quo r1 p1 q1 * exp_quo r1 p2 q2.
 Proof.
 move => Hq1pos Hq2pos Hr1pos.
-have Hprodpos : (0 < q1 * q2)%N.
-  by rewrite muln_gt0 Hq1pos Hq2pos.
-rewrite /exp_quo.
-set t1 := LHS.
-set t2 := RHS.
-suff: t1 ^+ (q1 * q2) = t2 ^+ (q1 * q2).
-  apply: pexpIrn; rewrite // nnegrE /t1 /t2.
-  + by apply: exprn_ge0; rewrite rootC_ge0 ?ler0q.
-  + by apply: mulr_ge0; apply: exprn_ge0; rewrite rootC_ge0 ?ler0q.
-rewrite /t1 /t2 -exprM mulnDl exprD prod_root ?ler0q // exprMn !exprM.
-rewrite ![_ ^+ _ ^+ q1]exprAC [_ ^+ p1 ^+ q2]exprAC !rootCK // -exprM.
-rewrite [_ ^+ p2 ^+ q1]exprAC 2![_ ^+ _ ^+ q2]exprAC !rootCK // -exprM.
-rewrite ![_ ^+ _ ^+ q1]exprAC rootCK // -exprM.
-by rewrite ![_ ^+ _ ^+ q2]exprAC rootCK // -exprM [(p2 * _)%N]mulnC.
+rewrite [LHS]exprD [in l in l * _ = _]mulnC !prod_root ?ler0q //.
+by rewrite mulnC exprM mulnC exprM !rootCK.
 Qed.
 
 Lemma exp_quo_equiv r1 p1 q1 p2 q2 :
@@ -126,21 +128,11 @@ Proof.
 move => Hq1 Hq2 Hr1 Hr2 Hr1gt0 Hle1r2 Hle12.
 have Hr1pos : 0 <= r1 by apply: ltW.
 have Hr2pos : 0 <= r2 by rewrite Hr2 divr_ge0 // ?ler0z.
-have Hprodpos : (0 < q1 * q2)%N by rewrite muln_gt0 Hq1 Hq2.
-have Hleq : (p1 * q2 <= p2 * q1)%N.
-  rewrite -(ler_nat [numDomainType of rat]) !natrM -ler_pdivl_mulr ?ltr0n //.
-  by rewrite mulrAC -ler_pdivr_mulr ?ltr0n //; move: Hle12; rewrite Hr1 Hr2.
-have -> : exp_quo r2 p2 q2 =
-          exp_quo r2 p1 q1 * exp_quo r2 (p2 * q1 - p1 * q2)%N (q1 * q2)%N.
-  rewrite -exp_quo_plus //; apply: exp_quo_equiv => //. (* TODO: lia *)
-    by rewrite !muln_gt0 Hq1 Hq2.
-  by rewrite [in RHS]mulnA mulnAC -mulnDl subnKC // !mulnA.
-have -> : exp_quo r2 p1 q1 = exp_quo r1 p1 q1 * exp_quo (r2 / r1) p1 q1.
-  by rewrite exp_quo_mult_distr ?divr_ge0 // mulrC divfK ?lt0r_neq0.
-rewrite -mulrA; apply/ler_pemulr/mulr_ege1/exprn_ege1.
-- exact: exp_quo_ge0.
-- by apply: exprn_ege1; rewrite rootC_ge1 // ler1q ler_pdivl_mulr // mul1r.
-- by rewrite rootC_ge1 // ler1q.
+have: r1%:C ^+ (p1 * q2) <= r2%:C ^+ (p1 * q2).
+  by rewrite ler_expn2r ?ler_rat // nnegrE ler0q.
+rewrite exp_quo_lessE // => /le_trans -> //; rewrite exp_incr_expp ?ler1q //.
+move: Hle12; rewrite Hr1 Hr2 ler_pdivr_mulr ?ltr0n //.
+by rewrite mulrAC ler_pdivl_mulr ?ltr0n // -!natrM ler_nat.
 Qed.
 
 End RationalPower.
@@ -190,92 +182,48 @@ Qed.
 
 (* TODO : clean up, use more ^-1 *)
 (* this proof is very long in big part because of exp_quo *)
-Lemma one_plus_invx_expx (p q : nat) (r : rat) (n : nat) :
-  0 < r -> r = p%:Q / q%:Q -> exp_quo (1 + 1 / r) p q <= ratr 9%:Q.
+Lemma one_plus_invx_expx (p q : nat) :
+  0 < p%:Q / q%:Q -> exp_quo (1 + q%:Q / p%:Q) p q <= ratr 9%:Q.
 Proof.
-rewrite div1r => Hrpos Hrpq.
+move=> /ltr_neq.
+rewrite eq_sym mulf_eq0 invr_eq0 negb_or !intr_eq0 -!lt0n => /andP[Hp Hq].
+have [leqp|ltpq] := leqP q p.
 
-have Hp : (0 < p)%N.
-  by apply/contraTT: Hrpos; rewrite Hrpq -eqn0Ngt => /eqP ->; rewrite mul0r.
-have Hq : (0 < q)%N.
-  apply/contraTT: Hrpos; rewrite Hrpq -eqn0Ngt => /eqP ->.
-  by rewrite invr0 mulr0.
-have [H1r|Hr1] := leP 1 r.
-
-(* First part : 1 <= r *)
-have := floorQ_spec r.
-set f := floorQ r => /andP[Hf1 Hf2].
-have/ZnatP[m Hfm] : f \is a Znat by rewrite Znat_def; apply/floorQ_ge0/ltW.
-
+(* First part : q <= p *)
+pose f := (p %/ q)%N.
 apply: (@le_trans _ _ (ratr 8%:Q)); last by rewrite ler_rat.
-have Hle1m : (1 <= m)%N by have := floorQ_ge1 H1r; rewrite -/f Hfm.
+suff: exp_quo (1 + q%:~R / p%:~R) p q <= exp_quo (1 + f%:Q^-1) f.+1 1.
+  by move=> /le_trans -> //; rewrite -exp_quo_r_nat ler_rat one_plus_invn_expn.
+rewrite exp_quo_lessE ?addr_ge0 ?mulr_ge0 ?invr_ge0 ?ler0n // muln1.
+have: (1 + f%:~R^-1)%:C ^+ p <= (1 + f%:~R^-1)%:C ^+ (f.+1 * q).
+  by rewrite exp_incr_expp ?ler1q ?ler_addl ?invr_ge0 ?ler0n 1?ltnW ?ltn_ceil.
+apply: le_trans.
+rewrite ler_expn2r ?nnegrE ?ler0q ?addr_ge0 ?mulr_ge0 ?invr_ge0 ?ler0n //.
+rewrite ler_rat ler_add2l ler_pdivr_mulr ?ltr0n // mulrC.
+rewrite ler_pdivl_mulr ?ltr0n ?divn_gt0 //.
+by rewrite -intrM ler_nat mulnC leq_trunc_div.
 
-have Hfloor_inv : (f + 1)%:Q^-1 < r^-1 <= f%:Q^-1.
-  rewrite lef_pinv ?ltf_pinv //= ?posrE ?ltr0z.
-  - by rewrite andbC mulrzDl floorQ_spec.
-  - by rewrite gtz0_ge1 ler_addr floorQ_ge0 // ltW.
-  - by rewrite gtz0_ge1 floorQ_ge1.
-
-(* a few helpers which will be needed in the intermediate steps *)
-have Helper1 : 0 <= r by exact: ltW.
-have Helper2 : 0 <= r^-1 by rewrite invr_ge0.
-have Helper3 : 0 <= 1 + r^-1 by exact: addr_ge0.
-have Helper4 : 0 <= f%:Q^-1 by rewrite invr_ge0 Hfm ler0n.
-have Helper5 : 0 <= 1 + f%:Q^-1 by rewrite addr_ge0.
-have Helper6 : 1 <= 1 + f%:Q^-1 by rewrite ler_addl.
-
-suff Hinterm : exp_quo (1 + r^-1) p q <= exp_quo (1 + f%:Q^-1) m.+1 1.
-  apply: (le_trans Hinterm).
-  by rewrite Hfm -exp_quo_r_nat ler_rat one_plus_invn_expn.
-apply/le_trans.
-  apply: (@exp_quo_less _ (1 + f%:Q^-1)) => //.
-  by rewrite ler_add2l; case/andP: Hfloor_inv.
-apply: exp_quo_lessn => //.
-move: Hf2.
-rewrite muln1 Hfm -rat1 -natrD addn1 Hrpq ltr_pdivr_mulr ?ltr0z //.
-by rewrite -natrM ltr_nat; exact: leqW.
-
-(* r <= 1 *)
-have := floorQ_spec r^-1.
-set f := floorQ r^-1 => /andP[Hf1 Hf2].
-have Hfnat : f \is a Znat by rewrite Znat_def floorQ_ge0 // invr_ge0 ltW.
-move/ZnatP: Hfnat => [] m Hfm.
-
-have Helper0 : 0 < f%:Q.
-  by rewrite ltr0z gtz0_ge1 floorQ_ge1 // invf_ge1 // ltW.
-have Helper1 : (0 < m)%N.
-  by move: Helper0; rewrite Hfm ltr0n.
-have Helper2 : 0 < f%:Q + 1.
-  by rewrite ltr_paddr.
-have Helper3 : r <= f%:Q^-1.
-  by rewrite -lef_pinv ?posrE ?invr_gt0 // invrK.
-have Helper4 : 0 <= 1 + r^-1.
-  by rewrite ler_paddl //; apply/le_trans/Hf1/ltW.
-have Helper5 : 0 <= 1 + (1 + f%:Q).
-  by rewrite Hfm -rat1 -!intrD ler0n.
-have Helper6 : 1 + r^-1 <= 1 + (1 + f%:Q).
-  by rewrite ler_add2l addrC; apply: ltW.
-have Helper7 : 1 <= 1 + (1 + f%:Q).
-  by rewrite Hfm -rat1 -!intrD ler1n.
-have Helper8 : (p * m <= q)%N.
-  move: Hf1; rewrite Hfm Hrpq invfM invrK.
-  by rewrite ler_pdivl_mull ?ltr0z // -intrM ler_int.
-
-have Hfloor_inv : (f%:Q + 1)^-1 < r <= f%:Q^-1.
-  by rewrite -[r]invrK lef_pinv ?ltf_pinv ?Hf1 ?Hf2 // posrE invr_gt0.
+(* Second part : p < q *)
+pose f := (q %/ p)%N.
+have Helper0 : (0 < f)%N.
+  by rewrite divn_gt0 // ltnW.
+have Helper1 : 0 <= 1 + q%:Q / p%:Q.
+  by rewrite addr_ge0 ?divr_ge0 ?ler0n.
+have Helper2 : 1 + q%:Q / p%:Q <= 1 + (1 + f%:~R).
+  rewrite ler_add2l -mulrS ler_pdivr_mulr ?ltr0n // -natrM ler_nat.
+  by rewrite ltnW ?ltn_ceil.
+have Helper3 : (p * f <= q)%N.
+  by rewrite mulnC leq_trunc_div.
 apply: (@le_trans _ _ (exp_quo (1 + (1 + f%:Q)) p q)).
-  exact: exp_quo_less.
-apply: (@le_trans _ _ (exp_quo (1 + (1 + f%:Q)) 1 m)).
-  by apply: exp_quo_lessn=> //; rewrite mul1n.
-apply: (@le_trans _ _ (exp_quo (((3 ^ (m.+1))%N)%:Q) 1 m)).
-  apply: exp_quo_less => //; first exact: ler0n.
-  by rewrite -rat1 Hfm -!natrD ler_nat !add1n replace_exponential.
-rewrite /exp_quo expr1 !CratrE /= expnS natrM rootCMr ?ler0n //.
+  by apply: exp_quo_less; rewrite // !addr_ge0 ?ler0n.
+apply: (@le_trans _ _ (exp_quo (1 + (1 + f%:Q)) 1 f)).
+  by apply: exp_quo_lessn; rewrite //= ?ler_addl ?addr_ge0 ?ler0n // mul1n.
+apply: (@le_trans _ _ (exp_quo ((3 ^ f.+1)%N%:Q) 1 f)).
+  rewrite exp_quo_less // ?addr_ge0 ?ler0n //.
+  by rewrite -rat1 -!natrD ler_nat !add1n replace_exponential.
+rewrite /exp_quo expr1 !CratrE expnS natrM rootCMr ?ler0n //.
 have -> : 9%:R = 3%:R * 3%:R :> algC by rewrite -natrM.
-rewrite ler_pmul ?rootC_ge0 ?ler0n //.
-  case: m Hfm Helper1 Helper8 => [|m]// _ _ _; exact: le_mrootn_n.
-  (* TODO: make a lemma out of this *)
-by rewrite natrX exprCK // ?CratrE // ler0n.
+by rewrite ler_pmul ?root_le_x ?rootC_ge0 ?ler0n ?natrX // ler_eexpr ?ler1n.
 Qed.
 
 End FourFacts.
