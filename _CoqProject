@@ -40,8 +40,6 @@ theories/reduce_order.v
 theories/s_props.v
 theories/seq_defs.v
 theories/shift.v
-theories/test_conj.v
-theories/test_field_tactics.v
 theories/z3irrational.v
 theories/z3seq_props.v
 theories/rho_computations.v
