@@ -40,7 +40,7 @@ remains the sole trusted code base.
 - Coq-community maintainer(s):
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: 8.11 or later
+- Compatible Coq versions: 8.12 or later
 - Additional dependencies:
   - [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
   - [MathComp algebra](https://math-comp.github.io)

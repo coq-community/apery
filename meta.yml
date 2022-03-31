@@ -46,19 +46,15 @@ license:
   identifier: CECILL-C
 
 supported_coq_versions:
-  text: 8.11 or later
+  text: 8.12 or later
   opam: '{(>= "8.11" & < "8.16~") | (= "dev")}'
 
 tested_coq_opam_versions:
-- version: '1.12.0-coq-8.11'
-  repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.14'
-  repo: 'mathcomp/mathcomp'
-- version: '1.13.0-coq-8.11'
   repo: 'mathcomp/mathcomp'
 - version: '1.13.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
@@ -68,8 +64,6 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.13.0-coq-8.15'
   repo: 'mathcomp/mathcomp'
-- version: '1.14.0-coq-8.11'
-  repo: 'mathcomp/mathcomp'
 - version: '1.14.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 - version: '1.14.0-coq-8.13'
@@ -78,20 +72,6 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.14.0-coq-8.15'
   repo: 'mathcomp/mathcomp'
-- version: '1.14.0-coq-dev'
-  repo: 'mathcomp/mathcomp'
-- version: 'coq-8.11'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-8.12'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-8.13'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-8.14'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-8.15'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-dev'
-  repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
 - opam:
