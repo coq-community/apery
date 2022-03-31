@@ -3,9 +3,8 @@
    them to concrete values that will be used in the rest of the
    formalization. *)
 
-Require Import ZArith.
+Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-
 Require Import field_tactics lia_tactics.
 
 Import Order.TTheory GRing.Theory Num.Theory.

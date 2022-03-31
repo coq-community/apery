@@ -1,12 +1,10 @@
 Require Import BinInt.
-
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import rat_of_Z.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
 
 From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat binint rational.
@@ -57,8 +55,7 @@ Qed.
 (* Generic programming of your functions : *)
 (* we abstract wrt Q and all the operations you use *)
 Section generic.
-Import Refinements.
-Import Op.
+Import Refinements.Op.
 
 (* In the future, many of these might come packaged together *)
 Context (AQ : Type).
@@ -113,8 +110,7 @@ Definition  h_iter :=
    style so that it is as "free" in the implementation as it is in
    theory. *)
 Section parametric.
-Import Refinements.
-Import Op.
+Import Refinements.Op.
 
 Context (AQ : Type).
 Context (zeroAQ : zero_of AQ) (addAQ : add_of AQ) (oppAQ : opp_of AQ) (subAQ : sub_of AQ).

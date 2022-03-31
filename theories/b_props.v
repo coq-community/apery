@@ -1,11 +1,6 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import extra_mathcomp.
-
-Require Import binomialz bigopz lia_tactics field_tactics.
-Require Import harmonic_numbers seq_defs.
-
-Require Import arithmetics a_props.
+Require Import field_tactics lia_tactics binomialz bigopz.
+Require Import arithmetics seq_defs a_props.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

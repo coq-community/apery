@@ -1,8 +1,6 @@
+Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import binomialz.
-Require Import field_tactics.
-Require Import seq_defs.
-
+Require Import field_tactics binomialz seq_defs.
 Require harmonic_numbers.
 
 Local Open Scope ring_scope.
@@ -57,8 +55,6 @@ Ltac solve_b_evaluation :=
 
 (* Evaluations for the sequence b. With our definition we have:
         b_n = 0, 6, 351/4, 62531/36, ... *)
-
-Import ZArith.
 
 Lemma b0_eq : b 0 = 0.
 Proof. solve_b_evaluation. Qed.

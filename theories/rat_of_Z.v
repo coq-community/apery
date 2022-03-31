@@ -1,5 +1,4 @@
 Require Import ZArith.
-
 From mathcomp Require Import all_ssreflect all_algebra.
 
 Set Implicit Arguments.
@@ -9,7 +8,6 @@ Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
-
 
 (*  We define an *opaque* cast:                                                *)
 (*     rat_of_Z : Z -> rat                                                     *)

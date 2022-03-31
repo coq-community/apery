@@ -5,7 +5,6 @@
    algorithmically getting a recurrence on b. *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-
 Require Import binomialz bigopz.
 Require harmonic_numbers.
 

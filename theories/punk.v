@@ -1,6 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import bigopz.
-Require Import shift.
+Require Import shift bigopz.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -12,7 +11,7 @@ Local Open Scope ring_scope.
 
 
 (* Compare with (f ^~ y). *)
-Let pfun2 Tx Ty Tz T (f : Tx -> Ty -> Tz -> T) z := (fun x y => f x y z).
+Local Definition pfun2 Tx Ty Tz T (f : Tx -> Ty -> Tz -> T) z x y := f x y z.
 
 
 Section CreativeTelescopingMasterLemma.

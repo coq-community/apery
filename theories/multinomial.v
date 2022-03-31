@@ -1,5 +1,4 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
 Require Import extra_mathcomp.
 
 Import Order.TTheory GRing.Theory Num.Theory.

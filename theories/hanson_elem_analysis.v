@@ -1,14 +1,9 @@
 From mathcomp Require Import all_ssreflect all_algebra all_field.
-
-Require Import floor posnum.
+Require Import extra_mathcomp posnum hanson_elem_arith.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-Require Import extra_mathcomp.
-
-Require Import hanson_elem_arith.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

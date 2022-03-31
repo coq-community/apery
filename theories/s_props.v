@@ -1,7 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import binomialz bigopz.
-Require Import seq_defs.
+Require Import binomialz bigopz seq_defs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

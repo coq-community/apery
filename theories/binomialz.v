@@ -48,7 +48,7 @@ Proof. by case: n => n. Qed.
 Fact binz_neg (n m : int) : m <= -1 -> binomialz n m = 0.
 Proof. by case: m => m //= _; case: n => n; case: m. Qed.
 
-Fact bin0z (m : int) : m >= 1 -> binomialz 0 m = 0.
+Fact bin0z (m : int) : 1 <= m -> binomialz 0 m = 0.
 Proof. by case: m => [ | m] // [ | m]. Qed.
 
 Fact bin_posz_posz (n m : nat) :
@@ -66,7 +66,7 @@ Fact bin_1N_posz (m : nat) :
 Proof. by []. Qed.
 
 (* Now more relations, combining inductions with the previous rules. *)
-Lemma bin_1N (m : int) : m >= 0 -> binomialz (Negz 0) m = (- 1) ^ m.
+Lemma bin_1N (m : int) : 0 <= m -> binomialz (Negz 0) m = (- 1) ^ m.
 Proof.
 case: m => m // _.
 by elim: m => [ | m ihm] //; rewrite bin_1N_posz ihm exprSz mulN1r.
@@ -231,18 +231,17 @@ Lemma binSz (n k : int): (k != n + 1) ->
 Proof.
 move=> hkn; case: (altP (k =P 0)) hkn => [-> | hk0] hkn.
   by rewrite !binz0 subr0 divff // -[1]/(1%:Q) -intrD intr_eq0 eq_sym.
-have hk : k = (k - 1) + 1 by rewrite -addrA subrr addr0.
+have hk : k = k - 1 + 1 by rewrite -addrA subrr addr0.
 rewrite hk binzSS; last by rewrite -hk.
 rewrite binzS; last by rewrite -hk.
 rewrite !rmorphD !rmorphN /=; rat_field.
 move: hk0 hkn hk; goal_to_lia; intlia.
 Qed.
 
-Lemma binz_gt0 (n k : int) :
-  n >= 0 -> k >= 0 -> n >= k -> binomialz n k > 0.
+Lemma binz_gt0 (n k : int) : 0 <= k -> k <= n -> 0 < binomialz n k.
 Proof.
-case: n => // n; case: k => // k _ _ lekn.
-by rewrite binz_nat_nat -[0]/(intr 0) ltr_int ltz_nat bin_gt0.
+case: n k => [] n [] k //= _ lekn.
+by rewrite binz_nat_nat -[0]/(intr 0) ltr_nat bin_gt0.
 Qed.
 
 (* Below, older results, possibly needing revision. *)

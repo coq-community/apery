@@ -1,16 +1,8 @@
-Require Import ZArith.
+Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import extra_mathcomp.
-
-Require Import field_tactics lia_tactics shift.
-Require Import seq_defs.
-
-Require Import algo_closures reduce_order initial_conds.
-
+Require Import extra_mathcomp field_tactics lia_tactics shift.
 Require annotated_recs_c.
-
-Require Import a_props.
+Require Import seq_defs initial_conds algo_closures reduce_order a_props.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -19,7 +11,6 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
-
 
 (**** We introduce and study the casoratian of a and b ****)
 

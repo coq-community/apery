@@ -1,7 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import binomialz lia_tactics.
-Require Import seq_defs.
+Require Import lia_tactics binomialz seq_defs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

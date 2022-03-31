@@ -1,12 +1,6 @@
-Require Import ZArith.
-
+Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import field_tactics.
-Require Import bigopz.
-Require Import lia_tactics conj.
-Require Import shift.
-
+Require Import field_tactics lia_tactics conj bigopz shift.
 Require punk.
 
 Set Implicit Arguments.

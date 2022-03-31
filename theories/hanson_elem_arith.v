@@ -1,15 +1,10 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import arithmetics multinomial floor.
-
+Require Import extra_mathcomp field_tactics lia_tactics.
+Require Import floor arithmetics multinomial.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-Require Import field_tactics.
-Require Import lia_tactics.
-Require Import extra_mathcomp.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -39,15 +34,15 @@ Proof. by []. Qed.
 
 Lemma a_pos n : 0 < a n.
 Proof. by case: n. Qed.
-Hint Resolve a_pos.
+Hint Resolve a_pos : core.
 
 Lemma a_gt1 n : 1 < a n.
 Proof. by elim: n => // n ihn; rewrite aS ltnS muln_gt0; case: (a n) ihn. Qed.
-Hint Resolve a_gt1.
+Hint Resolve a_gt1 : core.
 
 Lemma pa_gt0 n : 0 < (a n).-1.
 Proof. by rewrite -ltnS prednK. Qed.
-Hint Resolve pa_gt0.
+Hint Resolve pa_gt0 : core.
 
 Lemma a_grows1 n : a n < a n.+1.
 Proof. by rewrite aS ltnS leq_pmulr. Qed.
@@ -66,11 +61,11 @@ Qed.
 
 Lemma aS_gt2 k : 2 < a k.+1.
 Proof. by suff H1 : (2 < a 1) by apply: leq_trans H1 (a_grows _). Qed.
-Hint Resolve aS_gt2.
+Hint Resolve aS_gt2 : core.
 
 Lemma aSpred_gt1 k : (1 < (a k.+1).-1)%N.
 Proof. by rewrite -subn1 ltn_subRL addn1. Qed.
-Hint Resolve aSpred_gt1.
+Hint Resolve aSpred_gt1 : core.
 
 Lemma a_rec (n : nat) : a n = \prod_(0 <= i < n) a i + 1.
 Proof.
@@ -91,16 +86,16 @@ Definition a_rat (n : nat) : rat := (a n)%:Q.
 (* Unfortunately, we need to duplicate the trivialities, in order to make them
  available to the copies of a in rational numbers. *)
 Lemma a_rat_gt1 (n : nat) : 1 < (a n)%:Q. Proof. by rewrite ltr1n. Qed.
-Hint Resolve a_rat_gt1.
+Hint Resolve a_rat_gt1 : core.
 
 Lemma a_rat_sub1_gt0 (n : nat) : 0 < (a n)%:Q - 1. by rewrite subr_gt0. Qed.
-Hint Resolve a_rat_sub1_gt0.
+Hint Resolve a_rat_sub1_gt0 : core.
 
 Lemma a_rat_pos (n : nat) : 0 < (a n)%:Q. Proof. by rewrite ltr0n. Qed.
-Hint Resolve a_rat_pos.
+Hint Resolve a_rat_pos : core.
 
 Lemma a_rat_ge0 (n : nat) : 0 <= (a n)%:Q. Proof. by rewrite ler0n. Qed.
-Hint Resolve a_rat_ge0.
+Hint Resolve a_rat_ge0 : core.
 
 Lemma a_rat_rec1 (n : nat) : (a (n.+1))%:Q = (a n)%:Q * ((a n)%:Q - 1) + 1.
 Proof.
@@ -116,16 +111,16 @@ Qed.
 End DefinitionOfA.
 
 (* We lack a "Global" for Hint Resolve. *)
-Hint Resolve a_pos.
-Hint Resolve a_gt1.
-Hint Resolve pa_gt0.
-Hint Resolve aS_gt2.
-Hint Resolve aSpred_gt1.
+#[export] Hint Resolve a_pos : core.
+#[export] Hint Resolve a_gt1 : core.
+#[export] Hint Resolve pa_gt0 : core.
+#[export] Hint Resolve aS_gt2 : core.
+#[export] Hint Resolve aSpred_gt1 : core.
 
-Hint Resolve a_rat_gt1.
-Hint Resolve a_rat_sub1_gt0.
-Hint Resolve a_rat_pos.
-Hint Resolve a_rat_ge0.
+#[export] Hint Resolve a_rat_gt1 : core.
+#[export] Hint Resolve a_rat_sub1_gt0 : core.
+#[export] Hint Resolve a_rat_pos : core.
+#[export] Hint Resolve a_rat_ge0 : core.
 
 Section BoundsOnA.
 
@@ -280,7 +275,7 @@ Definition C n k : nat := 'C[C_row n k] * (n - \sum_(0 <= i < k) n %/ a i)`!.
 
 Lemma C_pos n k : 0 < C n k.
 Proof. by rewrite muln_gt0 multi_gt0 fact_gt0. Qed.
-Hint Resolve C_pos.
+Hint Resolve C_pos : core.
 
 Lemma nth_C_row n k i :
   nth 0 (C_row n k) i =

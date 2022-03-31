@@ -1,14 +1,8 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
 From mathcomp Require Import bigenough cauchyreals.
-
-Require Import bigopz extra_cauchyreals extra_mathcomp.
-Require Import field_tactics shift.
-
-Require Import seq_defs.
-Require Import arithmetics.
+Require Import extra_mathcomp extra_cauchyreals.
+Require Import field_tactics shift bigopz arithmetics seq_defs.
 Require Import c_props s_props z3seq_props a_props b_props b_over_a_props.
-
 Require hanson.
 
 Set Implicit Arguments.

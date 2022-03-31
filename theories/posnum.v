@@ -42,7 +42,7 @@ Local Open Scope ring_scope.
 (* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
 (* Hint Mode infer ! : typeclass_instances. *)
-Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+#[export] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Lemma splitr (R : numFieldType) (x : R) : x = x / 2%:R + x / 2%:R.
@@ -52,8 +52,8 @@ Record posnum_def (R : numDomainType) := PosNumDef {
   num_of_pos :> R;
   posnum_gt0 : num_of_pos > 0
 }.
-Hint Resolve posnum_gt0.
-Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
+#[export] Hint Resolve posnum_gt0 : core.
+#[export] Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
 Notation "'{posnum' R }" := (posnum_of (@Phant R))
@@ -119,8 +119,8 @@ Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posnum := PosNum one_pos_gt0.
 
 End PosNum.
-Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
-Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
+#[export] Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
+#[export] Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
 
 Section PosNumReal.
 Context {R : realDomainType}.
@@ -141,7 +141,7 @@ Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt x%:num.
 Proof. by rewrite sqrtr_gt0. Qed.
 Canonical sqrt_posnum (R : rcfType) (x : {posnum R}) := PosNum (sqrt_pos_gt0 x).
 
-CoInductive posnum_spec (R : numDomainType) (x : R) :
+Variant posnum_spec (R : numDomainType) (x : R) :
   R -> bool -> bool -> bool -> Type :=
 | IsPosnum (p : {posnum R}) : posnum_spec x (p : R) false true true.
 
@@ -152,9 +152,9 @@ move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
-Hint Resolve posnum_gt0.
-Hint Resolve posnum_ge0.
-Hint Resolve posnum_neq0.
+#[export] Hint Resolve posnum_gt0 : core.
+#[export] Hint Resolve posnum_ge0 : core.
+#[export] Hint Resolve posnum_neq0 : core.
 Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom algC x))
  (format "[gt0 'of'  x ]").
 
