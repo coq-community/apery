@@ -138,11 +138,11 @@ Context (Z_toAQ : cast_of Z AQ) (nat_to_AQ : cast_of nat AQ).
 Local Open Scope computable_scope.
 
 Definition generic_beta (i : AQ) : AQ := 
-  ((i + cast 1%coqZ) %/ (i + cast 2%coqZ)) ^ 3.
+  ((i + cast 1%coqZ) %/ (i + cast 2%coqZ)) ^ 3%N.
 
 Definition generic_alpha (i : AQ) : AQ :=
-     (cast 17%coqZ * i ^ 2 + cast 51%coqZ * i + cast 39%coqZ)
-   * (cast 2%coqZ * i + cast 3%coqZ) %/ (i + cast 2%coqZ) ^ 3.
+     (cast 17%coqZ * i ^ 2%N + cast 51%coqZ * i + cast 39%coqZ)
+   * (cast 2%coqZ * i + cast 3%coqZ) %/ (i + cast 2%coqZ) ^ 3%N.
 
 Definition generic_h (i : AQ) (x : AQ) := generic_alpha i  - generic_beta i %/ x.
 

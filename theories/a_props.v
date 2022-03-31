@@ -340,7 +340,7 @@ Fact compat33 : rat_of_Z 33 = 33%:Q.
 Proof. by rewrite rat_of_ZEdef. Qed.
 
 
-Notation N_rho := 51.
+Notation N_rho := 51%N.
 
 Lemma rho_maj (n : nat) : (N_rho < n)%N -> 33%:Q < rho n.
 Proof.

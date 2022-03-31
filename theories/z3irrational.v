@@ -295,7 +295,7 @@ Proof.
 case=> z3_rat z3_ratP; case: (denqP z3_rat) z3_ratP => d dP z3_ratP.
 have heps : 0 < 1 / 2%:Q by [].
 have [M MP] := sigma_goes_to_0 heps.
-pose sigma_Q (n : nat) := 2%:Q * (l n)%:Q ^ 3 * (a n * z3_rat - b n).
+pose sigma_Q (n : nat) := 2%:Q * (l n)%:Q ^ 3%N * (a n * z3_rat - b n).
 have sigma_QP (n : nat) : ((sigma_Q n)%:CR == sigma n)%CR.
   by rewrite /sigma z3_ratP -!cst_crealM -cst_crealB -cst_crealM.
 pose_big_enough n.

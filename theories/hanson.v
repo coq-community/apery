@@ -88,7 +88,7 @@ End PreliminaryRemarksLemma7.
 (* TODO rename + chainage avant *)
 Lemma l7 n i (Hain : (a i <= n)%N) :
   exp_quo (n%:Q / (a i)%:Q) n (a i) / ((n %/ a i) ^ (n %/ a i))%N%:Q%:C <
-  exp_quo (10%:Q * n%:Q / (a i)%:Q) (a i - 1) (a i).
+  exp_quo (10%N%:Q * n%:Q / (a i)%:Q) (a i - 1) (a i).
 Proof.
 have posai_rat : 0 < (a i)%:Q by rewrite ltr0n.
 pose posai := PosNumDef posai_rat.
@@ -311,7 +311,7 @@ Lemma w_upper_bounded k : w_seq k <= w%:C.
 Proof.
 wlog le4k : k / (4 <= k)%N.
   move=> hwlog; case: (leqP 4 k) => [|ltk4]; first exact: hwlog.
-  apply: le_trans (hwlog 4 _) => //; apply: w_seq_incr; exact: ltnW.
+  apply: le_trans (hwlog 4%N _) => //; apply: w_seq_incr; exact: ltnW.
 rewrite -(subnK le4k) addnC; apply: le_trans (w_seq_bound_tail _ _) _ => //.
 have -> : w_seq 4 = a' 0 * a' 1 * a' 2 * a' 3.
   by rewrite /w_seq !big_ord_recr /= big_ord0 mul1r.
@@ -446,7 +446,7 @@ have H10_ge1 : 1 <= (10 * n)%N%:Q.
 set cn := (C _ _)%:Q%:C.
 set t10n_to := exp_quo (10 * n)%N%:Q.
 have wq_ge0 m : 0 <= w%:C ^+ m by rewrite exprn_ge0 // ler0q.
-suff step1 : cn < t10n_to (2 * k.+1 - 1)%N 2 * w%:C ^+ n * w_seq k.+1.
+suff step1 : cn < t10n_to (2 * k.+1 - 1)%N 2%N * w%:C ^+ n * w_seq k.+1.
   apply: lt_le_trans step1 _; rewrite -intrM exprSr mulrA.
   by apply/ler_wpmul2l/w_upper_bounded/mulr_ge0/wq_ge0/exp_quo_ge0/ler0n.
 rewrite -mulrA; set tw := (X in _ < _ * X).
@@ -455,7 +455,7 @@ have tenn_to_pos : 0 <= ((10 * n)%N%:Q ^+ k)%:C.
   by rewrite ler0q exprn_ge0 ?ler0n.
 suff step2 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1 * tw.
   apply: lt_le_trans step2 _; rewrite exp_quo_r_nat.
-  have ->: t10n_to (2 * k.+1 - 1)%N 2 = t10n_to k 1%N * t10n_to 1%N 2.
+  have ->: t10n_to (2 * k.+1 - 1)%N 2%N = t10n_to k 1%N * t10n_to 1%N 2%N.
     rewrite -exp_quo_plus ?ler0n //; apply: exp_quo_equiv; ring_lia.
   apply/ler_wpmul2r/ler_wpmul2l/exp_quo_lessn => //; last by rewrite !mul1n.
   by rewrite exp_quo_ge0 // ler0n.
@@ -652,9 +652,9 @@ have eps2_val : eps2 = 3%:R * rat_of_Z (2 * 10 ^ 15).
   by rewrite /eps2; ring.
 have epsF : eps = eps1 / eps2.
   by rewrite -epsE eps2_val invfM [RHS]mulrA [RHS]mulrAC w_val.
-have a3 : alpha 3 = expn 2 8 by [].
-have lt_l3_1 : l 3 <= 1.
-  have -> : l 3 = (2%:R * eps ^ (2%:R ^ 3 * ((alpha 3)%:R - 2%:R))) ^ (2 ^ 5)%N%:R.
+have a3 : alpha 3%N = expn 2 8 by [].
+have lt_l3_1 : l 3%N <= 1.
+  have -> : l 3%N = (2%:R * eps ^ (2%:R ^ 3 * ((alpha 3%N)%:R - 2%:R))) ^ (2 ^ 5)%N%:R.
     rewrite /l a3 [RHS]expfzMl -!natz !natrX !natz !exprnP !exprz_exp.
     by congr (_ ^ _ * eps ^ _).
   rewrite expr_le1 //; last exact/mulr_ge0/exprz_ge0/ltW.
@@ -664,11 +664,11 @@ have lt_l3_1 : l 3 <= 1.
   rewrite mul1r -subr_ge0 -!rat_of_Z_pow mulr_natl -rmorphMn -rmorphB.
   vm_compute; exact: rat_of_Z_ZposW.
 rewrite [l]lock in lt_l3_1.
-have lt_t4_1 : t 4 < 1.
+have lt_t4_1 : t 4%N < 1.
   rewrite {l le_0_l lt_l3_1 maj_t loglog a3}.
-  pose a4 := locked alpha 4.
+  pose a4 := locked alpha 4%N.
   have lt0a4 : (0 < a4)%N by rewrite /a4 -lock.
-  have -> : t 4 = (m * a4%:R) ^ 14 * eps ^ alpha 4 by rewrite /t /a4 -lock.
+  have -> : t 4%N = (m * a4%:R) ^ 14 * eps ^ alpha 4%N by rewrite /t /a4 -lock.
   suff [M hM hm]: exists2 M, (M * 14 <= alpha 4)%N & (m * a4%:R) * eps ^ M < 1.
     have {hm} : (m * a4%:R) ^14 * eps ^ (M * 14)%N < 1.
       rewrite PoszM -exprz_exp -expfzMl; apply: exprn_ilt1=> //.
@@ -692,7 +692,7 @@ have lt_t4_1 : t 4 < 1.
     exists M => //.
     rewrite /e  expfzMl -expfV mulrA ltr_pdivr_mulr; last by rewrite exprz_gt0 // rat_of_Z_Zpos.
     by rewrite mul1r -subr_gt0.
-  exists 2000; first by rewrite /alpha -subn_eq0. (* FIXME : compute in Z. *)
+  exists 2000%N; first by rewrite /alpha -subn_eq0. (* FIXME : compute in Z. *)
   rewrite -mE -!rat_of_Z_pow.
   rewrite pmulrn -intrM mulrzl -rmorphMz -rmorphB -mulrzl intrM.
   rewrite /a4 -lock /alpha.
@@ -727,7 +727,7 @@ suff [K [lt0K [N Pn]]] : exists K : rat,  0 < K /\ exists N : nat, (forall n, (N
   exists KK; split => //; elim=> [| n ihn]; first exact: KKmaj.
   case: (ltnP n.+1 N.+1) => [lenN | ltNn]; first exact: KKmaj.
   by apply: lt_le_trans ltKK; apply: Pn.
-exists 1; split => //; exists 3; elim=> [| n ihn] //.
+exists 1; split => //; exists 3%N; elim=> [| n ihn] //.
 rewrite leq_eqVlt => /predU1P [<- | lt3n]; first by rewrite [t]lock.
 have {}ihn := ihn lt3n.
 apply: le_lt_trans (maj_t _) _; apply: (@le_lt_trans _ _ (t n ^ 2)); last first.
