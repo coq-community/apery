@@ -157,34 +157,3 @@ Qed.
 #[export] Hint Resolve posnum_neq0 : core.
 Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom algC x))
  (format "[gt0 'of'  x ]").
-
-
-Variable f : algC -> algC.
-Hypothesis H : forall x, f x > 0.
-
-Lemma f_gt0 (x : {posnum algC}) :  0 < f x%:num.
-Proof. by rewrite H. Qed.
-Canonical f_posnum (x : {posnum algC}) := PosNum (f_gt0 x).
-
-Lemma SnC_gt0 (n : nat) : 0 < n.+1%:R :> algC.
-Proof. by rewrite ltr0n. Qed.
-Canonical SnC_posnum n := PosNum (SnC_gt0 n).
-
-Lemma Sz_gt0 (n : nat) : 0 < n.+1%:~R :> algC.
-Proof. by rewrite ltr0n. Qed.
-Canonical Sz_posnum n := PosNum (@Sz_gt0 n).
-
-(* Goal forall n (Hn : (n > 0)%nat), True. *)
-(* move => n Hn. *)
-(* Check (n%:R %:pos). *)
-
-(* Require Import rat. *)
-
-(* Lemma foo : forall (n : nat) (Hn : (n > 0)%nat), (f ((n %:R)) * 2%:R : algC) > 0. *)
-(* Proof. *)
-(* move => n Hn. *)
-(* Check (PosNum (n_gt0 Hn)). *)
-(* Check (n%:R %:pos). *)
-(* Check ([gt0 of (f (n%:R : algC) * (2 : algC))]). *)
-(* (* move => H1. *) *)
-(* (* Check ([gt0 of (f (3 %:R) * 2 : algC)]). *) *)
