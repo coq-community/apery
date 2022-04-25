@@ -7,16 +7,10 @@ From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat binint rational.
 Import Refinements (* AlgOp *).
 
-Require Import binomialz bigopz.
 Require Import field_tactics lia_tactics shift.
-Require Import seq_defs.
-
-Require Import c_props.
-Require Import algo_closures.
+Require Import binomialz bigopz rho_computations.
 Require annotated_recs_c.
-
-Require Import rho_computations.
-Require Import initial_conds.
+Require Import seq_defs c_props initial_conds algo_closures.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -215,7 +209,7 @@ exact/hposM/exprn_ge0.
 Qed.
 
 (* delta is the discriminant *)
-Let delta (x : rat) := (alpha x) ^+ 2 - rat_of_positive 4 * (beta x).
+Local Definition delta (x : rat) := alpha x ^+ 2 - rat_of_positive 4 * beta x.
 
 Fact lt_0_delta (x : rat) : 0 <= x -> 0 < delta x.
 Proof.
@@ -271,7 +265,7 @@ Proof. by []. Qed.
 (*FIXME : Why a /= after goal_to_lia? *)
 Lemma rho_rec (i : int) : Posz 2 <= i -> rho (i + 1) = h i%:Q (rho i).
 Proof.
-move=> le2i. rewrite hE.
+move=> le2i; rewrite hE.
 have rhoi_neq0 : rho i != 0 by apply/lt0r_neq0/lt_0_rho/le_trans/le2i.
 have ai_neq0 : a i != 0 by apply/a_neq0/le_trans/le2i.
 rewrite -[alpha i%:Q](mulfK rhoi_neq0) -mulrBl; apply: canRL (mulfK _) _ => //.

@@ -1,5 +1,4 @@
 From mathcomp Require Import all_ssreflect all_algebra all_field.
-
 From mathcomp Require Import bigenough.
 
 Set Implicit Arguments.

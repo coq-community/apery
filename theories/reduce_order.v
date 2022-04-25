@@ -1,16 +1,7 @@
-Require Import ZArith.
-
+Require Import BinInt.
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import binomialz bigopz.
-Require Import field_tactics lia_tactics shift.
-Require Import extra_mathcomp.
-Require Import seq_defs.
-
-Require harmonic_numbers.
-Require (* rat_pos *) algo_closures initial_conds.
-
-Require annotated_recs_c.
-Require annotated_recs_v.
+Require Import field_tactics lia_tactics binomialz shift seq_defs.
+Require annotated_recs_c annotated_recs_v algo_closures initial_conds.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -71,7 +62,7 @@ Proof.  by rewrite /= initial_conds.b0_eq.  Qed.
 Lemma b'1_eq : b' 1 = 6%:Q.
 Proof.  by rewrite /= initial_conds.b1_eq.  Qed.
 
-Lemma b'2_eq : b' (2 : int) = rat_of_Z 351 / rat_of_Z 4.
+Lemma b'2_eq : b' 2%N = rat_of_Z 351 / rat_of_Z 4.
 Proof.
 rewrite -[Posz 2]/(int.shift 2 0) b'_Sn2_rew // b'0_eq b'1_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
@@ -79,7 +70,7 @@ by apply/eqP; rewrite rat_of_ZEdef; vm_compute.
 (* Faster than: rat_field; goal_to_lia; intlia. *)
 Qed.
 
-Lemma b'3_eq : b' (3 : int) = rat_of_Z 62531 / rat_of_Z 36.
+Lemma b'3_eq : b' 3%N = rat_of_Z 62531 / rat_of_Z 36.
 Proof.
 rewrite -[Posz 3]/(int.shift 2 1) b'_Sn2_rew // b'1_eq b'2_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
@@ -89,7 +80,7 @@ do 2! (split; first by move/eqP; rewrite rat_of_Z_eq0).
 by move/eqP; rewrite rat_of_Z_eq0.
 Qed.
 
-Lemma b'4_eq : b' (4 : int) = rat_of_Z 11424695 / rat_of_Z 288.
+Lemma b'4_eq : b' 4%N = rat_of_Z 11424695 / rat_of_Z 288.
 Proof.
 rewrite -[Posz 4]/(int.shift 2 2) b'_Sn2_rew // b'2_eq b'3_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
@@ -121,8 +112,8 @@ Ltac affine_poly_intlia :=
   rewrite ?intr_eq0 ?ltr0z ?ler0z; intlia.
 
 Lemma Sn4_flat_to_Sn4_rew (w : int -> rat) :
-  (forall n : int, n >= (2 : int) -> annotated_recs_v.P_horner w n = 0) ->
-  (forall n : int, n >= (2 : int) ->
+  (forall n : int, 2 <= n :> int -> annotated_recs_v.P_horner w n = 0) ->
+  (forall n : int, 2 <= n :> int ->
     w (int.shift 4 n) =
       - (annotated_recs_v.P_cf0 n * w n + 
          annotated_recs_v.P_cf1 n * w (int.shift 1 n) +
@@ -183,7 +174,7 @@ Proof.  by rewrite /int.shift intS addrC.  Qed.
 (* that we shift the verification of the initial conditions to the first *)
 (* values from which we are able to establish the recurrence by closures. *)
 Lemma b'_eq_b_reduction (k : int) :
-k >= (2 : int) ->
+  2 <= k :> int ->
   b' k = b k -> b' (k + 1) = b (k + 1) ->
   b' (k + 2) = b (k + 2) -> b' (k + 3) = b (k + 3) ->
   forall (n : int), n >= k -> b' n = b n.
@@ -195,7 +186,7 @@ pose p : int := n - k; simpl in p.
 have -> : n = p + k by rewrite /p addrNK.
 clearbody p; clear n.
 rewrite ler_addr.
-suff gen (n : int) : (0 : int) <= n -> n <= p -> b' (n + k) = b (n + k).
+suff gen (n : int) : 0 <= n -> n <= p -> b' (n + k) = b (n + k).
   by move=> p_pos; apply: (gen _ p_pos).
 move: n.
 elim/int_rect: p => [p h0p hp0 | p ihp n le0n hnp | p _ n hn hp]; last 1 first.
@@ -219,10 +210,9 @@ have hmp : m + 3 <= p by move: hnp; rewrite -addn1 PoszD hm; clear; intlia.
 rewrite hm; clearbody m; clear le0n hnp hn0 hn1 hn2 hn3 hm n.
 have -> : m + 4 + k = int.shift 4 (m + k).
   by rewrite int.shift2Z addrAC.
-have b'_Sn4_from2 (n : int) : (2 : int) <= n -> 
-                               annotated_recs_v.P_horner b' n = 0.
+have b'_Sn4_from2 n : 2 <= n :> int -> annotated_recs_v.P_horner b' n = 0.
   by move=> hn; apply: b'_Sn4; apply: le_trans hn.
-have hmk2 : (2 : int) <= m + k by move: kpos le0m; clear; intlia.
+have hmk2 : 2 <= m + k :> int by move: kpos le0m; clear; intlia.
 rewrite (Sn4_flat_to_Sn4_rew b'_Sn4_from2 hmk2); clear b'_Sn4_from2.
 rewrite (Sn4_flat_to_Sn4_rew algo_closures.b_Sn4 hmk2); clear hmk2.
 rewrite !int.shift2Z ![m + k + _]addrAC.

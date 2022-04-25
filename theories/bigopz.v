@@ -1,5 +1,4 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
 Require Import extra_mathcomp.
 (* Infrastructure for iterated operators indexed by ints. *)
 
@@ -220,10 +219,10 @@ case: m => m; case: n => n // hmn.
 - case: m hmn => [_ | m]; rewrite NegzE.
      by rewrite addNr big_map -NegzE /index_iotaz /= big_cons big_map.
   rewrite addrC subzSS add0r -!NegzE /index_iotaz -(addn1 m.+1).
-  by rewrite /index_iota subn0 iota_add map_cat rev_cat add0n /= big_cons.
+  by rewrite /index_iota subn0 iotaD map_cat rev_cat add0n /= big_cons.
 - case: m hmn => [ | m] //; rewrite !NegzE ltr_opp2 ltz_nat => hmn.
   rewrite addrC subzSS add0r -!NegzE /index_iotaz /index_iota subSn //.
-  by rewrite -[(_ - _).+1]addn1 iota_add rev_cat map_cat subnKC // big_cons.
+  by rewrite -[(_ - _).+1]addn1 iotaD rev_cat map_cat subnKC // big_cons.
 Qed.
 
 Lemma big_ltz m n F :

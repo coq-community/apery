@@ -42,7 +42,7 @@ Local Open Scope ring_scope.
 (* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
 (* Hint Mode infer ! : typeclass_instances. *)
-Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+#[export] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Lemma splitr (R : numFieldType) (x : R) : x = x / 2%:R + x / 2%:R.
@@ -52,8 +52,8 @@ Record posnum_def (R : numDomainType) := PosNumDef {
   num_of_pos :> R;
   posnum_gt0 : num_of_pos > 0
 }.
-Hint Resolve posnum_gt0.
-Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
+#[export] Hint Resolve posnum_gt0 : core.
+#[export] Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
 Notation "'{posnum' R }" := (posnum_of (@Phant R))
@@ -119,8 +119,8 @@ Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posnum := PosNum one_pos_gt0.
 
 End PosNum.
-Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
-Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
+#[export] Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
+#[export] Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
 
 Section PosNumReal.
 Context {R : realDomainType}.
@@ -141,7 +141,7 @@ Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt x%:num.
 Proof. by rewrite sqrtr_gt0. Qed.
 Canonical sqrt_posnum (R : rcfType) (x : {posnum R}) := PosNum (sqrt_pos_gt0 x).
 
-CoInductive posnum_spec (R : numDomainType) (x : R) :
+Variant posnum_spec (R : numDomainType) (x : R) :
   R -> bool -> bool -> bool -> Type :=
 | IsPosnum (p : {posnum R}) : posnum_spec x (p : R) false true true.
 
@@ -152,39 +152,8 @@ move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
-Hint Resolve posnum_gt0.
-Hint Resolve posnum_ge0.
-Hint Resolve posnum_neq0.
+#[export] Hint Resolve posnum_gt0 : core.
+#[export] Hint Resolve posnum_ge0 : core.
+#[export] Hint Resolve posnum_neq0 : core.
 Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom algC x))
  (format "[gt0 'of'  x ]").
-
-
-Variable f : algC -> algC.
-Hypothesis H : forall x, f x > 0.
-
-Lemma f_gt0 (x : {posnum algC}) :  0 < f x%:num.
-Proof. by rewrite H. Qed.
-Canonical f_posnum (x : {posnum algC}) := PosNum (f_gt0 x).
-
-Lemma SnC_gt0 (n : nat) : 0 < n.+1%:R :> algC.
-Proof. by rewrite ltr0n. Qed.
-Canonical SnC_posnum n := PosNum (SnC_gt0 n).
-
-Lemma Sz_gt0 (n : nat) : 0 < n.+1%:~R :> algC.
-Proof. by rewrite ltr0n. Qed.
-Canonical Sz_posnum n := PosNum (@Sz_gt0 n).
-
-(* Goal forall n (Hn : (n > 0)%nat), True. *)
-(* move => n Hn. *)
-(* Check (n%:R %:pos). *)
-
-(* Require Import rat. *)
-
-(* Lemma foo : forall (n : nat) (Hn : (n > 0)%nat), (f ((n %:R)) * 2%:R : algC) > 0. *)
-(* Proof. *)
-(* move => n Hn. *)
-(* Check (PosNum (n_gt0 Hn)). *)
-(* Check (n%:R %:pos). *)
-(* Check ([gt0 of (f (n%:R : algC) * (2 : algC))]). *)
-(* (* move => H1. *) *)
-(* (* Check ([gt0 of (f (3 %:R) * 2 : algC)]). *) *)

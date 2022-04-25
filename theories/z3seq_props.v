@@ -1,7 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import field_tactics lia_tactics bigopz.
-Require Import harmonic_numbers seq_defs.
+Require Import field_tactics lia_tactics bigopz harmonic_numbers seq_defs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

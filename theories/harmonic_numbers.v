@@ -1,8 +1,6 @@
 (* A stub library on generalized harmonic numbers. *)
 From mathcomp Require Import all_ssreflect all_algebra.
-
-Require Import shift bigopz.
-Require Import field_tactics.
+Require Import field_tactics shift bigopz.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

@@ -1,20 +1,11 @@
 Require Import ZArith.
 From mathcomp Require Import all_ssreflect all_algebra all_field.
-
-Require Import arithmetics multinomial floor posnum binomialz.
+Require Import extra_mathcomp field_tactics lia_tactics binomialz floor.
+Require Import arithmetics posnum hanson_elem_arith hanson_elem_analysis.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-Require Import field_tactics.
-Require Import bigopz.
-Require Import lia_tactics.
-Require Import shift.
-Require Import extra_mathcomp.
-
-Require Import hanson_elem_arith.
-Require Import hanson_elem_analysis.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -172,14 +163,14 @@ Implicit Types i : nat.
 Definition a' i : algC := exp_quo (a i)%:Q 1%N (a i).
 
 Lemma a'_gt0 i : 0 < a' i. Proof. by rewrite rootC_gt0 ?CratrE ?ltr0n. Qed.
-Hint Resolve a'_gt0.
+Hint Resolve a'_gt0 : core.
 
 Lemma a'_ge0 i : 0 <= a' i. Proof. exact: ltW. Qed.
-Hint Resolve a'_ge0.
+Hint Resolve a'_ge0 : core.
 
 Lemma a'_gt1 i : 1 < a' i.
 Proof. by rewrite exprn_egte1 // rootC_gt1 ?ltr1q ?ltr1n. Qed.
-Hint Resolve a'_gt1.
+Hint Resolve a'_gt1 : core.
 
 Lemma a'_S i (Hi : (2 <= i)%N) : a' i.+1 <= sqrtC (a' i).
 Proof.
@@ -242,8 +233,8 @@ suff -> : exp_quo (a k)%:Q (2 ^ l.+2 - 2) (2 ^ l.+1 * a k) =
   rewrite mulrA.
   apply: ler_pmul; rewrite ?a'_bound // ?rootC_ge0 ?CratrE ?a_pos ?ler0n //.
   by rewrite prodr_ge0 // => i _ ; exact: a'_ge0.
-rewrite -prod_root ?CratrE ?expn_gt0 ?a_pos ?ler0n // .
-have -> : (2 ^ l * a k).-root (a k)%:R = exp_quo (a k)%:R 1%N (2 ^ l * a k).
+rewrite -prod_root ?CratrE ?expn_gt0 ?a_pos ?ler0n //.
+have -> : (2 ^ l * a k).-root (a k)%:R = exp_quo (a k)%:R 1 (2 ^ l * a k).
   by rewrite /exp_quo expr1 2!CratrE.
 rewrite -exp_quo_plus ?ler0n // ?muln_gt0 ?a_pos ?expn_gt0 //.
 rewrite [(2 ^ l.+1)%N]expnS -mulnA -mulnDl -subnA ?leq_pmulr ?expn_gt0 //=.
@@ -286,17 +277,17 @@ Definition a'4_ub : rat := rat_of_Z 201 / rat_of_Z 200.
 End A'.
 
 (* Reported to survive end of section *)
-Hint Resolve a'_gt0.
-Hint Resolve a'_ge0.
-Hint Resolve a'_gt1.
-Hint Resolve w_seq_ge0.
+#[export] Hint Resolve a'_gt0 : core.
+#[export] Hint Resolve a'_ge0 : core.
+#[export] Hint Resolve a'_gt1 : core.
+#[export] Hint Resolve w_seq_ge0 : core.
 
 Module Computations.
 
 (* Can't be moved before *)
 (* Import ZArith. *)
 
-Hint Resolve rat_of_Z_Zpos.
+#[local] Hint Resolve rat_of_Z_Zpos : core.
 
 (* Missing from rat_of_Zpos *)
 Lemma rat_of_Z_ZposW z : 0 <= rat_of_Z (Zpos z).
@@ -316,7 +307,7 @@ rewrite Zpower_nat_succ_r; case: rat_morph_Z => _ _ _ _ -> _ _.
 by rewrite ihn -[RHS]exprnP exprS exprnP.
 Qed.
 
-Hint Resolve rat_of_Z_ZposW.
+#[local] Hint Resolve rat_of_Z_ZposW : core.
 
 Definition w : rat := a'0_ub * a'1_ub * a'2_ub * a'3_ub * a'4_ub ^ 2.
 
@@ -510,15 +501,15 @@ End Computations.
 
 Import Computations.
 
-Hint Resolve w_gt0.
-Hint Resolve w_ge0.
+#[export] Hint Resolve w_gt0 : core.
+#[export] Hint Resolve w_ge0 : core.
 
 (* change name to make it not seem general *)
 Lemma prod_is_exp_sum (n k : nat) (tenn := (10 * n)%N%:Q) :
   \prod_(i < k.+1) exp_quo tenn (a i).-1 (a i) =
   tenn%:C ^+ k * exp_quo tenn 1 (a k.+1 - 1).
 Proof.
-elim: k => [|k ihk]; first by rewrite expr0 big_ord_recr big_ord0 /=.
+elim: k => [|k ihk]; first by rewrite expr0 big_ord_recr big_ord0.
 have pos_tenn : 0 <= tenn by rewrite /tenn ler0n.
 have h l : tenn%:C ^+ l = exp_quo tenn l 1 by rewrite -exp_quo_r_nat -!CratrE.
 rewrite big_ord_recr ihk /= !h !subn1 -!exp_quo_plus ?ltnS ?muln_gt0 ?a_pos //=.
@@ -531,8 +522,8 @@ Proof. by rewrite ltr0n. Qed.
 Lemma aR_ge0 i : 0 <= (a i)%:~R :> algC.
 Proof. by rewrite ler0n. Qed.
 
-Hint Resolve aR_gt0.
-Hint Resolve aR_ge0.
+#[export] Hint Resolve aR_gt0 : core.
+#[export] Hint Resolve aR_ge0 : core.
 
 Section PreliminaryRemarksTheorem2.
 
@@ -587,7 +578,7 @@ rewrite -mulrA; set tw := (X in _ < _ * X).
 have tw_pos : 0 <= tw by apply: mulr_ge0.
 have tenn_to_pos : 0 <= ((10 * n)%N%:Q ^+ k)%:C.
   by rewrite ler0q exprn_ge0 ?ler0n.
-suff step2 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1%N * tw.
+suff step2 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1 * tw.
   apply: lt_le_trans step2 _; rewrite exp_quo_r_nat.
   have ->: t10n_to (2 * k.+1 - 1)%N 2 = t10n_to k 1%N * t10n_to 1%N 2.
     rewrite -exp_quo_plus ?ler0n //; apply:exp_quo_equiv => //.
@@ -669,11 +660,11 @@ case: k Hank => [| k] //; case: k => [| k Hank]; last exact: k_bound.
 by rewrite addn2.
 Qed.
 
-Theorem t3_nat : exists (K : nat),
+Theorem t3_nat : exists K : nat,
     (0 < K)%N /\ forall n : nat, (iter_lcmn n <= K * 3 ^ n)%N.
 Proof.
 pose cond n k := (a k <= n < a k.+1)%N.
-suff [K [Kpos KP]] : exists (K : nat),
+suff [K [Kpos KP]] : exists K : nat,
     (0 < K)%N /\ (forall n k, cond n k -> C n k.+1 <= K * 3 ^ n)%N.
   exists K; split => // n; case: (leqP n 1)=> hn; last first.
     apply: leq_trans (KP _ (f_k n) _); first exact: lcm_leq_Cnk.
@@ -698,7 +689,7 @@ pose eps : rat := locked (w / 3%:R).
 have epsE : eps = w / 3%:R by rewrite /eps -lock.
 have lt0eps1 : 0 < eps < 1.
   by rewrite epsE ltr_pdivl_mulr // mul0r ltr_pdivr_mulr // mul1r w_lt3 w_gt0.
-pose u n k eps := (m * n%:R) ^ k.+1 * eps ^ n.+1 : rat.
+pose u n k eps : rat := (m * n%:R) ^ k.+1 * eps ^ n.+1.
 suff hloglog : exists (K : rat), (0 < K) /\ (forall n k, cond n k -> u n k eps < K).
   have [K [lt0K KP]] := hloglog.
   exists (K * 3%:Q); split; first by exact: mulr_gt0.
@@ -718,11 +709,11 @@ suff {u} [K [Kpos KP]] : exists K : rat, 0 < K /\ forall n, v n < K.
   apply: exp_incr_expp; first by apply: mulr_ege1=> //; rewrite ler1n.
   by rewrite ltnS -addn2.
 have h1 n : ((trunc_log 2 n).+1 <= 2 ^ (loglog n).+1)%N by exact: trunc_log_ltn.
-have {}h1 n : (n < 2 ^ (2 ^ (loglog n).+1))%N.
+have {}h1 n : (n < 2 ^ 2 ^ (loglog n).+1)%N.
   have h : (n < 2 ^ (trunc_log 2 n).+1)%N by exact: trunc_log_ltn.
   have {}h : (2 ^ (trunc_log 2 n).+1 <= 2 ^ (2 ^ (loglog n).+1))%N by rewrite leq_exp2l.
   exact/leq_trans/h/trunc_log_ltn.
-have h2 n : (1 < n)%N -> (2 ^ (2 ^ (loglog n)) <= n)%N.
+have h2 n : (1 < n)%N -> (2 ^ 2 ^ loglog n <= n)%N.
   move=> lt1n.
   have h: (2 ^ trunc_log 2 n <= n)%N by apply/trunc_logP/ltnW.
   apply: leq_trans h; rewrite leq_exp2l; last by [].
@@ -774,7 +765,7 @@ have le_0_t n : 0 <= t n by exact: ltW.
 suff {x h1 h2 u} [K [Kpos KP]] : exists K : rat, 0 < K /\ forall n, t n < K.
   by exists K; split => // n; apply: le_lt_trans (KP (loglog n)).
 pose l n := (alpha n)%:R ^ 4 * eps ^ ((alpha n)%:Z ^ 2 - 2%:Z * (alpha n)%:Z).
-have alphaS n : (alpha n.+1 = (alpha n) ^ 2)%N.
+have alphaS n : (alpha n.+1 = alpha n ^ 2)%N.
   by rewrite /alpha expnS mulnC expnM.
 have le_0_alpham2 k : 0 <= (alpha k)%:Z - 2%:Z.
   rewrite /alpha; apply: (@le_trans _ _ ((2 ^ 2 ^ 0)%:Z - 2%:Z)) => //.
@@ -882,8 +873,8 @@ have lt_ln_1 (n : nat) : (3 <= n)%N -> l n <= 1.
   rewrite leq_eqVlt => /predU1P [<- | {}/ihn ihn]; first by rewrite [l]lock. (* unlock does not work... *)
   suff h : l n.+1 <= (l n) ^ 2 by apply: le_trans h _; apply: mulr_ile1.
   rewrite /l expfzMl exprz_exp; apply: ler_pmul.
-  - apply: exprz_ge0; exact: ler0n.
-  - apply: exprz_ge0; exact: ltW.
+  - exact/exprz_ge0/ler0n.
+  - exact/exprz_ge0/ltW.
   - by rewrite alphaS natrX exprnP exprz_exp.
   rewrite exprz_exp; apply: ler_wpiexpz2l.
   - exact: ltW.

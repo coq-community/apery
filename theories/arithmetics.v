@@ -134,7 +134,7 @@ Proof.
 elim: n => [|n ihn]; first by rewrite iter_lcmn0.
 by rewrite /iter_lcmn (@big_cat_nat _ _ _ n.+1) //= lcmn_gt0 ihn big_nat1.
 Qed.
-Hint Resolve iter_lcmn_gt0.
+#[export] Hint Resolve iter_lcmn_gt0 : core.
 
 Fact iter_lcmn_leq_div (n m : nat) : (n <= m)%N -> l n %| l m.
 Proof.

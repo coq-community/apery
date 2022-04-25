@@ -2,6 +2,11 @@
 -R include mathcomp.apery
 -arg -w -arg -notation-overridden
 -arg -w -arg -ambiguous-paths
+-arg -w -arg +local-declaration
+-arg -w -arg +implicit-core-hint-db
+-arg -w -arg +deprecated-hint-without-locality
+-arg -w -arg +deprecated-hint-rewrite-without-locality
+-arg -w -arg +deprecated-instance-without-locality
 theories/a_props.v
 theories/annotated_recs_b.v
 theories/annotated_recs_c.v

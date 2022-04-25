@@ -1,7 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-
 From mathcomp Require Import bigenough cauchyreals.
-
 
 Set Implicit Arguments.
 Unset Strict Implicit.

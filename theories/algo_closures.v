@@ -1,15 +1,10 @@
 (* In this file, we now propagate the theories in the ops_for_x files to
    prove results on our concrete sequences defined in seq_defs.v. *)
 
-Require Import ZArith.
-
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import binomialz.
-Require Import field_tactics lia_tactics shift.
-Require Import seq_defs.
-
-Require ops_for_a ops_for_b ops_for_s ops_for_u ops_for_v.
+Require Import field_tactics lia_tactics shift binomialz seq_defs.
 Require annotated_recs_c annotated_recs_z annotated_recs_d.
+Require ops_for_a ops_for_b ops_for_s ops_for_u ops_for_v.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
