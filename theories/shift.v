@@ -1,4 +1,6 @@
-From mathcomp Require Import all_ssreflect all_algebra. 
+Require Import BinInt ZifyClasses.
+From mathcomp Require Import all_ssreflect all_algebra.
+Require Import tactics.
 
 (* Tentative definition of shifts for indexes of sequences. *)
 (* Expressions featuring shifts can be converted into their analogues
@@ -62,4 +64,19 @@ Proof. by rewrite shiftE /=. Qed.
 
 End shift.
 
+#[local]
+Instance Op_shift1 : UnOp (shift1 : int -> int) :=
+  { TUOp n := Z.add n 1; TUOpInj _ := ltac:(rewrite /= shift1E; lia) }.
+
+#[local]
+Instance Op_shift : BinOp (shift : nat -> int -> int) :=
+  { TBOp := Z.add; TBOpInj _ _ := ltac:(rewrite /= zshiftP; lia) }.
+
+#[local]
+Instance Op_shift_ : BinOp shift_ := Op_shift.
+
 End int.
+
+Add Zify UnOp int.Op_shift1.
+Add Zify BinOp int.Op_shift.
+Add Zify BinOp int.Op_shift_.

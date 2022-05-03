@@ -2,7 +2,7 @@
    prove results on our concrete sequences defined in seq_defs.v. *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import field_tactics lia_tactics shift binomialz seq_defs.
+Require Import tactics shift binomialz rat_of_Z seq_defs.
 Require annotated_recs_c annotated_recs_z annotated_recs_d.
 Require ops_for_a ops_for_b ops_for_s ops_for_u ops_for_v.
 
@@ -23,30 +23,18 @@ Proof. by rewrite exprzDr // expr1z mulrN1. Qed.
 
 Lemma c_Sn : annotated_recs_c.Sn c.
 Proof.
-rewrite /annotated_recs_c.Sn /annotated_recs_c.precond.Sn => n k ?.
-rewrite /c.
-rewrite addrAC !binSz; [| intlia..].
-rewrite rmorphD /=.
-set b1 := binomialz _ _.
-set b2 := binomialz _ _.
-rewrite /annotated_recs_c.Sn_cf0_0.
-rat_field.
-by goal_to_lia; intlia.
+rewrite /annotated_recs_c.Sn /annotated_recs_c.precond.Sn /c => n k ?.
+rewrite addrAC !binSz /annotated_recs_c.Sn_cf0_0; [| lia..].
+by field; ring_lia.
 Qed.
 
 
 Lemma c_Sk : annotated_recs_c.Sk c.
 Proof.
-rewrite /annotated_recs_c.Sk /annotated_recs_c.precond.Sk => n k ?.
-rewrite /c.
-rewrite addrA.
-rewrite !(binSz, binzS) //; [ | intlia ..].
-rewrite !rmorphD /=.
-set b1 := binomialz _ _.
-set b2 := binomialz _ _.
+rewrite /annotated_recs_c.Sk /annotated_recs_c.precond.Sk /c => n k ?.
+rewrite int.zshiftP addrA !(binSz, binzS); [ | lia ..].
 rewrite /annotated_recs_c.Sk_cf0_0.
-rat_field.
-by goal_to_lia; intlia.
+by field; ring_lia.
 Qed.
 
 Definition c_ann := annotated_recs_c.ann c_Sn c_Sk.
@@ -56,17 +44,11 @@ Proof. by move=> h; exact: (ops_for_a.recAperyA c_ann h). Qed.
 
 Lemma d_Sn : annotated_recs_d.Sn d.
 Proof.
-rewrite /annotated_recs_d.Sn /annotated_recs_d.precond.Sn => n k m ?.
-rewrite /d.
-rewrite addrAC !binSz; [ | by intlia ..].
-set b1 := binomialz _ _.
-set b2 := binomialz _ _.
-rewrite rmorphD /= /annotated_recs_d.Sn_cf0_0_0.
-have {b1} [e1 [-> e1_pos]]: exists e1, b1 = e1%:Q /\ e1 > 0.
-  by apply: bin_nonneg_int; intlia.
-have {b2} [e2 [-> e2_pos]]: exists e2, b2 = e2%:Q /\ e2 > 0.
-  by apply: bin_nonneg_int; intlia.
-by rat_field; goal_to_lia; intlia.
+rewrite /annotated_recs_d.Sn /annotated_recs_d.precond.Sn /d => n k m ?.
+rewrite addrAC !binSz /annotated_recs_d.Sn_cf0_0_0; [ | lia ..].
+have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
+have b2_pos: 0 < binomialz (n + m) m by apply: bin_nonneg; lia.
+by field; ring_lia.
 Qed.
 
 (* This is a fake recurrence, because d does not really depend on k *)
@@ -78,19 +60,12 @@ Qed.
 
 Lemma d_Sm : annotated_recs_d.Sm d.
 Proof.
-rewrite /annotated_recs_d.Sm /annotated_recs_d.precond.Sm => n k m ?.
-rewrite /d.
-rewrite addrAC !alt_sign rmorphD /=.
-rewrite addrA.
-rewrite !(binzS, binSz); [ | intlia ..].
-set b1 := binomialz _ _.
-set b2 := binomialz _ _.
-rewrite /annotated_recs_d.Sm_cf0_0_0 !rmorphD /=.
-have {b1} [e1 [-> e1_pos]]: exists e1 : int, b1 = e1%:Q /\ e1 > 0.
-  by apply: bin_nonneg_int; intlia.
-have {b2} [e2 [-> e2_pos]]: exists e2 : int, b2 = e2%:Q /\ e2 > 0.
-  by apply: bin_nonneg_int; intlia.
-by rat_field; goal_to_lia; intlia.
+rewrite /annotated_recs_d.Sm /annotated_recs_d.precond.Sm /d => n k m ?.
+rewrite int.zshiftP !alt_sign addrA !(binzS, binSz); [ | lia ..].
+rewrite /annotated_recs_d.Sm_cf0_0_0.
+have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
+have b2_pos: 0 < binomialz (n + m) m by apply: bin_nonneg; lia.
+by field; ring_lia.
 Qed.
 
 Definition d_ann := annotated_recs_d.ann d_Sn d_Sk d_Sm.
@@ -109,12 +84,9 @@ Definition s_ann := annotated_recs_s.ann s_Sn2 s_SnSk s_Sk2.
 Lemma z_Sn2 : annotated_recs_z.Sn2 ghn3.
 Proof.
 rewrite /annotated_recs_z.Sn2 /annotated_recs_z.precond.Sn2 => n ?.
-rewrite /ghn3 harmonic_numbers.ghn_Sn2 -/ghn3; last by intlia.
-set z1 := ghn3 _.
-set z2 := ghn3 _.
+rewrite /ghn3 harmonic_numbers.ghn_Sn2 -/ghn3; last lia.
 rewrite /annotated_recs_z.Sn2_cf0 /annotated_recs_z.Sn2_cf1.
-rat_field.
-by goal_to_lia; intlia.
+by field; ring_lia.
 Qed.
 
 Definition z_ann := annotated_recs_z.ann z_Sn2.

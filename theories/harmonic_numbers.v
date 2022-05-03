@@ -1,6 +1,6 @@
 (* A stub library on generalized harmonic numbers. *)
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import field_tactics shift bigopz.
+Require Import tactics shift bigopz.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -42,22 +42,9 @@ rewrite ?ghn_Sn_inhom ?ltW ?addr_gt0 //=.
 rewrite int.shift2R -/n.
 move: (ghn m n_) => x.
 apply/eqP; rewrite -subr_eq0 -!addrA addr_eq0; apply/eqP.
-elim: m => [|m ->]; first by rat_field => //.
+elim: m => [|m ->]; first by field => //.
 (* The ring tactic is not able to reason under (_ ^ m) where m is a variable:
    we have to expand (_ ^_.+1) and identify p2 and p3 by hand... *)
 rewrite !exprSz.
-set p1 := _ ^ _.
-set p2 := _ ^ _.
-rat_field.
-rewrite /p1 /p2.
-
-(* These two lemmas could be handled by a lia tactic. *)
-have hn01 : n + 2%:Q != 0.
-  rewrite addr_eq0 -rmorphN /= -NegzE eqr_int.
-  by apply/eqP => nD; move: hn; rewrite nD.
-
-have hn02 : n + 1%:Q != 0.
-  rewrite addr_eq0 -rmorphN /= -NegzE eqr_int.
-  by apply/eqP => nD; move: hn; rewrite nD.
-by repeat split; apply/eqP; rewrite ?expfz_eq0 // negb_and ?hn01 ?hn02 orbT.
+by field; rewrite /= !expfz_eq0; ring_lia.
 Qed.

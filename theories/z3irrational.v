@@ -1,7 +1,7 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import bigenough cauchyreals.
 Require Import extra_mathcomp extra_cauchyreals.
-Require Import field_tactics shift bigopz arithmetics seq_defs.
+Require Import tactics shift bigopz arithmetics seq_defs.
 Require Import c_props s_props z3seq_props a_props b_props b_over_a_props.
 Require hanson.
 
@@ -145,8 +145,7 @@ pose_big_enough m.
     apply: ltr_spaddl => //;  apply: sumr_ge0 => i _; exact: ltW.
   have -> : (z3 - (b_over_a_seq n)%:CR ==
          z3 - (b_over_a_seq m)%:CR + (b_over_a_seq m - b_over_a_seq n)%:CR)%CR.
-    apply: eq_creal_ext => i /=.
-    by rewrite addrACA [- _ - _]addrC addrACA subrr addr0.
+    by apply: eq_creal_ext => i /=; ring.
   rewrite z3_eq_b_over_a; apply: ltcr_spaddr.
     apply/lt_creal_cst/diff_pos1; raise_big_enough.
   by apply: (@le_crealP _ m.+1) => *; apply/ltW/diff_pos1; raise_big_enough.
@@ -183,8 +182,7 @@ exists large => n hlarge.
   rewrite mulr_suml; apply: ler_sum_nat => j /andP[hnj hji].
   rewrite -mulrSr ler_pmul2l; last by apply/divr_gt0/exprz_gt0; rewrite ltr0n.
   rewrite lef_pinv; [| apply: mulr_gt0; exact: lt_0_a..].
-  apply: ler_pmul; rewrite ?le_0_a //; apply: a_incr => //.
-  by rewrite int.shift2Z lez_nat; apply: leq_trans hnj _; rewrite addn1.
+  by apply: ler_pmul; rewrite ?le_0_a //; apply: a_incr; lia.
 by close.
 Qed.
 
@@ -278,9 +276,8 @@ pose_big_enough M.
   have -> : lhs = C * (K2 ^ 3 / 33%:Q) ^ n.
     (* what an ugly script... rat_field is bad with _ ^ n *)
     rewrite {}/lhs /C [in RHS]expfzMl exprzAC -[in RHS]expfV.
-    set x := _ ^ n; set y := _ ^ n; rat_field.
-    split; first by apply/eqP/expfz_neq0; rewrite intr_eq0.
-    exact/eqP/lt0r_neq0/lt_0_Ka.
+    set x := _ ^ n; set y := _ ^ n; field.
+    by rewrite expfz_neq0 ?intr_eq0 // lt0r_neq0 ?lt_0_Ka.
   rewrite -ltr_pdivl_mull -[X in _ < X]mulrC; last by rewrite mulrC; exact: Cpos.
   apply: hN; raise_big_enough.
 by close.
@@ -298,7 +295,7 @@ Proof.
 case=> z3_rat z3_ratP; case: (denqP z3_rat) z3_ratP => d dP z3_ratP.
 have heps : 0 < 1 / 2%:Q by [].
 have [M MP] := sigma_goes_to_0 heps.
-pose sigma_Q (n : nat) := 2%:Q * (l n)%:Q ^ 3 * (a n * z3_rat - b n).
+pose sigma_Q (n : nat) := 2%:Q * (l n)%:Q ^ 3%N * (a n * z3_rat - b n).
 have sigma_QP (n : nat) : ((sigma_Q n)%:CR == sigma n)%CR.
   by rewrite /sigma z3_ratP -!cst_crealM -cst_crealB -cst_crealM.
 pose_big_enough n.

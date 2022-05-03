@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import field_tactics lia_tactics bigopz harmonic_numbers seq_defs.
+Require Import tactics bigopz harmonic_numbers seq_defs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -50,17 +50,17 @@ Proof.
 move=> hr; set r := k.+1%:Q.
 have hkr : k%:Q = r - 1 by rewrite /r -addn1 PoszD rmorphD addrK.
 have hrk : r = k%:Q + 1 by rewrite hkr addrK.
-have lt1r : (1 < r)%Q by rewrite hrk ltr_addr.
+have lt1r : 1 < r by rewrite hrk ltr_addr.
 rewrite hkr; set  rhs := (X in _ <= X).
 have {rhs} -> : rhs = 2%:Q^-1 * (2%:Q * r - 1) / (r - 1) ^ 2 * (r ^ 2)^-1.
-  by rewrite /rhs; rat_field; rewrite /r; move: lt1r; goal_to_lia; intlia.
-have -> : (r ^ 3)^-1 = r ^-1 * (r ^ 2)^-1 by rat_field; goal_to_lia; intlia.
+  by rewrite /rhs; field; ring_lia.
+have -> : (r ^ 3)^-1 = r ^-1 * (r ^ 2)^-1 by field; ring_lia.
 have le0r : 0 <= r by apply: ltW; apply: lt_trans lt1r.
 apply: ler_pmul; rewrite ?invr_ge0 ?exprn_ge0 //.
 rewrite ler_pdivl_mulr; last first.
   by apply: exprz_gt0; rewrite subr_gt0.
 rewrite ler_pdivr_mull; last by apply: lt_trans lt1r.
 rewrite -subr_ge0; set rhs := (X in _ <= X).
-have {rhs} -> : rhs = 3%:Q / 2%:Q * r - 1 by rewrite /rhs; rat_field.
+have {rhs} -> : rhs = 3%:Q / 2%:Q * r - 1 by rewrite /rhs; field.
 by rewrite subr_ge0; apply/mulr_ege1/ltW.
 Qed.

@@ -17,11 +17,11 @@ Let v_Sk2 := v.Sk2_ v_ann.
 
 Theorem P_eq_Delta_Q : v.CT v.
 Proof.
-rewrite /v.CT => n k; rewrite /v.not_D; andb_to_and => notD.
+rewrite /v.CT => n k; rewrite /v.not_D => notD.
 rewrite /v.P_horner /v.P_seq /punk.horner_seqop /= /v.Q_flat.
-do 5! (rewrite v_Sn2; last by rewrite /v.precond.Sn2; intlia).
-rewrite v_SnSk; last by rewrite /v.precond.SnSk; intlia.
-rewrite v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+do 5! (rewrite v_Sn2; last by rewrite /v.precond.Sn2; lia).
+rewrite v_SnSk; last by rewrite /v.precond.SnSk; lia.
+rewrite v_Sk2; last by rewrite /v.precond.Sk2; lia.
 (* Sanity check: at this point, we have a normal form wrt the Gröbner basis. *)
 set v1 := v _ _; set v2 := v _ _; set v3 := v _ _.  (* set v4 := v _ _. *)
 (* This unfolding takes a dozen seconds if the Q_cf<i> are unfolded first: *)
@@ -34,8 +34,7 @@ rewrite
 .
 rewrite !int.shift2R.
 (* This takes over 250 seconds. *)
-rat_field.
-by goal_to_lia; intlia.
+by field; ring_lia.
 Qed.
 
 
@@ -55,18 +54,18 @@ have {onD} -> : onD = F 0 + F (n - 1) + F n.
   rewrite /onD /v.not_D.
   rewrite /punk.horner_seqop.
   rewrite /punk.horner_seqop_rec /=.
-  rewrite big_mkcond /= big_int_recl /=; last by intlia.
-  rewrite ifT; last by goal_to_lia; intlia.
-  have hn : n = (n - 1 - 1) + 1 + 1 by intlia.
+  rewrite big_mkcond /= big_int_recl /=; last lia.
+  rewrite ifT; last lia.
+  have hn : n = (n - 1 - 1) + 1 + 1 by lia.
   rewrite {1}[in LHS]hn.
-  rewrite big_int_recr /=; last by move: nge2; clear; intlia.
-  rewrite ifT; last by move: nge2; clear; goal_to_lia; intlia.
-  rewrite big_int_recr /=; last by move: nge2; clear; intlia.
-  rewrite ifT; last by move: nge2; clear; goal_to_lia; intlia.
+  rewrite big_int_recr /=; last lia.
+  rewrite ifT; last lia.
+  rewrite big_int_recr /=; last lia.
+  rewrite ifT; last lia.
   rewrite -hn [n - 1 - 1 + 1]addrNK -big_mkcond big_int_cond big_pred0
       => [ | i].
     by rewrite add0r addrA.
-  by apply: negPf; move: nge2; clear; goal_to_lia; intlia.
+  lia.
 (* Now we chase pathological denominators that may occur in values of F
    and "telQ". *)
 rewrite {}/F.
@@ -84,7 +83,7 @@ set q_S1_S0 := v.Q_flat _ _ _.
 Fail set q := v.Q_flat _ _ _.
 set L := (X in (X + _ = _)).
 have -> : L = pv_0_S1 - q_S1_1 + pv_S0_S1 + q_S1_S0 + pv_S1_S1.
-  rewrite /L; rat_field.
+  rewrite /L; ring.
 clear L q_S1_S2 q_S1_0 q_S1_S1.
 (* No more pathological denominators in the remaining terms. *)
 (* We can observe two groups of terms: one right and above (n, 0) *)
@@ -112,33 +111,32 @@ have -> : around_n_0 = 0.
   Fail set c := v _ _.
   (* This one will be produced by the normalization *)
   pose c21 := v (int.shift 2 n) (int.shift 1 0).
-  rewrite [c40]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+  rewrite [c40]v_Sn2; last by rewrite /v.precond.Sn2; lia.
   rewrite {c40} -/c30 -/c20 -/c21.
-  rewrite [c30]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+  rewrite [c30]v_Sn2; last by rewrite /v.precond.Sn2; lia.
   rewrite {c30} -/c20 -/c11 -/c10.
-  rewrite [c21]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+  rewrite [c21]v_SnSk; last by rewrite /v.precond.SnSk; lia.
   rewrite {c21} -/c11 -/c20 -/c10.
-  rewrite [c20]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+  rewrite [c20]v_Sn2; last by rewrite /v.precond.Sn2; lia.
   rewrite {c20} -/c00 -/c10 -/c01.
-  rewrite [c02]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+  rewrite [c02]v_Sk2; last by rewrite /v.precond.Sk2; lia.
   rewrite {c02} -/c00 -/c01.
-  rewrite [c11]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+  rewrite [c11]v_SnSk; last by rewrite /v.precond.SnSk; lia.
   rewrite {c11} -/c00 -/c01 -/c10.
  (* See comments about the protocole in the second normalization. *)
   set n1 := int.shift 1 n.
   set n2 := int.shift 2 n.
   (* Now we are under the stairs. *)
-  have hn1 : n1%:Q = n%:Q + rat_of_Z 1 by rewrite rat_of_ZEdef rmorphD.
-  have hn2 : n2%:Q = n%:Q + rat_of_Z 2 by rewrite !rmorphD /=; rat_field.
+  have hn1 : n1%:Q = n%:Q + 1%:Q by rewrite rmorphD.
+  have hn2 : n2%:Q = n%:Q + 2%:Q by rewrite !rmorphD /=; ring.
   rewrite /v.P_cf0 /v.P_cf1 /v.P_cf2 /v.P_cf3.
   rewrite /v.P_cf4 /v.Q_cf0_0 /v.Q_cf0_1.
   rewrite /v.Q_cf1_0 /v.Sk2_cf0_0 /v.Sk2_cf0_1.
   rewrite /v.Sn2_cf0_0 /v.Sn2_cf0_1 /v.Sn2_cf1_0.
   rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
-  rewrite hn1 hn2.
-  rat_field.
+  rewrite {n1}hn1 {n2}hn2.
+  field; ring_lia.
   (* above: Finished transaction in 16. secs (16.761047u,0.s) *)
-  move: nge2; clear; goal_to_lia; intlia.
 (* Now the normalization of the second part of the expression causes
    no problem. *)
 suff around_p_p_eq_0 : pv_S0_S1 + q_S1_S0 + pv_S1_S1 + remP = 0.
@@ -149,8 +147,8 @@ rewrite {}/q_S1_S0 {}/q_S1_1 {}/pv_S1_S1 {}/pv_S0_S1 {}/pv_0_S1.
 rewrite {}/remP [bigop]unlock /=.
 (* Avoid backward shifts, as our rewriting rules cannot deal with them. *)
 set p := n - 1.
-have -> : n = int.shift 1 p. by rewrite /p; intlia.
-have hp : (1 : int) <= p by rewrite /p; intlia.
+have -> : n = int.shift 1 p. by rewrite /p; lia.
+have hp : (1 : int) <= p by rewrite /p; lia.
 (* We can now clear n. *)
 clearbody p; clear n nge2.
 (* Unrolling the definition of P. *)
@@ -182,40 +180,40 @@ set v54 := v (int.shift 5 p) (int.shift 4 p).
 set v55 := v (int.shift 5 p) (int.shift 5 p).
 Fail set vvv := v _ _.
 (* Normalization modulo annulators of v. *)
-rewrite [v55]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v55]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v55} -/v54 -/v53 -/v52 -/v51 -/v50.
-rewrite [v54]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v54]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v54} -/v53 -/v52 -/v51 -/v50.
-rewrite [v53]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v53]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v53} -/v52 -/v51 -/v50.
-rewrite [v52]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v52]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v52} -/v51 -/v50.
-rewrite [v44]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v44]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v44} -/v43 -/v42 -/v41 -/v40.
-rewrite [v43]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v43]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v43} -/v42 -/v41 -/v40.
-rewrite [v42]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v42]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v42} -/v41 -/v40.
-rewrite [v33]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v33]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v33} -/v32 -/v31 -/v30.
-rewrite [v32]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v32]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v32} -/v31 -/v30.
-rewrite [v22]v_Sk2; last by rewrite /v.precond.Sk2; intlia.
+rewrite [v22]v_Sk2; last by rewrite /v.precond.Sk2; lia.
 rewrite {v22} -/v21 -/v20.
 (* Use v_SnSk and v_Sn2 in alternation: *)
-rewrite [v51]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+rewrite [v51]v_SnSk; last by rewrite /v.precond.SnSk; lia.
 rewrite {v51} -/v50 -/v40 -/v41.
-rewrite [v50]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+rewrite [v50]v_Sn2; last by rewrite /v.precond.Sn2; lia.
 rewrite {v50} -/v40 -/v30 -/v31.
-rewrite [v41]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+rewrite [v41]v_SnSk; last by rewrite /v.precond.SnSk; lia.
 rewrite {v41} -/v40 -/v30 -/v31.
-rewrite [v40]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+rewrite [v40]v_Sn2; last by rewrite /v.precond.Sn2; lia.
 rewrite {v40} -/v30 -/v20 -/v21.
-rewrite [v31]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+rewrite [v31]v_SnSk; last by rewrite /v.precond.SnSk; lia.
 rewrite {v31} -/v30 -/v20 -/v21.
-rewrite [v30]v_Sn2; last by rewrite /v.precond.Sn2; intlia.
+rewrite [v30]v_Sn2; last by rewrite /v.precond.Sn2; lia.
 rewrite {v30} -/v20 -/v10 -/v11.
-rewrite [v21]v_SnSk; last by rewrite /v.precond.SnSk; intlia.
+rewrite [v21]v_SnSk; last by rewrite /v.precond.SnSk; lia.
 (* Now we are under the stair, we unfold the coefficients of the operators *)
 (* and call field. *)
 rewrite {v21} -/v20 -/v10 -/v11.
@@ -228,15 +226,11 @@ set p4 := int.shift 4 p.
 set p5 := int.shift 5 p.
 (* We pre-compute the desired expressions for the embeddings in rat of the p* *)
 (* that will occur after unfolding the operators. *)
-have kp1 : p1%:Q = p%:Q + 1 by rewrite /p1 int.shift2R.
-have kp2 : p2%:Q = p%:Q + rat_of_Z 2.
-  by rewrite /p1 int.shift2R rat_of_ZEdef.
-have kp3 : p3%:Q = p%:Q + rat_of_Z 3.
-  by rewrite /p1 int.shift2R rat_of_ZEdef.
-have kp4 : p4%:Q = p%:Q + rat_of_Z 4.
-  by rewrite /p1 int.shift2R rat_of_ZEdef.
-have kp5 : p5%:Q = p%:Q + rat_of_Z 5.
-  by rewrite /p1 int.shift2R rat_of_ZEdef.
+have kp1 : p1%:Q = p%:Q + 1 by rewrite int.shift2R.
+have kp2 : p2%:Q = p%:Q + 2%:Q by rewrite int.shift2R.
+have kp3 : p3%:Q = p%:Q + 3%:Q by rewrite int.shift2R.
+have kp4 : p4%:Q = p%:Q + 4%:Q by rewrite int.shift2R.
+have kp5 : p5%:Q = p%:Q + 5%:Q by rewrite int.shift2R.
 rewrite /v.P_cf0 /v.P_cf1 /v.P_cf2 /v.P_cf3.
 rewrite /v.P_cf4 /v.Q_cf0_0 /v.Q_cf0_1.
 rewrite /v.Q_cf1_0 /v.Sk2_cf0_0 /v.Sk2_cf0_1.
@@ -245,10 +239,9 @@ rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
 (* These rewriting catch the occurrences of p*%:~R modulo conversion, even *)
 (* those that are not folded and display other forms in terms of nested *)
 (* shift and shift1, because the head symbols in the rhs of kp* is _%:~R. *)
-rewrite kp1 kp2 kp3 kp4 kp5.
-rat_field.
+rewrite {p1}kp1 {p2}kp2 {p3}kp3 {p4}kp4 {p5}kp5.
+field; ring_lia.
 (* above: Finished transaction in 157. secs (156.849802u,0.252016s) *)
-by move: hp; clear; goal_to_lia; intlia.
 Qed.
 
 End AnnOfB.
