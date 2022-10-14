@@ -24,6 +24,9 @@ publications:
 - pub_url: https://hal.inria.fr/hal-00984057
   pub_title: A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)
   pub_doi: 10.1007/978-3-319-08970-6_11
+- pub_url: https://drops.dagstuhl.de/opus/volltexte/2022/16738/pdf/LIPIcs-ITP-2022-29.pdf
+  pub_title: Reflexive Tactics for Algebra, Revisited
+  pub_doi: 10.4230/LIPIcs.ITP.2022.29
 
 authors:
 - name: Frédéric Chyzak
@@ -36,6 +39,8 @@ authors:
 maintainers:
 - name: Assia Mahboubi
   nickname: amahboubi
+- name: Kazuhiko Sakaguchi
+  nickname: pi8027
 
 opam-file-maintainer: assia.mahboubi@inria.fr
 
@@ -47,7 +52,7 @@ license:
 
 supported_coq_versions:
   text: 8.13 or later
-  opam: '{(>= "8.13" & < "8.16~") | (= "dev")}'
+  opam: '{(>= "8.13" & < "8.17~") | (= "dev")}'
 
 tested_coq_opam_versions:
 - version: '1.12.0-coq-8.13'
@@ -66,11 +71,21 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.14.0-coq-8.15'
   repo: 'mathcomp/mathcomp'
+- version: '1.15.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.15.0-coq-8.14'
+  repo: 'mathcomp/mathcomp'
+- version: '1.15.0-coq-8.15'
+  repo: 'mathcomp/mathcomp'
+- version: '1.15.0-coq-8.16'
+  repo: 'mathcomp/mathcomp'
 - version: 'coq-8.13'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.14'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.15'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.16'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-dev'
   repo: 'mathcomp/mathcomp-dev'
@@ -78,7 +93,7 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{(>= "1.12" & < "1.15~") | (= "dev")}'
+    version: '{(>= "1.12" & < "1.16~") | (= "dev")}'
   description: |-
     [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
 - opam:
@@ -106,12 +121,12 @@ dependencies:
     [MathComp bigenough 1.0.0 or later](https://github.com/math-comp/bigenough)
 - opam:
     name: coq-mathcomp-zify
-    version: '{(>= "1.2.0") | (= "dev")}'
+    version: '{>= "1.2.0"}'
   description: |-
     [Mczify](https://github.com/math-comp/mczify) 1.2.0 or later
 - opam:
     name: coq-mathcomp-algebra-tactics
-    version: '{(>= "0.2.0") | (= "dev")}'
+    version: '{>= "0.2.0"}'
   description: |-
     [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 0.2.0 or later
 
