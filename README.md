@@ -39,6 +39,7 @@ remains the sole trusted code base.
   - Thomas Sibut-Pinote (initial)
 - Coq-community maintainer(s):
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
+  - Kazuhiko Sakaguchi ([**@pi8027**](https://github.com/pi8027))
 - License: [CeCILL-C](LICENSE)
 - Compatible Coq versions: 8.13 or later
 - Additional dependencies:
@@ -54,6 +55,7 @@ remains the sole trusted code base.
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 
   - [A Computer-Algebra-Based Formal Proof of the Irrationality of ζ(3)](https://hal.inria.fr/hal-00984057) doi:[10.1007/978-3-319-08970-6_11](https://doi.org/10.1007/978-3-319-08970-6_11)
+  - [Reflexive Tactics for Algebra, Revisited](https://drops.dagstuhl.de/opus/volltexte/2022/16738/pdf/LIPIcs-ITP-2022-29.pdf) doi:[10.4230/LIPIcs.ITP.2022.29](https://doi.org/10.4230/LIPIcs.ITP.2022.29)
 
 ## Building and installation instructions
 
