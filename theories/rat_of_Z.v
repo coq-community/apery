@@ -1,6 +1,6 @@
 Require Import ZArith.
 From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Export ssrZ.
+From mathcomp.zify Require Export ssrZ.
 Require Import tactics.
 
 Set Implicit Arguments.
