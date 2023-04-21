@@ -319,7 +319,7 @@ rewrite /xp ler_pmul2r; last first.
   by rewrite invr_gt0 RealAlg.ltr_to_alg.
 apply: ler_add.
   by rewrite RealAlg.ler_to_alg rmorphD /=; apply: alpha_incr; rewrite ler0z.
-rewrite ler_sqrt; last exact/deltap_pos/addr_ge0.
+rewrite ler_sqrt; last by try apply/ltW; apply/deltap_pos/addr_ge0.
 by rewrite /deltap RealAlg.ler_to_alg rmorphD; apply: delta_incr; rewrite ler0z.
 Qed.
 
