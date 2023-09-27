@@ -1,3 +1,4 @@
+From HB Require Import structures.
 Require Import ZArith.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.zify Require Export ssrZ.
@@ -45,12 +46,14 @@ Export rat_of_ZDef.
 Fact rat_of_Z_is_additive : additive rat_of_Z.
 Proof. by move=> m n; rewrite rat_of_ZEdef !raddfB. Qed.
 
-Canonical rat_of_Z_additive := Additive rat_of_Z_is_additive.
+HB.instance Definition _ :=
+  GRing.isAdditive.Build Z rat rat_of_Z rat_of_Z_is_additive.
 
 Fact rat_of_Z_is_multiplicative : multiplicative rat_of_Z.
 Proof. by rewrite rat_of_ZEdef; exact: rmorphismMP [rmorphism of _ \o _]. Qed.
 
-Canonical rat_of_Z_rmorphism := AddRMorphism rat_of_Z_is_multiplicative.
+HB.instance Definition _ :=
+  GRing.isMultiplicative.Build Z rat rat_of_Z rat_of_Z_is_multiplicative.
 
 Lemma zify_rat_of_Z_subproof n : rat_of_Z n = (int_of_Z n)%:~R.
 Proof. by rewrite rat_of_ZEdef. Qed.
