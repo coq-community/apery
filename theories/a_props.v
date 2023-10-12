@@ -34,7 +34,7 @@ Proof. by apply: rpred_sum => ?; rewrite rpred_zify. Qed.
 Fact lt_0_a (k : int) : 0 <= k -> 0 < a k.
 Proof.
 move=> h0k; rewrite /a big_int_recl /=; last lia.
-apply: ltr_paddr; last exact: lt_0_c.
+apply: ltr_wpDr; last exact: lt_0_c.
 by rewrite big_int_cond sumr_ge0 => // i ?; apply/ltW/lt_0_c; lia.
 Qed.
 
@@ -51,7 +51,7 @@ Proof.
 move=> lenm.
 have [le0n | ltn0] := lerP 0 n; last by rewrite {1}/a big_geqz ?le_0_a; lia.
 have leSnSm : n + 1 <= m + 1 by lia.
-rewrite /a (big_cat_int _ _ _ _ leSnSm) //=; apply: ler_paddr=> //; last first.
+rewrite /a (big_cat_int _ _ _ _ leSnSm) //=; apply: ler_wpDr=> //; last first.
   rewrite [X in X <= _]big_int_cond [X in _ <= X]big_int_cond /=.
   apply: ler_sum => i; rewrite andbT => /andP [hi hin]; apply: c_incr; lia.
 rewrite big_int_cond; apply: sumr_ge0 => i; rewrite andbT => /andP [hni hmi].
@@ -74,8 +74,8 @@ Proof. by rewrite /rho a3_eq a2_eq. Qed.
 
 Fact le_1_rho (i : int) : 0 <= i -> 1 <= rho i.
 Proof.
-move=> lei0; rewrite /rho ler_pdivl_mulr; last exact: lt_0_a.
-by rewrite mul1r; apply: a_incr; rewrite ler_paddr.
+move=> lei0; rewrite /rho ler_pdivlMr; last exact: lt_0_a.
+by rewrite mul1r; apply: a_incr; rewrite ler_wpDr.
 Qed.
 
 Fact lt_0_rho (i : int) : 0 <= i -> 0 < rho i.
@@ -97,12 +97,12 @@ Definition beta (x : rat) : rat := ((x + rat_of_Z 1) / (x + rat_of_Z 2)) ^+ 3.
 (* END TODO *)
 
 Fact lt_0_beta (x : rat) : 0 <= x -> 0 < beta x.
-Proof. by move=> le0i; apply/exprn_gt0/divr_gt0; apply/ltr_paddl. Qed.
+Proof. by move=> le0i; apply/exprn_gt0/divr_gt0; apply/ltr_wpDl. Qed.
 
 Fact lt_beta_1 (x : rat) : 0 <= x -> beta x < 1.
 Proof.
 move=> le0i; rewrite /beta expr_lte1 //; last by apply/divr_ge0; apply/addr_ge0.
-by rewrite ltr_pdivr_mulr ?ltr_paddl // mul1r ltr_add2l lt_rat_of_Z.
+by rewrite ltr_pdivrMr ?ltr_wpDl // mul1r ltrD2l lt_rat_of_Z.
 Qed.
 
 (* TODO : FIX/MOVE *)
@@ -115,21 +115,21 @@ Definition alpha (x : rat) :=
 Fact lt_2_alphaN (x : rat) : 0 <= x ->  rat_of_Z 2 < alpha x.
 Proof.
 move=> le0i; rewrite /alpha.
-have npos : 0 < x + rat_of_Z 2 by apply: ltr_paddl; rewrite ?ler0z.
-rewrite ltr_pdivl_mulr; last by apply: exprn_gt0.
+have npos : 0 < x + rat_of_Z 2 by apply: ltr_wpDl; rewrite ?ler0z.
+rewrite ltr_pdivlMr; last by apply: exprn_gt0.
 have trans: rat_of_Z 2 * (x + rat_of_Z 2) ^+ 3 <=
             rat_of_Z 2 * (x + rat_of_Z 2) ^+ 2 * (rat_of_Z 2 * x + rat_of_Z 3).
-  rewrite [_ ^+ 3]exprSr mulrA ler_wpmul2l //.
+  rewrite [_ ^+ 3]exprSr mulrA ler_wpM2l //.
     by rewrite mulr_ge0 // exprn_ge0 // addr_ge0.
-  by apply: ler_add (ler_pemull _ _) _ => //; ring_lia.
+  by apply: lerD (ler_peMl _ _) _ => //; ring_lia.
 apply: le_lt_trans trans _.
 suff trans : rat_of_Z 2 * (x + rat_of_Z 2) ^+ 2 <
              rat_of_Z 17 * x ^ 2 + rat_of_Z 51 * x + rat_of_Z 39.
-  by rewrite ltr_pmul2r // ltr_paddl // mulr_ge0.
-rewrite -exprnP sqrrD !mulrDr; apply: ler_lt_add; last first.
+  by rewrite ltr_pM2r // ltr_wpDl // mulr_ge0.
+rewrite -exprnP sqrrD !mulrDr; apply: ler_ltD; last first.
   by rewrite [_ < _]refines_eq.
-apply: ler_add; first by rewrite ler_wpmul2r ?exprn_ge0 // [_ <= _]refines_eq.
-by rewrite [x * _]mulrC mulrA -mulrDl ler_wpmul2r // [_ <= _]refines_eq.
+apply: lerD; first by rewrite ler_wpM2r ?exprn_ge0 // [_ <= _]refines_eq.
+by rewrite [x * _]mulrC mulrA -mulrDl ler_wpM2r // [_ <= _]refines_eq.
 Qed.
 
 
@@ -143,7 +143,7 @@ move=> le0i; rewrite -subr_ge0; set rhs := (X in 0 <= X).
 have -> : rhs = (rat_of_Z 51 * x ^+ 4 + rat_of_Z 456 * x ^+ 3 +
                  rat_of_Z 1497 * x ^+ 2 + rat_of_Z 2136 * x + rat_of_Z 1121) /
                 ((x + rat_of_Z 3) ^+ 3 * (x + rat_of_Z 2) ^+ 3).
-  by rewrite /rhs /alpha; field; rewrite !lt0r_neq0 // ltr_paddl.
+  by rewrite /rhs /alpha; field; rewrite !lt0r_neq0 // ltr_wpDl.
 by rewrite divr_ge0 ?addr_ge0 // mulr_ge0 // exprn_ge0 // addr_ge0.
 Qed.
 
@@ -154,7 +154,7 @@ Fact lt_0_delta (x : rat) : 0 <= x -> 0 < delta x.
 Proof.
 move=> le0x; rewrite /delta subr_gt0.
 have /lt_trans -> //: rat_of_Z 4 * beta x < rat_of_Z 4.
-  by rewrite gtr_pmulr // lt_beta_1.
+  by rewrite gtr_pMr // lt_beta_1.
 have -> : rat_of_Z 4 = rat_of_Z 2 ^+ 2 by ring.
 rewrite -subr_gt0 subr_sqr mulr_gt0 //.
   rewrite subr_gt0; exact: lt_2_alphaN.
@@ -173,7 +173,7 @@ have -> : rhs = (rat_of_Z 3456 * x ^ 10 + rat_of_Z 77550 * x ^  9 +
                  rat_of_Z 8307151) /
                 ((x + rat_of_Z 3) ^ 6 * (x + rat_of_Z 2) ^ 6).
   rewrite {}/rhs /delta /alpha /beta.
-  by field; rewrite !lt0r_neq0 // ltr_paddl.
+  by field; rewrite !lt0r_neq0 // ltr_wpDl.
 by rewrite divr_ge0 ?addr_ge0 // mulr_ge0 // exprn_ge0 // addr_ge0.
 Qed.
 
@@ -265,37 +265,37 @@ suff rho_in_Iyx i (le2i : 2%:~R <= i) : yp i <= QtoR (rho i) <= xp i.
   by have /andP[yr rx] := rho_in_Iyx _ le2k; apply: hr_p_pos.
 have lt_0_xp j : 0 <= j -> 0 < xp j.
   move=> le0j; rewrite /xp; apply: divr_gt0.
-    exact/ltr_paddr/lt_Ralpha_0/le0j/sqrtr_ge0.
+    exact/ltr_wpDr/lt_Ralpha_0/le0j/sqrtr_ge0.
   by rewrite RealAlg.ltr_to_alg.
 have le_1_xp j (le0j : 0 <= j) : 1 <= xp j.
-  rewrite /xp lter_pdivl_mulr ?mul1r; last by rewrite RealAlg.ltr_to_alg.
+  rewrite /xp lter_pdivlMr ?mul1r; last by rewrite RealAlg.ltr_to_alg.
   have trans : QtoR (rat_of_Z 2) <= Ralpha j%:Q.
     by apply: ltW; rewrite RealAlg.ltr_to_alg lt_2_alphaN // ler0z.
-  apply: le_trans trans _; rewrite ler_addl; exact: sqrtr_ge0.
+  apply: le_trans trans _; rewrite lerDl; exact: sqrtr_ge0.
 have le_yp_1 j : 2%:~R <= j -> yp j <= 1.
   move=> le2j.
   have le0j : 0 <= j by apply: le_trans le2j; rewrite le0z_nat.
   have -> : yp j = Rbeta j%:Q / xp j.
     by rewrite -xyp // mulrAC mulfV ?mul1r //; apply/lt0r_neq0/lt_0_xp.
-  rewrite ler_pdivr_mulr ?lt_0_xp // mul1r.
+  rewrite ler_pdivrMr ?lt_0_xp // mul1r.
   by apply/le_trans/le_1_xp/le0j/ltW/lt_Rbeta_1.
 have hr_incr j x y : 0 <= j -> 0 < x -> x <= y -> hr j x <= hr j y.
   move=> le0j lt0x lexy; rewrite -subr_ge0 /hr addrAC [- (Ralpha _ - _)]opprD.
   rewrite opprK addrA addrN add0r -mulrBr; apply: mulr_ge0.
     by rewrite RealAlg.ler_to_alg; apply/ltW/lt_0_beta; rewrite ler0z.
-  by rewrite subr_ge0 lef_pinv // posrE //; apply: lt_le_trans lexy.
+  by rewrite subr_ge0 lef_pV2 // posrE //; apply: lt_le_trans lexy.
 suff rho_in_I1x : 1 <= QtoR (rho i) <= xp i.
   by case/andP: rho_in_I1x => h1 ->; rewrite andbT; exact/le_trans/h1/le_yp_1.
 suff lerx : QtoR (rho i) <= xp i.
   by rewrite [X in X && _]RealAlg.ler_to_alg le_1_rho //=; apply: le_trans le2i.
 suff im_hr j x : 0 <= j -> 0 < x -> x <= xp j -> hr j x <= xp (j + 1).
   have base_case : QtoR (rho 2) <= xp 2.
-    rewrite /xp ler_pdivl_mulr; last by rewrite RealAlg.ltr_to_alg.
-    rewrite -ler_subl_addl; set lhs := (X in X <= _).
+    rewrite /xp ler_pdivlMr; last by rewrite RealAlg.ltr_to_alg.
+    rewrite -lerBlDl; set lhs := (X in X <= _).
     have [le_lhs_0 | lt_0_lhs] := ler0P lhs.
       exact/le_trans/sqrtr_ge0/le_lhs_0.
     rewrite -[lhs]gtr0_norm // -sqrtr_sqr; apply: ler_wsqrtr; rewrite /lhs.
-    rewrite -rmorphM /Ralpha -rmorphB -rmorphX /deltap RealAlg.ler_to_alg.
+    rewrite -rmorphM /Ralpha -rmorphB -rmorphXn /deltap RealAlg.ler_to_alg.
     have ->: 2%:~R = rat_of_Z 2 by rewrite rat_of_ZEdef.
     by rewrite /delta rho2_eq /alpha [_ <= _]refines_eq; vm_compute.
   case: i le2i; last by discriminate.
@@ -315,9 +315,9 @@ have -> : hr j (xp j) = xp j.
   by rewrite fac_p // subrr mul0r oppr0.
 move=> h; apply: le_trans h _.
 suff xp_incr : xp j <= xp (j + 1) by [].
-rewrite /xp ler_pmul2r; last first.
+rewrite /xp ler_pM2r; last first.
   by rewrite invr_gt0 RealAlg.ltr_to_alg.
-apply: ler_add.
+apply: lerD.
   by rewrite RealAlg.ler_to_alg rmorphD /=; apply: alpha_incr; rewrite ler0z.
 rewrite ler_sqrt; last by try apply/ltW; apply/deltap_pos/addr_ge0.
 by rewrite /deltap RealAlg.ler_to_alg rmorphD; apply: delta_incr; rewrite ler0z.
@@ -366,14 +366,14 @@ Proof.
 move=> lt1i ltiNrho.
 rewrite /Ka; set Ka' := (X in a 1 * X *  _ <_).
 suff : Ka' * 33%:Q ^ i < a i / a 1.
-  rewrite  [in X in X -> _]ltr_pdivl_mulr; last exact: lt_0_a.
+  rewrite  [in X in X -> _]ltr_pdivlMr; last exact: lt_0_a.
   by rewrite mulrC [in X in X -> _]mulrA.
 rewrite -[X in _ < X](@telescope_prod_int _ 1 i (fun i => a i)) //; last first.
   by move=> /= k /andP [le1k ltki]; apply/a_neq0/le_trans/le1k.
-rewrite (big_cat_int _ _ _ _ (ltW ltiNrho)) /=; last by rewrite ler_addr.
+rewrite (big_cat_int _ _ _ _ (ltW ltiNrho)) /=; last by rewrite lerDr.
 suff hrho_maj : 33%:Q ^ i / 33%:Q ^+ N_rho.+1 < 
                   \prod_(Posz N_rho + 1 <= i0 < i :> int) (a (i0 + 1) / a i0).
-  rewrite /Ka' mulrAC -mulrA ltr_pmul2l; first exact: hrho_maj.
+  rewrite /Ka' mulrAC -mulrA ltr_pM2l; first exact: hrho_maj.
   rewrite big_int_cond; apply: prodr_gt0 => j; rewrite andbT => /andP [hj _].
   exact/lt_0_rho/le_trans/hj.
 rewrite -PoszD; case: i lt1i ltiNrho => i //.
@@ -384,7 +384,7 @@ Qed.
 
 Lemma a_asympt (n : nat) : (N_rho + 1 < n)%N -> 1 / a n < Ka^-1 / 33%:Q ^ n.
 Proof.
-move=> hn; rewrite ltr_pdivr_mulr; last exact: lt_0_a.
-rewrite -invfM ltr_pdivl_mull; last exact/mulr_gt0/exprz_gt0/isT/lt_0_Ka.
+move=> hn; rewrite ltr_pdivrMr; last exact: lt_0_a.
+rewrite -invfM ltr_pdivlMl; last exact/mulr_gt0/exprz_gt0/isT/lt_0_Ka.
 by rewrite mulr1; apply/a_maj/hn/leq_trans/hn.
 Qed.

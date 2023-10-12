@@ -15,12 +15,11 @@ Lemma ghn_Sn_inhom m n : n >= 0 ->
   ghn m (int.shift 1 n) = ghn m n + ((n%:Q + 1)^m)^-1.
 Proof.
 move=> pn. 
-rewrite /ghn int.shift2Z big_int_recr /= ?rmorphD //=.
-by rewrite -ler_subl_addr.
+by rewrite /ghn int.shift2Z big_int_recr /= ?rmorphD //= -lerBlDr.
 Qed.
 
 Lemma ghn_small (m : nat) (n : int) : n <= 0 -> ghn m n = 0.
-Proof. by move=> hn; rewrite /ghn big_geqz // ger_addr. Qed.
+Proof. by move=> hn; rewrite /ghn big_geqz // gerDr. Qed.
 
 Lemma ghn1 (m : nat) : ghn m 1 = 1.
 Proof. by rewrite /ghn big_int_recr //= big_nil add0r exp1rz. Qed.

@@ -298,7 +298,7 @@ Proof.
 elim : m n => [ | m Hm] n.
   by rewrite ffactn1 ffactn0 mul1r subr0.
 rewrite ffactnS Hm ffactnS -mulrA; repeat congr (_ * _).
-by rewrite -!addrA; congr(_ + _); rewrite -addn1 -oppz_add addrC.
+by rewrite -!addrA; congr(_ + _); rewrite -addn1 -oppzD addrC.
 Qed.
 
 (* Do not know yet if signed conditions are better expressed as such or as

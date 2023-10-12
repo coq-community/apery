@@ -56,7 +56,7 @@ case: m => m; case: n => n; rewrite /index_iotaz => //=.
     by move=> mn; apply/eqP; rewrite subn_eq0.
   + by rewrite lez_nat ltnW // subzn ?(ltnW hnm) // absz_nat.
 - by rewrite size_cat size_rev /index_iota /= !size_map !size_iota addnC subn0.
-- rewrite size_map size_rev /index_iota size_iota !NegzE ler_opp2 lez_nat.
+- rewrite size_map size_rev /index_iota size_iota !NegzE lerN2 lez_nat.
   rewrite opprK addrC; case: ifP => hnm; first by rewrite subzn.
   case: (altP (n =P m)) => [-> | enm]; first by rewrite subnn.
   apply/eqP; rewrite subn_eq0 ltnNge; move: hnm; rewrite ltnS leq_eqVlt.
@@ -76,17 +76,17 @@ case: m => m; case: n => n; rewrite /index_iotaz.
 - by rewrite in_nil; case: i => xi //; rewrite andbF.
 - rewrite mem_cat; apply/orP/idP => [[] | ].
     + rewrite mem_rev; case/mapP=> xi; rewrite mem_iota add0n; case/andP=> _ hi ->.
-      by rewrite andbT !NegzE ler_opp2 /= lez_nat.
+      by rewrite andbT !NegzE lerN2 /= lez_nat.
     + case/mapP=> xi; rewrite mem_index_iota; case/andP=> _ hi -> /=.
       by rewrite ltz_nat.
   case: i => xi.
   + by rewrite /= => hi; right; apply/mapP; exists xi; rewrite // mem_index_iota.
-  + rewrite andbT {1}(NegzE xi) (NegzE m) ler_opp2 => hi; left; rewrite mem_rev.
+  + rewrite andbT {1}(NegzE xi) (NegzE m) lerN2 => hi; left; rewrite mem_rev.
     rewrite  mem_map ?mem_index_iota //; exact: Negz_inj.
 - apply/idP/idP.
     case/mapP=> xi; rewrite mem_rev mem_index_iota => hi ->.
-    by rewrite !NegzE  ler_opp2 ltr_opp2 andbC ltz_nat lez_nat.
-  case: i => // xi; rewrite !NegzE ler_opp2 ltr_opp2 lez_nat ltz_nat andbC => hi.
+    by rewrite !NegzE  lerN2 ltrN2 andbC ltz_nat lez_nat.
+  case: i => // xi; rewrite !NegzE lerN2 ltrN2 lez_nat ltz_nat andbC => hi.
   rewrite -NegzE mem_map; last exact: Negz_inj.
   by rewrite mem_rev mem_index_iota.
 Qed.
@@ -112,12 +112,12 @@ case: m => m; case: n => n // hmn hi; rewrite /index_iotaz /=.
     by rewrite size_iota -ek leq_subr.
   - have {}hi : (i - m.+1 < n)%N.
       move: hi; rewrite NegzE opprK -PoszD ger0_norm //.
-      by rewrite PoszD -lter_sub_addr subzn ?ltz_nat // ltnNge -ltnS him.
+      by rewrite PoszD -lterBDr subzn ?ltz_nat // ltnNge -ltnS him.
     rewrite (nth_map 0%N); last by rewrite /index_iota size_iota subn0.
     rewrite /index_iota subn0 nth_iota // add0n NegzE addrC subzn //.
     by rewrite ltnNge -ltnS him.
 - have {}hmn : (n <= m)%N.
-    by  move: hmn; rewrite !NegzE ler_oppl opprK lez_nat.
+    by  move: hmn; rewrite !NegzE lerNl opprK lez_nat.
   have hi' : (i < m - n)%N.
     by move: hi; rewrite !NegzE opprK addrC subzn.
   have hi'' : (i <= m)%N.
@@ -202,7 +202,7 @@ Lemma big_geqz m n (P : pred int) F :
 Proof.
 case: m => m; case: n => // n; rewrite /index_iotaz ?big_nil //.
   by rewrite lez_nat /index_iota; move/eqnP->; rewrite big_nil.
-rewrite ![in _ <= _]NegzE ler_opp2 lez_nat /index_iota; move/eqnP->.
+rewrite ![in _ <= _]NegzE lerN2 lez_nat /index_iota; move/eqnP->.
 by rewrite big_nil.
 Qed.
 
@@ -220,7 +220,7 @@ case: m => m; case: n => n // hmn.
      by rewrite addNr big_map -NegzE /index_iotaz /= big_cons big_map.
   rewrite addrC subzSS add0r -!NegzE /index_iotaz -(addn1 m.+1).
   by rewrite /index_iota subn0 iotaD map_cat rev_cat add0n /= big_cons.
-- case: m hmn => [ | m] //; rewrite !NegzE ltr_opp2 ltz_nat => hmn.
+- case: m hmn => [ | m] //; rewrite !NegzE ltrN2 ltz_nat => hmn.
   rewrite addrC subzSS add0r -!NegzE /index_iotaz /index_iota subSn //.
   by rewrite -[(_ - _).+1]addn1 iotaD rev_cat map_cat subnKC // big_cons.
 Qed.
@@ -240,12 +240,12 @@ Proof.
 suff -> : index_iotaz (m + a) n = map (fun i => i + a) (index_iotaz m (n - a)).
   by rewrite big_map.
 apply: (@eq_from_nth _ 0).
-  by rewrite size_map !size_index_iotaz ler_sub_addl addrC -addrA opprD.
+  by rewrite size_map !size_index_iotaz lerBDl addrC -addrA opprD.
 move=> i; rewrite size_index_iotaz; case: ifP => // hman hi.
 rewrite nth_index_iotaz // (nth_map 0); last first.
-  rewrite size_index_iotaz ler_sub_addr hman.
+  rewrite size_index_iotaz lerBDr hman.
   by move: hi; rewrite opprD -addrCA addrC.
-rewrite nth_index_iotaz 1?addrAC // ?ler_sub_addr //.
+rewrite nth_index_iotaz 1?addrAC // ?lerBDr //.
 by move: hi; rewrite opprD addrA.
 Qed.
 
@@ -277,7 +277,7 @@ Lemma index_iotaz_add n m p : m <= n -> n <= p ->
 Proof.
 move=> hmn hnp.
 have h : `|n - m| + `|p - n| = `|p - m|%N.
-  move/leqifP: (leqif_add_distz p n m).
+  move/leqifP: (leqifD_distz p n m).
   rewrite hnp hmn orbT addnC; move/eqP; move/(f_equal Posz).
   by rewrite PoszD; move<-.
 apply: (@eq_from_nth _ 0); rewrite size_cat !size_index_iotaz hmn hnp.
@@ -290,7 +290,7 @@ apply: (@eq_from_nth _ 0); rewrite size_cat !size_index_iotaz hmn hnp.
   have hmn' : `|n - m |  = n - m by apply: ger0_norm; rewrite subr_gte0.
   rewrite nth_index_iotaz //; last first.
     rewrite -subzn; last by  rewrite leqNgt hi2.
-    by rewrite lter_sub_addr addrC h ltz_nat.
+    by rewrite lterBDr addrC h ltz_nat.
   rewrite nth_index_iotaz //; last exact: le_trans hnp.
   rewrite -subzn; last by  rewrite leqNgt hi2.
   move: hmn'; rewrite abszE; move->. rewrite addrCA opprB.
@@ -310,7 +310,7 @@ Lemma big_int_recr m n F : m <= n ->
   \big[op/idx]_(m <= i < n + 1 :> int) F i =
      op  (\big[op/idx]_(m <= i < n :> int) F (i)) (F n).
 Proof.
-move=> hmn; rewrite (@big_cat_int n) ?ler_paddr //=.
+move=> hmn; rewrite (@big_cat_int n) ?ler_wpDr //=.
 rewrite big_addz2l (@big_ltz 0 1) // add0r (@big_geqz 1 1) // add0r.
 by rewrite Monoid.Theory.mulm1.
 Qed.
@@ -339,7 +339,7 @@ rewrite Monoid.Theory.mul1m.
 rewrite big_ltz_cond // eqxx big_hasC; last first.
   apply/hasPn => k. rewrite mem_index_iotaz; case/andP=> hkj _.
   suff : j < k by rewrite lt_def eq_sym; case/andP.
-  by apply: lt_le_trans hkj; rewrite cpr_add.
+  by apply: lt_le_trans hkj; rewrite cprD.
 by rewrite Monoid.Theory.mulm1.
 Qed.
 
@@ -409,7 +409,7 @@ transitivity (\prod_(0 <= i < bma) (f (Posz (i + 1)%N + a) / f (Posz i + a))).
   apply: congr_big_nat => // i _ ; by rewrite PoszD addrAC.
 rewrite (@telescope_prod_nat _ _ _ (fun i => f (Posz i + a))%R) //.
 - by rewrite add0r -e addrNK.
-- move=> k /andP [h0k hbma]; apply: hf; rewrite ler_addr -ltr_subr_addr e.
+- move=> k /andP [h0k hbma]; apply: hf; rewrite lerDr -ltrBrDr e.
   by rewrite lez_nat ltz_nat h0k /=.
 - have : 0 < b - a by rewrite subr_gt0.
   by rewrite e ltz_nat.

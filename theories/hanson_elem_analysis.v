@@ -55,7 +55,7 @@ Lemma exp_quo_less r1 r2 p q :
   exp_quo r1 p q <= exp_quo r2 p q.
 Proof.
 move => Hq H1 H2 Hleq.
-by rewrite exp_quo_lessE // ler_expn2r ?ler_rat // nnegrE ler0q.
+by rewrite exp_quo_lessE // lerXn2r ?ler_rat // nnegrE ler0q.
 Qed.
 
 Lemma exp_quo_lessn r1 (p1 q1 p2 q2 : nat) :
@@ -124,10 +124,10 @@ move => Hq1 Hq2 Hr1 Hr2 Hr1gt0 Hle1r2 Hle12.
 have Hr1pos : 0 <= r1 by apply: ltW.
 have Hr2pos : 0 <= r2 by rewrite Hr2 divr_ge0 // ?ler0z.
 have: r1%:C ^+ (p1 * q2) <= r2%:C ^+ (p1 * q2).
-  by rewrite ler_expn2r ?ler_rat // nnegrE ler0q.
+  by rewrite lerXn2r ?ler_rat // nnegrE ler0q.
 rewrite exp_quo_lessE // => /le_trans -> //; rewrite exp_incr_expp ?ler1q //.
-move: Hle12; rewrite Hr1 Hr2 ler_pdivr_mulr ?ltr0n //.
-by rewrite mulrAC ler_pdivl_mulr ?ltr0n // -!natrM ler_nat.
+move: Hle12; rewrite Hr1 Hr2 ler_pdivrMr ?ltr0n //.
+by rewrite mulrAC ler_pdivlMr ?ltr0n // -!natrM ler_nat.
 Qed.
 
 End RationalPower.
@@ -141,8 +141,8 @@ Section FourFacts.
 (* A lemma comparing factorial to a geometric sequence *)
 Lemma fact_greater_geom i : i.+1`!%:R >= (3%:Q / 2%:Q) ^+ i.
 Proof.
-elim: i => // i IHi; rewrite exprS factS natrM; apply: ler_pmul IHi => //.
-by rewrite ler_pdivr_mulr ?ltr0n // mulr_natr -mulrnA ler_nat.
+elim: i => // i IHi; rewrite exprS factS natrM; apply: ler_pM IHi => //.
+by rewrite ler_pdivrMr ?ltr0n // mulr_natr -mulrnA ler_nat.
 Qed.
 
 (* Formula for a geometric sum in a field *)
@@ -161,18 +161,18 @@ Proof.
 case: n => // n.
 have step: (1 + n.+1%:Q^-1) ^+ n.+1 <= \sum_(i < n.+2) i`!%:Q^-1.
   rewrite exprDn; apply: ler_sum => i _; rewrite expr1n mul1r -mulr_natr exprVn.
-  rewrite ler_pdivr_mull ?ler_pdivl_mulr ?ltr0n ?expn_gt0 ?fact_gt0 //.
+  rewrite ler_pdivrMl ?ler_pdivlMr ?ltr0n ?expn_gt0 ?fact_gt0 //.
   by rewrite -natrM bin_ffact -natrX ler_nat ffact_le_expn.
 have {step}: (1 + n.+1%:Q^-1) ^+ n.+2 <= 2%:Q * \sum_(i < n.+2) i`!%:Q^-1.
-  rewrite exprS; apply: ler_pmul => //.
-  by rewrite -[2%:Q]/(1 + 1) ler_add2l invf_le1 // ler1z.
-move/le_trans; apply; rewrite -[8%:Q]/(2%:Q * 4%:Q) ler_pmul2l //.
+  rewrite exprS; apply: ler_pM => //.
+  by rewrite -[2%:Q]/(1 + 1) lerD2l invf_le1 // ler1z.
+move/le_trans; apply; rewrite -[8%:Q]/(2%:Q * 4%:Q) ler_pM2l //.
 have: 1 + \sum_(i < n.+1) (2%:Q / 3%:Q) ^+ i <= 4%:Q.
-  rewrite geometric_sum // -[4%:Q]/(1 + 3%:Q) ler_add2l.
+  rewrite geometric_sum // -[4%:Q]/(1 + 3%:Q) lerD2l.
   have -> : 1 - 2%:Q / 3%:Q = 3%:Q^-1 by [].
-  by rewrite invrK ler_pimull // ler_subl_addr ler_addl.
-apply: le_trans; rewrite big_ord_recl ler_add2l; apply: ler_sum => i _ /=.
-by rewrite -invf_div exprVn lef_pinv ?posrE ?ltr0n ?fact_gt0 ?fact_greater_geom.
+  by rewrite invrK ler_piMl // lerBlDr lerDl.
+apply: le_trans; rewrite big_ord_recl lerD2l; apply: ler_sum => i _ /=.
+by rewrite -invf_div exprVn lef_pV2 ?posrE ?ltr0n ?fact_gt0 ?fact_greater_geom.
 Qed.
 
 (* TODO : clean up, use more ^-1 *)
@@ -191,11 +191,11 @@ suff: exp_quo (1 + q%:~R / p%:~R) p q <= exp_quo (1 + f%:Q^-1) f.+1 1.
   by move=> /le_trans -> //; rewrite -exp_quo_r_nat ler_rat one_plus_invn_expn.
 rewrite exp_quo_lessE ?addr_ge0 ?mulr_ge0 ?invr_ge0 ?ler0n // muln1.
 have: (1 + f%:~R^-1)%:C ^+ p <= (1 + f%:~R^-1)%:C ^+ (f.+1 * q).
-  by rewrite exp_incr_expp ?ler1q ?ler_addl ?invr_ge0 ?ler0n 1?ltnW ?ltn_ceil.
+  by rewrite exp_incr_expp ?ler1q ?lerDl ?invr_ge0 ?ler0n 1?ltnW ?ltn_ceil.
 apply: le_trans.
-rewrite ler_expn2r ?nnegrE ?ler0q ?addr_ge0 ?mulr_ge0 ?invr_ge0 ?ler0n //.
-rewrite ler_rat ler_add2l ler_pdivr_mulr ?ltr0n // mulrC.
-rewrite ler_pdivl_mulr ?ltr0n ?divn_gt0 //.
+rewrite lerXn2r ?nnegrE ?ler0q ?addr_ge0 ?mulr_ge0 ?invr_ge0 ?ler0n //.
+rewrite ler_rat lerD2l ler_pdivrMr ?ltr0n // mulrC.
+rewrite ler_pdivlMr ?ltr0n ?divn_gt0 //.
 by rewrite -intrM ler_nat mulnC leq_trunc_div.
 
 (* Second part : p < q *)
@@ -205,20 +205,20 @@ have Helper0 : (0 < f)%N.
 have Helper1 : 0 <= 1 + q%:Q / p%:Q.
   by rewrite addr_ge0 ?divr_ge0 ?ler0n.
 have Helper2 : 1 + q%:Q / p%:Q <= 1 + (1 + f%:~R).
-  rewrite ler_add2l -mulrS ler_pdivr_mulr ?ltr0n // -natrM ler_nat.
+  rewrite lerD2l -mulrS ler_pdivrMr ?ltr0n // -natrM ler_nat.
   by rewrite ltnW ?ltn_ceil.
 have Helper3 : (p * f <= q)%N.
   by rewrite mulnC leq_trunc_div.
 apply: (@le_trans _ _ (exp_quo (1 + (1 + f%:Q)) p q)).
   by apply: exp_quo_less; rewrite // !addr_ge0 ?ler0n.
 apply: (@le_trans _ _ (exp_quo (1 + (1 + f%:Q)) 1 f)).
-  by apply: exp_quo_lessn; rewrite //= ?ler_addl ?addr_ge0 ?ler0n // mul1n.
+  by apply: exp_quo_lessn; rewrite //= ?lerDl ?addr_ge0 ?ler0n // mul1n.
 apply: (@le_trans _ _ (exp_quo ((3 ^ f.+1)%N%:Q) 1 f)).
   rewrite exp_quo_less // ?addr_ge0 ?ler0n //.
   by rewrite -rat1 -!natrD ler_nat !add1n replace_exponential.
 rewrite /exp_quo expr1 !CratrE expnS natrM rootCMr ?ler0n //.
 have -> : 9%:R = 3%:R * 3%:R :> algC by rewrite -natrM.
-by rewrite ler_pmul ?root_le_x ?rootC_ge0 ?ler0n ?natrX // ler_eexpr ?ler1n.
+by rewrite ler_pM ?root_le_x ?rootC_ge0 ?ler0n ?natrX // ler_eXnr ?ler1n.
 Qed.
 
 End FourFacts.

@@ -41,16 +41,16 @@ remains the sole trusted code base.
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
   - Kazuhiko Sakaguchi ([**@pi8027**](https://github.com/pi8027))
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: 8.13 or later
+- Compatible Coq versions: 8.15 or later
 - Additional dependencies:
-  - [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
+  - [MathComp ssreflect 1.17 or later](https://math-comp.github.io)
   - [MathComp algebra](https://math-comp.github.io)
   - [MathComp field](https://math-comp.github.io)
-  - [CoqEAL 1.0.5 or later](https://github.com/coq-community/coqeal)
-  - [MathComp real closed fields 1.1.2 or later](https://github.com/math-comp/real-closed)
-  - [MathComp bigenough 1.0.0 or later](https://github.com/math-comp/bigenough)
-  - [Mczify](https://github.com/math-comp/mczify) 1.2.0 or later
-  - [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 0.2.0 or later
+  - [CoqEAL 1.1.3 or later](https://github.com/coq-community/coqeal)
+  - [MathComp real closed fields 1.1.4 or later](https://github.com/math-comp/real-closed)
+  - [MathComp bigenough 1.0.1 or later](https://github.com/math-comp/bigenough)
+  - [Mczify](https://github.com/math-comp/mczify) 1.3.0 or later
+  - [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 1.0.0 or later
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 

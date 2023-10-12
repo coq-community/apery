@@ -166,7 +166,7 @@ move=> kpos ebk0 ebk1 ebk2 ebk3 /= n.
 pose p : int := n - k; simpl in p.
 have -> : n = p + k by rewrite /p addrNK.
 clearbody p; clear n.
-rewrite ler_addr.
+rewrite lerDr.
 suff gen (n : int) : 0 <= n -> n <= p -> b' (n + k) = b (n + k).
   by move=> p_pos; apply: (gen _ p_pos).
 move: n.
@@ -254,7 +254,7 @@ case: (altP (n =P 1)) => [-> | h1]; first exact: b_Sn2_at_1.
 pose p : int := n - (2 : int); simpl in p.
 have hnp : n = p + (2 : int) by rewrite /p addrNK.
 have {hn h0 h1} le0p : 0 <= p by lia.
-have {le0p hnp p} h : (2 : int) <= n by rewrite hnp ler_addr.
+have {le0p hnp p} h : (2 : int) <= n by rewrite hnp lerDr.
 exact: b_Sn2_almost.
 Qed.
 
