@@ -318,26 +318,21 @@ have -> : w_seq 4 = a' 0 * a' 1 * a' 2 * a' 3.
 have a'0_ubP : a' 0 <= a'0_ub%:C.
   have ge0a'0 : 0 <= a'0_ub%:C by rewrite ler0q divr_ge0.
   rewrite root_le_x // a0 -rmorphXn ler_rat exprMn exprVn.
-  rewrite lter_pdivlMr ?exprn_gt0 // -subr_ge0 mulrzl.
-  by rewrite -!rmorphXn -rmorphMz -rmorphB /= rat_of_ZEdef ler0z.
+  by rewrite lter_pdivlMr; ring_lia.
 have a'1_ubP : a' 1 <= a'1_ub%:C.
   have ge0a'1 : 0 <= a'1_ub%:C by rewrite ler0q divr_ge0.
   rewrite root_le_x // a1 -rmorphXn ler_rat exprMn exprVn.
-  rewrite lter_pdivlMr ?exprn_gt0 // -subr_ge0 mulrzl.
-  by rewrite -!rmorphXn -rmorphMz -rmorphB /= rat_of_ZEdef ler0z.
+  by rewrite lter_pdivlMr; ring_lia.
 have a'2_ubP : a' 2 <= a'2_ub%:C.
   have ge0a'2 : 0 <= a'2_ub%:C by rewrite ler0q divr_ge0.
   have ge0a2 : 0 <= (a 2)%:Q%:C by rewrite ler0q.
   rewrite root_le_x // a2 -rmorphXn ler_rat exprMn exprVn.
-  rewrite lter_pdivlMr ?exprn_gt0 // -subr_ge0 mulrzl.
-  by rewrite -!rmorphXn -rmorphMz -rmorphB /= rat_of_ZEdef ler0z.
+  by rewrite lter_pdivlMr; ring_lia.
 have a'3_ubP : a' 3 <= a'3_ub%:C.
   have ge0a'3 : 0 <= a'3_ub%:C by rewrite ler0q divr_ge0.
   have ge0a3 : 0 <= (a 3)%:Q%:C by rewrite ler0q.
   rewrite root_le_x // a3 -rmorphXn ler_rat exprMn exprVn.
-  rewrite lter_pdivlMr; last exact: exprn_gt0.
-  rewrite -subr_ge0 mulrzl -!rmorphXn -rmorphMz -rmorphB /=.
-  by rewrite rat_of_ZEdef ler0z.
+  by rewrite lter_pdivlMr; ring_lia.
 have a'4_ubP : a' 4 <= a'4_ub%:C.
   have ge0a'1 : 0 <= a'4_ub%:C by rewrite ler0q divr_ge0.
   have ge0a4 : 0 <= (a 4)%:Q%:C by rewrite ler0q ler0z.
@@ -345,7 +340,9 @@ have a'4_ubP : a' 4 <= a'4_ub%:C.
   pose t : rat := (rat_of_Z 200)^-1.
   have -> : a'4_ub = 1 + t by rewrite /a'4_ub /t; field.
   rewrite -rmorphXn ler_rat a4 exprDn.
-  have -> : (1808 = 8 + 1800)%N by [].
+  (* FIXME: *)
+  (* have -> : (1808 = 8 + 1800)%N by []. *)
+  change 1808%N with (8 + 1800)%N.
   rewrite big_split_ord /=; apply: ler_wpDr.
     apply: sumr_ge0 => i.
     by rewrite expr1n mul1r mulrn_wge0 ?exprn_ge0 ?invr_ge0.
@@ -500,7 +497,7 @@ have -> : forall k1, exp_quo n%:Q (n * (a k1.+1).-2) (a k1.+1).-1
   - by rewrite muln_gt0 /= muln_gt0; apply/andP.
   - by rewrite muln_gt0 andbT muln_gt0; apply/andP.
   lia.
-rewrite /w_seq /t10n_to rmorphXn -subn1 -prod_is_exp_sum.
+rewrite /w_seq /t10n_to [in RHS]rmorphXn -subn1 -prod_is_exp_sum.
 rewrite -3!mulrA ![_ * (_%:C * _)]mulrCA; congr (_ * _).
 rewrite -prodrXl -!prodfV -!big_split /=; apply: eq_bigr => i _.
 rewrite -exprM mul1n [_^-1 / _ in RHS]mulrC [RHS]mulrA [RHS]mulrACA.

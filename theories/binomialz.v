@@ -125,12 +125,10 @@ wlog: m n / n <= 0.
   case: m => m; last by rewrite !binz_neg // mulr0.
   rewrite binz_nat_nat -addrA -opprB opprK.
   case: (ltnP n m) => hnm hwlog.
-  - rewrite bin_small // subzn // binz_nat_nat bin_small ?mulr0 //.
-    by rewrite add1n subnSK // leq_subLR leq_addl.
-  - have {}hnm : (Posz m) - (Posz n.+1) <= 0.
-      by rewrite subr_le0; apply/leqW/hnm.
-    rewrite [in RHS]hwlog // opprD opprK addrA subrr add0r addrAC subrr add0r.
-    by rewrite binz_nat_nat mulrA /exprz /= -exprMn mulrNN mul1r expr1n mul1r.
+    by rewrite bin_small // subzn // binz_nat_nat bin_small ?mulr0; lia.
+  have {}hnm : Posz m - Posz n.+1 <= 0 by rewrite subr_le0; apply/leqW/hnm.
+  rewrite [in RHS]hwlog // subKr addrAC subrr add0r.
+  by rewrite binz_nat_nat mulrA /exprz /= -exprMn mulrNN mul1r expr1n mul1r.
 case: m => m; last by rewrite !binz_neg // mulr0.
 case: n => [n | n _].
   case: n => [_ | //]; case:m => [ | m]; first by rewrite !binz0.
@@ -139,8 +137,7 @@ rewrite [in RHS]NegzE opprK -addrA subzSS subr0.
 move: {2}(m + n)%N (leqnn (m + n)) => k; elim: k n m => [n m|k ihk n m hnm].
   by rewrite leqn0 addn_eq0; case/andP => /eqP -> /eqP ->; rewrite !binz0.
 case: m hnm => [ | m] hnm //; case: n hnm => [ | n] hnm.
-  rewrite bin_1N_posz {}ihk // !addr0 !binz_on_diag /= !mulr1.
-  by rewrite exprSz mulN1r.
+  by rewrite bin_1N_posz {}ihk // !addr0 !binz_on_diag /= !mulr1 exprSz mulN1r.
 rewrite bin_negz_posz ihk; last by move: hnm; rewrite addnS.
 rewrite ihk; last by move: hnm; rewrite addSn.
 rewrite exprSzr -!mulrA !mulN1r -mulrBr; congr (_ * _); rewrite -opprD.
@@ -156,8 +153,8 @@ Lemma binzSS_weak (F : numFieldType) (n k : int) : 0 <= n -> k + 1 != 0 ->
 Proof.
 case: n k => [] // n [k|[|k]] // _ _; last by rewrite !binz_neg // mulr0.
 rewrite -!PoszD !addn1 !binz_nat_nat mulrAC.
-apply: (canRL (mulfK _)); rewrite ?intr_eq0 //.
-by rewrite -!rmorphM -!PoszM /= mul_bin_diag mulnC.
+apply: canRL (mulfK _) _; rewrite ?intr_eq0 //.
+by rewrite -!intrM -!PoszM mul_bin_diag mulnC.
 Qed.
 
 Lemma binzS_weak (F : numFieldType) (n k : int) : n >= 0 -> k + 1 != 0 ->
