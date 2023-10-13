@@ -92,8 +92,8 @@ have {}step : P U n = t1 - t2.
   rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i; simpl in i.
   rewrite andbT mem_index_iota; case/andP=> _ hi.
   rewrite -big_cat_int //= !int.shift2Z.
-  - by apply: le_trans range_correct _; rewrite ler_add2r ler_addl.
-  - by rewrite ler_add2r ler_add2l ltW.
+  - by apply: le_trans range_correct _; rewrite lerD2r lerDl.
+  - by rewrite lerD2r lerD2l ltW.
 have t1_step :
   t1 =
     \sum_(a <= k < int.shift r n + b :> int)
@@ -131,7 +131,7 @@ have {}t1_step :
     \sum_(n + b <= k < int.shift r n + b :> int)
       \sum_(0 <= i < r)
         cf_P i n * u (int.shift i n) k.
-  by rewrite t1_step /t11 -big_cat_int // ler_add2r int.shift2Z cpr_add.
+  by rewrite t1_step /t11 -big_cat_int // lerD2r int.shift2Z cprD.
 rewrite {}step {}t1_step {}t11_step.
 rewrite -1![RHS]addrA -3![LHS]addrA; congr (_ + _).
 rewrite -sumrN [LHS]addrA -big_split /=; congr (_ + _).
@@ -141,8 +141,8 @@ rewrite -sumrN [LHS]addrA -big_split /=; congr (_ + _).
 rewrite exchange_big /= -sumrN -big_split /=.
 rewrite [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr=> i /andP [].
 rewrite mem_index_iota; case/andP=> _ hi _; rewrite !int.shift2Z.
-have hl : n + b <= n + i + b by rewrite ler_add2r ler_addl.
-have hr : n + i + b <= n + r + b by rewrite ler_add2r ler_add2l ltW.
+have hl : n + b <= n + i + b by rewrite lerD2r lerDl.
+have hr : n + i + b <= n + r + b by rewrite lerD2r lerD2l ltW.
 rewrite (big_cat_int _ _ _ hl hr) {hl hr} addrK [n + i + b]addrAC big_addz2l /=.
 rewrite eq_big_int_nat /=; apply: eq_bigr=> ? _.
 by rewrite int.shift2Z [n + b + _]addrC.
@@ -272,7 +272,7 @@ have PUnk_value :
   apply: eq_bigr => i.  rewrite andbT -/s.  move/andP=> [_ i_bound].
   apply: eq_bigr => j _.
   congr (_ * _).
-  rewrite -big_cat_int ?cpr_add //=.
+  rewrite -big_cat_int ?cprD //=.
   by rewrite !int.shift2Z addrAC.
 
 have {}PUnk_value :

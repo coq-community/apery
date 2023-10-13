@@ -26,19 +26,19 @@ suff philippe (i1 : nat) : (0 < i1)%N -> (i1 <= i)%N -> i%:Q ^+ 2 <= U i1.
   apply: ler_sum => j; rewrite andbT addn1 ltnS => /andP [h0j hji].
   have dpos :
     0 < 2%:Q * j%:Q ^+ 3 * (binomialz i j)%:Q * (binomialz (Posz i + j) j)%:Q.
-    by rewrite !mulr_gt0 ?ltr0z // binz_gt0 ?cpr_add //; exact: leq_trans lei0i.
+    by rewrite !mulr_gt0 ?ltr0z // binz_gt0 ?cprD //; exact: leq_trans lei0i.
   rewrite /d normrM normfV normrX expr1n !div1r gtr0_norm //.
-  rewrite lef_pinv //; last by rewrite posrE mulr_gt0 // mulr_gt0.
-  by rewrite -2!mulrA ler_pmul2l // mulrA; apply/philippe/leq_trans/lei0i.
+  rewrite lef_pV2 //; last by rewrite posrE mulr_gt0 // mulr_gt0.
+  by rewrite -2!mulrA ler_pM2l // mulrA; apply/philippe/leq_trans/lei0i.
 move=> lt0i1; rewrite {}/U leq_eqVlt => /predU1P[->|hii1].
-  rewrite !binz_nat_nat binn mulr1 -!mulrA mulrA ler_pmulr ?mulr_gt0 //.
+  rewrite !binz_nat_nat binn mulr1 -!mulrA mulrA ler_pMr ?mulr_gt0 //.
   by move: bigi1; rewrite -rmorphM ler1n muln_gt0 ltr0n bin_gt0 leq_addl andbT.
 have: i%:Q ^+ 2 <= i1%:Q ^+ 3 * i%:Q ^+ 2.
-  by rewrite ler_pmull ?exprn_gt0 // exprn_ege1 ?ler1z.
-move/le_trans; apply; rewrite -mulrA ler_pmul2l; last first.
+  by rewrite ler_pMl ?exprn_gt0 // exprn_ege1 ?ler1z.
+move/le_trans; apply; rewrite -mulrA ler_pM2l; last first.
   by rewrite exprn_gt0 ?ltr0n.
 suff maj : Posz i <= binomialz i i1.
-  apply: ler_pmul; rewrite ?ler0n ?ler_int //; apply: le_trans maj _.
+  apply: ler_pM; rewrite ?ler0n ?ler_int //; apply: le_trans maj _.
   by rewrite !binz_nat_nat lez_nat leq_bin2l ?leq_addr.
 rewrite binz_nat_nat lez_nat.
 (* FIXME : n <= 'C(n, m) should be a lemma *)

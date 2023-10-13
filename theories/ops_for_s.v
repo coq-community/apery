@@ -110,7 +110,7 @@ Theorem recD1 (n k : int) : 0 <= k -> k < n -> P1_horner s n k = 0.
 Proof.
 move=> ? ?.
 rewrite /P1_horner /d.P1_horner.
-rewrite (punk.biv_sound_telescoping P1_eq_Delta_Q1); last by rewrite ler_addr.
+rewrite (punk.biv_sound_telescoping P1_eq_Delta_Q1); last by rewrite lerDr.
 set telQ := (X in X + _ + _).
 set onD := (X in _ + X + _).
 set remP := (X in _ + _ + X).
@@ -152,7 +152,7 @@ Theorem recD2 (n k : int) : 0 < k -> k < n -> P2_horner s n k = 0.
 Proof.
 move=> ? ?.
 rewrite /P2_horner /d.P2_horner.
-rewrite (punk.biv_sound_telescoping P2_eq_Delta_Q2); last by rewrite ler_paddr.
+rewrite (punk.biv_sound_telescoping P2_eq_Delta_Q2); last by rewrite ler_wpDr.
 set telQ := (X in X + _ + _).
 set onD := (X in _ + X + _).
 set remP := (X in _ + _ + X).
@@ -192,8 +192,7 @@ Theorem recD3 (n k : int) : 0 <= k -> k < n -> P3_horner s n k = 0.
 Proof.
 move=> ? ?.
 rewrite /P3_horner /d.P3_horner.
-rewrite (punk.biv_sound_telescoping P3_eq_Delta_Q3);
-  last by rewrite ler_addr.
+rewrite (punk.biv_sound_telescoping P3_eq_Delta_Q3); last by rewrite lerDr.
 set telQ := (X in X + _ + _).
 set onD := (X in _ + X + _).
 set remP := (X in _ + _ + X).
@@ -235,8 +234,7 @@ Theorem recD4 (n k : int) : 0 <= k -> k + 1 < n -> P4_horner s n k = 0.
 Proof.
 move=> ? ?.
 rewrite /P4_horner /d.P4_horner.
-rewrite (punk.biv_sound_telescoping P4_eq_Delta_Q4);
-  last by rewrite ler_addr.
+rewrite (punk.biv_sound_telescoping P4_eq_Delta_Q4); last by rewrite lerDr.
 set telQ := (X in X + _ + _).
 set onD := (X in _ + X + _).
 set remP := (X in _ + _ + X).

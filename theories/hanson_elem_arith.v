@@ -207,7 +207,7 @@ Qed.
 
 
 Corollary lt_sum_aV_1 (n : nat) : \sum_(0 <= i < n.+1) (a i)%:Q ^-1 < 1.
-Proof. by rewrite sum_aV ltr_pdivr_mulr // mul1r ltr_add2l. Qed.
+Proof. by rewrite sum_aV ltr_pdivrMr // mul1r ltrD2l. Qed.
 
 
 (* NOT USED? *)
@@ -234,8 +234,8 @@ suff : ((\sum_(0 <= j < i.+1) n.+1 %/ a j)%N%:Q < n.+1%:Q)%R.
   by rewrite -ltz_nat ltr_int.
 suff hdiv : (\sum_(0 <= i0 < i.+1) (n.+1%:Q / (a i0)%:Q) < n.+1%:Q)%R.
   apply: le_lt_trans hdiv; rewrite sumMz; apply: ler_sum => j _.
-  rewrite ler_pdivl_mulr // -intrM ler_int; exact: leq_trunc_div.
-rewrite -mulr_sumr gtr_pmulr; last exact: ltr0z.
+  rewrite ler_pdivlMr // -intrM ler_int; exact: leq_trunc_div.
+rewrite -mulr_sumr gtr_pMr; last exact: ltr0z.
 exact: lt_sum_aV_1.
 Qed.
 

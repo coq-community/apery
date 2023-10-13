@@ -29,7 +29,7 @@ Lemma ltcr_add2r (z x y : creal F) : (x < y)%CR -> (x + z < y + z)%CR.
 Proof.
 move=> lt_xy; pose_big_enough i.
   apply: (@lt_crealP _ (diff lt_xy) i i); rewrite ?diff_gt0 //=.
-  by rewrite addrAC ler_add2r diffP.
+  by rewrite addrAC lerD2r diffP.
 by close.
 Qed.
 
@@ -37,7 +37,7 @@ Lemma ltcr_add2l (z x y : creal F) : (x < y)%CR -> (z + x < z + y)%CR.
 Proof.
 move=> lt_xy; pose_big_enough i.
   apply: (@lt_crealP _ (diff lt_xy) i i); rewrite ?diff_gt0 //=.
-  rewrite -addrA ler_add2l diffP //.
+  rewrite -addrA lerD2l diffP //.
 by close.
 Qed.
 
@@ -61,10 +61,10 @@ Proof.
 move=> ltxy lt0z; pose_big_enough i.
   apply: (@lt_crealP _ ((diff ltxy) * (diff lt0z)) i i) => //=.
   - apply: mulr_gt0; exact: diff_gt0.
-  rewrite -ler_sub_addl -mulrBl; apply: ler_pmul.
+  rewrite -lerBDl -mulrBl; apply: ler_pM.
   - by apply: ltW; apply: diff_gt0.
   - by apply: ltW; apply: diff_gt0.
-  - by rewrite ler_sub_addl diffP.
+  - by rewrite lerBDl diffP.
   - by rewrite -[X in X <= _]add0r -[0]/((0%:CR)%CR i) diffP.
 by close.
 Qed.
@@ -114,7 +114,7 @@ Lemma mulr_gtcr0 (x y : creal F) : (0 < x -> 0 < y -> 0 < x * y)%CR.
 move=> lt_0x lt_0y; pose_big_enough i.
   apply: (@lt_crealP _ ((diff lt_0x) * (diff lt_0y)) i i) => //=.
   - apply: mulr_gt0; exact: diff_gt0.
-  rewrite add0r; apply: ler_pmul.
+  rewrite add0r; apply: ler_pM.
   - by apply: ltW; apply: diff_gt0.
   - by apply: ltW; apply: diff_gt0.
   - by rewrite -[X in X <= _]add0r -[0]/((0%:CR)%CR i) diffP.
@@ -143,7 +143,7 @@ Qed.
 Lemma lt_ubound (x : creal F) : (x < (ubound x + 1)%:CR)%CR.
 Proof.
 pose_big_enough i.
-  apply: (@lt_crealP _ 1 i i) => //=; rewrite ler_add2r.
+  apply: (@lt_crealP _ 1 i i) => //=; rewrite lerD2r.
   apply: le_trans (uboundP x i); exact: ler_norm.
 by close.
 Qed.
@@ -158,7 +158,7 @@ move=> ltxy leyz; pose_big_enough i.
     apply/eqP; rewrite eq_sym subr_eq -addrA -mulrDr.
     have <- : 1 = 2%:~R^-1 + 2%:~R^-1 :> F by rewrite [LHS](splitf 2) div1r.
     by rewrite mulr1.
-  rewrite ler_subl_addr; apply: le_trans (diffP _ _) _ => //; apply: ltW.
+  rewrite lerBlDr; apply: le_trans (diffP _ _) _ => //; apply: ltW.
   by apply: le_modP.
 by close.
 Qed.
@@ -171,7 +171,7 @@ move=> lexy ltyz; pose_big_enough i.
   have hpos : 0 < diff ltyz / 2%:~R.
     apply: divr_gt0; rewrite ?ltr0Sn //; exact: diff_gt0.
   apply: (@lt_crealP _  ((diff ltyz) / 2%:~R) i i) => //=.
-  apply: le_trans (@diffP _ _ _ ltyz _ _ _) => //; rewrite -ler_subr_addr.
+  apply: le_trans (@diffP _ _ _ ltyz _ _ _) => //; rewrite -lerBrDr.
   suff <- : y i + diff ltyz / 2%:~R = y i + diff ltyz - diff ltyz / 2%:~R.
     by apply: ltW; apply: le_modP.
   apply/eqP; rewrite eq_sym subr_eq -addrA -mulrDr.
@@ -233,9 +233,9 @@ exists_big_modulus m F.
     rewrite /d [(_ - _) + _]addrC addrA addrNK opprB addrA [_ - x i]addrC.
     by rewrite addrA addKr addrC.
   suff step1 : `|d j + (x i - x j)| + `|d i| < eps.
-    by apply: le_lt_trans step1; rewrite -[`|d i|]normrN; apply: ler_norm_add.
+    by apply: le_lt_trans step1; rewrite -[`|d i|]normrN; apply: ler_normD.
   suff step2 : `|d j| + `|x i - x j| + `|d i| < eps.
-    by apply: le_lt_trans step2; rewrite ler_add2r; apply: ler_norm_add.
+    by apply: le_lt_trans step2; rewrite lerD2r; apply: ler_normD.
   have -> : eps = eps / 3%:~R + eps / 3%:~R + eps / 3%:~R.
     rewrite /= in eps lt_eps_0 hmi hmj *.
     rewrite -!mulrDl -[in X in _ = X](mulr1 eps) -!mulrDr -mulrA.
@@ -243,8 +243,8 @@ exists_big_modulus m F.
     rewrite -[X in (X + X + X) / _ = _]/(1%:~R) -!rmorphD /= mulfV //.
     by rewrite intr_eq0.
   have heps : 0 < eps / 3%:~R by apply: divr_gt0 => //; rewrite ltr0z.
-  apply: ltr_add => //; last exact: MP.
-  apply: ltr_add=> //; first by exact: MP.
+  apply: ltrD => //; last exact: MP.
+  apply: ltrD=> //; first by exact: MP.
   by move=> {MP}; apply: mxP.
 by close.
 Qed.

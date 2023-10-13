@@ -78,7 +78,7 @@ Proof. by apply/eqP; ring_lia. Qed.
 
 Lemma rat_of_Z_pow z n : rat_of_Z (z ^ Z.of_nat n) = rat_of_Z z ^ n.
 Proof.
-rewrite /exprz -rmorphX -Zpower_nat_Z; congr rat_of_Z.
+rewrite /exprz -rmorphXn -Zpower_nat_Z; congr rat_of_Z.
 by elim: n => //= n ->; rewrite exprS.
 Qed.
 #[export] Hint Resolve rat_of_Z_ZposW : core.

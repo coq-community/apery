@@ -226,7 +226,7 @@ Proof.
     by rewrite tnth_mktuple /aux /= (tnth_nth 0) in_tupleE.
   suff {P} -> : (('C[l])%:R * p%:R =
      ('C[tmap_val tl])%:R * monomial [seq i%:R | i <- l] (tmap_val tl) :> int)%R.
-  rewrite cpr_add; apply: sumr_ge0 => i _; apply: mulr_ge0.
+  rewrite cprD; apply: sumr_ge0 => i _; apply: mulr_ge0.
   - by rewrite ler0n.
   - rewrite /monomial big_seq_cond.
     apply: prodr_ge0 => j; rewrite andbT => /nth_index hj.

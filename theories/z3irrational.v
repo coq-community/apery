@@ -40,9 +40,9 @@ pose n_inv_seq (n : nat) := n%:Q^-1.
 have [/= modulus_n_inv modulus_n_inv_P] : {asympt e : i / n_inv_seq i < e}.
   exists_big_modulus M rat => /=.
     move=> eps i lt_eps0 hMi.
-    rewrite /n_inv_seq -div1r ltr_pdivr_mulr;
+    rewrite /n_inv_seq -div1r ltr_pdivrMr;
       last by rewrite ltr0n; raise_big_enough.
-    rewrite -ltr_pdivr_mull // mulr1.
+    rewrite -ltr_pdivrMl // mulr1.
     apply: lt_trans (archi_boundP _) _; first by rewrite ger0E ltW.
     rewrite ltr_nat; raise_big_enough.
   by close.
@@ -64,10 +64,10 @@ exists_big_modulus m rat.
     raise_big_enough.
   apply: le_lt_trans maj _; rewrite telescope_nat //.
   suff maj : v j < 2%:Q * eps.
-    rewrite mulNr -mulrN opprB ltr_pdivr_mull // ltr_subl_addr.
-    apply: lt_trans maj _; rewrite ltr_addl; apply: vpos; exact: ltn_trans ltij.
+    rewrite mulNr -mulrN opprB ltr_pdivrMl // ltrBlDr.
+    apply: lt_trans maj _; rewrite ltrDl; apply: vpos; exact: ltn_trans ltij.
   have maj : v j < j%:Q^-1.
-    rewrite /v -div1r ltr_pdivr_mulr; last by rewrite exprn_gt0 // ltr0n.
+    rewrite /v -div1r ltr_pdivrMr; last by rewrite exprn_gt0 // ltr0n.
     by rewrite mulKf ?ltr1n // lt0r_neq0 // ltr0n.
   by apply: lt_trans maj _; apply: modulus_n_inv_P; rewrite // pmulr_rgt0.
 by close.
@@ -87,7 +87,7 @@ exists_big_modulus M rat.
     suff -> : b_over_a_seq i =
               z3seq i + (\sum_(0 <= k < Posz i + 1 :> int) c i k * s i k) / a i.
       rewrite opprD addNKr normrN normrM normfV.
-      rewrite [X in _ / X](gtr0_norm (lt_0_a _)) // ltr_pdivr_mulr ?lt_0_a //.
+      rewrite [X in _ / X](gtr0_norm (lt_0_a _)) // ltr_pdivrMr ?lt_0_a //.
       exact: le_lt_trans (ler_norm_sum _ _ _) _.
     apply: canLR (mulfK _) _; rewrite ?mulrDl ?divfK ?a_neq0 //.
     rewrite mulr_sumr -big_split /=; apply: eq_bigr => j _.
@@ -96,7 +96,7 @@ exists_big_modulus M rat.
   have step2 (i0 : nat) : (0 <= i0 <= i)%N ->
     `|c i i0 * s i i0| <= c i i0 * i0%:Q / (2%:Q * i%:Q ^ 2).
     case/andP=> _ hi0; rewrite normrM [`|c i i0|]gtr0_norm ?lt_0_c //.
-    rewrite -mulrA ler_pmul2l //; last exact: lt_0_c.
+    rewrite -mulrA ler_pM2l //; last exact: lt_0_c.
     apply: s_maj; rewrite // ltr0n; raise_big_enough.
   apply: (@le_lt_trans _ _ (\sum_(0 <= i0 < i + 1)
                    c i i0 * i0%:Q / (2%:Q * i%:Q ^ 2))).
@@ -104,12 +104,12 @@ exists_big_modulus M rat.
     rewrite addn1 ltnS => hji; exact: step2.
   apply:(@le_lt_trans _ _ ((\sum_(0 <= i0 < i + 1) c i i0) / (2%:Q * i%:Q))).
     rewrite mulr_suml; apply: ler_sum_nat => j /andP[h0j].
-    rewrite addn1 ltnS => hji; rewrite -mulrA ler_pmul2l ?lt_0_c //.
-    rewrite mulrA invfM mulrCA ger_pmulr; last by rewrite gtr0E mulr_gt0 ?ltr0n.
-    by rewrite ler_pdivr_mulr ?ltr0n // mul1r ler_nat.
-  rewrite mulrC -eq_big_int_nat /= ltr_pmul2r; last first.
+    rewrite addn1 ltnS => hji; rewrite -mulrA ler_pM2l ?lt_0_c //.
+    rewrite mulrA invfM mulrCA ger_pMr; last by rewrite gtr0E mulr_gt0 ?ltr0n.
+    by rewrite ler_pdivrMr ?ltr0n // mul1r ler_nat.
+  rewrite mulrC -eq_big_int_nat /= ltr_pM2r; last first.
     rewrite -/(a i); exact: lt_0_a.
-  rewrite invfM ltr_pdivr_mulr ?ltr0n // mulrC -ltr_pdivr_mulr //.
+  rewrite invfM ltr_pdivrMr ?ltr0n // mulrC -ltr_pdivrMr //.
   apply: lt_trans (archi_boundP _) _; last by rewrite ltr_nat; raise_big_enough.
   by rewrite mulr_ge0 // invr_ge0 ltW.
 by close.
@@ -142,7 +142,7 @@ pose_big_enough m.
     have aux (i : nat) : 0 < 6%:Q / (i%:Q + 1) ^ 3 / (a (int.shift 1 i) * a i).
       apply: divr_gt0; first by apply: lt_0_ba_casoratian.
       apply:mulr_gt0; exact: lt_0_a.
-    apply: ltr_spaddl => //;  apply: sumr_ge0 => i _; exact: ltW.
+    apply/ltr_pwDl/sumr_ge0 => // i _; exact: ltW.
   have -> : (z3 - (b_over_a_seq n)%:CR ==
          z3 - (b_over_a_seq m)%:CR + (b_over_a_seq m - b_over_a_seq n)%:CR)%CR.
     by apply: eq_creal_ext => i /=; ring.
@@ -171,18 +171,18 @@ exists large => n hlarge.
     rewrite cst_crealM.
     by apply/lecr_mulf2r/divr_ge0/le_0_a; first exact: le_ubound.
   rewrite {1}z3_eq_b_over_a; apply: (@le_crealP _ n) => i leni /=.
-  rewrite mul1r ler_subl_addr mulrC -ler_pdivl_mulr ?lt_0_a // mulrDl.
-  rewrite -[_ / _ / _]mulrA -[_ / _]invfM -expr2 -ler_subl_addr.
+  rewrite mul1r lerBlDr mulrC -ler_pdivlMr ?lt_0_a // mulrDl.
+  rewrite -[_ / _ / _]mulrA -[_ / _]invfM -expr2 -lerBlDr.
   rewrite -/(b_over_a_seq n).
   have leSnSi : (n.+1 <= i.+1)%N by [].
-  rewrite z3seqE mulr_sumr (big_cat_nat _ _ _ _ leSnSi) //= mulrDl ler_paddl //.
+  rewrite z3seqE mulr_sumr (big_cat_nat _ _ _ _ leSnSi) //= mulrDl ler_wpDl //.
     rewrite divr_ge0 ?exprn_ge0 ?le_0_a ?sumr_ge0 // => k _.
     by rewrite divr_ge0 ?exprn_ge0 ?ler0n.
   rewrite big_add1 /= Db_over_a_casoratian; [ | raise_big_enough | exact: leni].
   rewrite mulr_suml; apply: ler_sum_nat => j /andP[hnj hji].
-  rewrite -mulrSr ler_pmul2l; last by apply/divr_gt0/exprz_gt0; rewrite ltr0n.
-  rewrite lef_pinv; [| apply: mulr_gt0; exact: lt_0_a..].
-  by apply: ler_pmul; rewrite ?le_0_a //; apply: a_incr; lia.
+  rewrite -mulrSr ler_pM2l; last by apply/divr_gt0/exprz_gt0; rewrite ltr0n.
+  rewrite lef_pV2; [| apply/mulr_gt0; exact: lt_0_a..].
+  by apply: ler_pM; rewrite ?le_0_a //; apply: a_incr; lia.
 by close.
 Qed.
 
@@ -252,7 +252,7 @@ have Cpos : 0 < C.
   by rewrite !(exprz_gt0, mulr_gt0) ?invr_gt0 ?lt_0_Ka ?lt_0_Kdelta.
 have heps : 0 < eps / C by apply: divr_gt0.
 have hr : 0 < K2 ^ 3 / 33%:Q < 1.
-  by rewrite andbC -ltr_pdivl_mulr // invrK mul1r K2_maj divr_gt0 // exprn_gt0.
+  by rewrite andbC -ltr_pdivlMr // invrK mul1r K2_maj divr_gt0 // exprn_gt0.
 have [N hN] := Gseqlt1 heps hr.
 pose_big_enough M.
   exists M => n hn.
@@ -267,10 +267,10 @@ pose_big_enough M.
     - apply/lt_creal_cst; apply: mulr_gt0; first exact: lt_0_Kdelta.
       apply: divr_gt0; last by apply: exprn_gt0; rewrite ltr0n.
       rewrite invr_gt0; exact: lt_0_Ka.
-    - apply/lt_creal_cst; rewrite ltr_expn2r //; first exact: ltW.
+    - apply/lt_creal_cst; rewrite ltrXn2r //; first exact: ltW.
       apply: hanson; raise_big_enough.
     - apply: lecr_lt_trans (NdeltaP _) _; first by raise_big_enough.
-      apply/lt_creal_cst; rewrite ltr_pmul2l; last exact: lt_0_Kdelta.
+      apply/lt_creal_cst; rewrite ltr_pM2l; last exact: lt_0_Kdelta.
       apply: a_asympt; raise_big_enough.
   apply: lt_creal_trans aux _; apply/lt_creal_cst; set lhs := (X in (X < _)).
   have -> : lhs = C * (K2 ^ 3 / 33%:Q) ^ n.
@@ -278,7 +278,7 @@ pose_big_enough M.
     rewrite {}/lhs /C [in RHS]expfzMl exprzAC -[in RHS]expfV.
     set x := _ ^ n; set y := _ ^ n; field.
     by rewrite expfz_neq0 ?intr_eq0 // lt0r_neq0 ?lt_0_Ka.
-  rewrite -ltr_pdivl_mull -[X in _ < X]mulrC; last by rewrite mulrC; exact: Cpos.
+  rewrite -ltr_pdivlMl -[X in _ < X]mulrC; last by rewrite mulrC; exact: Cpos.
   apply: hN; raise_big_enough.
 by close.
 Qed.
