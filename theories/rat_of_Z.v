@@ -50,7 +50,7 @@ HB.instance Definition _ :=
   GRing.isAdditive.Build Z rat rat_of_Z rat_of_Z_is_additive.
 
 Fact rat_of_Z_is_multiplicative : multiplicative rat_of_Z.
-Proof. by rewrite rat_of_ZEdef; exact: rmorphismMP [rmorphism of _ \o _]. Qed.
+Proof. by rewrite rat_of_ZEdef; exact: rmorphismMP (_ \o _). Qed.
 
 HB.instance Definition _ :=
   GRing.isMultiplicative.Build Z rat rat_of_Z rat_of_Z_is_multiplicative.
