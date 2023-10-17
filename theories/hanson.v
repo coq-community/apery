@@ -540,7 +540,7 @@ suff [K [Kpos KP]] : exists K : rat,
   suff: (C n m.+1)%:R <= (k%:Q + 1) * 3%:R ^ n.
     by rewrite -[_ + 1%:R]natrD -[_ ^ n]natrX -natrM ler_nat addn1.
   exact/le_trans/ler_wpM2r/ltW/leKSn/exprz_ge0.
-move mE: 10%:Q => m.
+move mE: 10%N%:Q => m. (* FIXME *)
 have lt0m : 0 < m by rewrite -mE.
 have le0m : 0 <= m by exact: ltW.
 have lt1m : 1 < m by rewrite -mE.

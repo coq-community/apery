@@ -83,8 +83,8 @@ Proof. by rewrite 2!zifyRingE ltr_int. Qed.
 
 End Internals.
 
-Lemma rpred_zify (R : ringType) (S : {pred R}) (ringS : subringPred S)
-                 (kS : keyed_pred ringS) (e : zifyRing R) : rval e \in kS.
+Lemma rpred_zify (R : ringType) (S : subringClosed R) (e : zifyRing R) :
+  rval e \in S.
 Proof. by rewrite zifyRingE rpred_int. Qed.
 
 Canonical zify_zero.

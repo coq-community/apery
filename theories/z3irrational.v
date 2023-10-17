@@ -76,7 +76,7 @@ Qed.
 
 (* Actual definition of \zeta(3) as a Cauchy real, i.e. the equivalence class *)
 (* of the sequence z3seq for Cauchy equivalence. *)
-Definition z3 : creal rat_realFieldType := CReal creal_z3seq.
+Definition z3 : creal rat := CReal creal_z3seq.
 
 (* We prove that the sequences z3seq and b / a are asymptotically close. *)
 Lemma z3seq_b_over_a_asympt : {asympt e : i / `|z3seq i - b_over_a_seq i| < e}.
@@ -267,8 +267,7 @@ pose_big_enough M.
     - apply/lt_creal_cst; apply: mulr_gt0; first exact: lt_0_Kdelta.
       apply: divr_gt0; last by apply: exprn_gt0; rewrite ltr0n.
       rewrite invr_gt0; exact: lt_0_Ka.
-    - apply/lt_creal_cst; rewrite ltrXn2r //; first exact: ltW.
-      apply: hanson; raise_big_enough.
+    - by apply/lt_creal_cst/ltrXn2r/hanson => //; raise_big_enough.
     - apply: lecr_lt_trans (NdeltaP _) _; first by raise_big_enough.
       apply/lt_creal_cst; rewrite ltr_pM2l; last exact: lt_0_Kdelta.
       apply: a_asympt; raise_big_enough.

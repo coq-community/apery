@@ -59,8 +59,7 @@ Proof.
 apply/floorQ_unique; move: (floorQ_spec q) (floorQ_spec (q / m.+1%:Q)).
 rewrite !ler_pdivlMr ?ltr_pdivrMr ?ltr0z // intrD -intrM ler_int.
 move=> /andP[_ Hq] /andP[Hdiv /le_lt_trans ->] //.
-rewrite -ltzD1 -(ltr_int [numDomainType of rat]) intrD.
-by rewrite (le_lt_trans Hdiv).
+by rewrite -ltzD1 -(ltr_int rat) intrD (le_lt_trans Hdiv).
 Qed.
 
 (* Lemma floorQ_div_pos (q : rat) (m : nat) :  *)
