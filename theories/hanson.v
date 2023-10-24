@@ -317,22 +317,18 @@ have -> : w_seq 4 = a' 0 * a' 1 * a' 2 * a' 3.
   by rewrite /w_seq !big_ord_recr /= big_ord0 mul1r.
 have a'0_ubP : a' 0 <= a'0_ub%:C.
   have ge0a'0 : 0 <= a'0_ub%:C by rewrite ler0q divr_ge0.
-  rewrite root_le_x // a0 -rmorphXn ler_rat exprMn exprVn.
-  by rewrite lter_pdivlMr; ring_lia.
+  by rewrite root_le_x // a0 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
 have a'1_ubP : a' 1 <= a'1_ub%:C.
   have ge0a'1 : 0 <= a'1_ub%:C by rewrite ler0q divr_ge0.
-  rewrite root_le_x // a1 -rmorphXn ler_rat exprMn exprVn.
-  by rewrite lter_pdivlMr; ring_lia.
+  by rewrite root_le_x // a1 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
 have a'2_ubP : a' 2 <= a'2_ub%:C.
   have ge0a'2 : 0 <= a'2_ub%:C by rewrite ler0q divr_ge0.
   have ge0a2 : 0 <= (a 2)%:Q%:C by rewrite ler0q.
-  rewrite root_le_x // a2 -rmorphXn ler_rat exprMn exprVn.
-  by rewrite lter_pdivlMr; ring_lia.
+  by rewrite root_le_x // a2 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
 have a'3_ubP : a' 3 <= a'3_ub%:C.
   have ge0a'3 : 0 <= a'3_ub%:C by rewrite ler0q divr_ge0.
   have ge0a3 : 0 <= (a 3)%:Q%:C by rewrite ler0q.
-  rewrite root_le_x // a3 -rmorphXn ler_rat exprMn exprVn.
-  by rewrite lter_pdivlMr; ring_lia.
+  by rewrite root_le_x // a3 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
 have a'4_ubP : a' 4 <= a'4_ub%:C.
   have ge0a'1 : 0 <= a'4_ub%:C by rewrite ler0q divr_ge0.
   have ge0a4 : 0 <= (a 4)%:Q%:C by rewrite ler0q ler0z.
@@ -349,33 +345,26 @@ have a'4_ubP : a' 4 <= a'4_ub%:C.
   rewrite 8!big_ord_recl big_ord0 !expr1n !mul1r /= /bump !add1n.
   set lhs := (X in _ <= X).
   suff -> : lhs = rat_of_Z 34077892883014859211 / rat_of_Z 12800000000000000.
-    have ->: 1807%:~R = rat_of_Z 1807 by rewrite rat_of_ZEdef; congr _%:~R.
-    by rewrite lter_pdivlMr // -subr_ge0 -rmorphM -rmorphB rat_of_Z_ZposW.
+    by rewrite lter_pdivlMr; ring_lia.
   rewrite {}/lhs bin0 mulr1n bin1 expr0 expr1.
   have -> : t ^+ 7 *+ 'C(1807, 7) =  t ^+ 7 * rat_of_Z 12337390971384003811.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   have -> : t ^+ 6 *+ 'C(1807, 6) = t ^+ 6 * rat_of_Z 47952102609488077.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   have -> : t ^+ 5 *+ 'C(1807, 5) =  t ^+ 5 * rat_of_Z 159662938766331.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   have -> : t ^+ 4 *+ 'C(1807, 4) = t ^+ 4 * rat_of_Z 442770212885.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   have -> : t ^+ 3 *+ 'C(1807, 3) = t ^+ 3 * rat_of_Z 981752135.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   have -> : t ^+ 2 *+ 'C(1807, 2) = t ^+ 2 * rat_of_Z 1631721.
     rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    rewrite -!rat_of_Z_of_nat !Nat2Z.inj_mul.
-    by do !(set x := Z.of_nat _; compute in x; rewrite {}/x); field.
+    by field.
   by rewrite /t; field.
 by rewrite 4!rmorphM rmorphXn /=; do 4!rewrite ler_pM ?mulr_ge0 //.
 Qed.
