@@ -481,7 +481,7 @@ suff step4 : cn < ((10 * n)%N%:Q ^+ k)%:C * t10n_to 1%N (a k.+1).-1 *
 congr (_ < _): (l10 (proj1 (andP Hank))).
 have -> : forall k1, exp_quo n%:Q (n * (a k1.+1).-2) (a k1.+1).-1
                      = \prod_(i < k1.+1) exp_quo n%:Q n (a i).
-  elim=> [|k1 HIk1]; first by rewrite big_ord_recr big_ord0 /= mul1r muln1.
+  elim=> [|k1 HIk1]; first by rewrite big_ord_recr big_ord0 /= mul1r !muln1.
   rewrite big_ord_recr /= -HIk1 -exp_quo_plus //; apply: exp_quo_equiv => //=.
   - by rewrite muln_gt0 /= muln_gt0; apply/andP.
   - by rewrite muln_gt0 andbT muln_gt0; apply/andP.
