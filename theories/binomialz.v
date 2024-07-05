@@ -214,10 +214,10 @@ Qed.
 
 (* Below, older results, possibly needing revision. *)
 Lemma binz_Znat_gt0 (n k : int) :
-  n \is a Znat -> k \is a Znat -> k <= n -> 0 < binomialz n k.
+  n \is a Num.nat -> k \is a Num.nat -> k <= n -> 0 < binomialz n k.
 Proof. by move=> /ZnatP[{}n ->] /ZnatP[{}k ->] le_kn; rewrite binz_gt0. Qed.
 
-Lemma binznSn (n : int) : n \is a Znat -> binomialz n (n + 1) = 0.
+Lemma binznSn (n : int) : n \is a Num.nat -> binomialz n (n + 1) = 0.
 Proof. by case/ZnatP => ? ->; rewrite -PoszD binz_nat_nat bin_small ?addn1. Qed.
 
 

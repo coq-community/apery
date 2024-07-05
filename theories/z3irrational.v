@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import bigenough cauchyreals.
 Require Import extra_mathcomp extra_cauchyreals.
 Require Import tactics shift bigopz arithmetics seq_defs.
@@ -303,7 +303,7 @@ pose_big_enough n.
   have h_lt1 : sigma_Q n < 1 / 2%:Q.
     apply/lt_creal_cst; rewrite sigma_QP; apply: MP; raise_big_enough.
   suff : 1 <= sigma_Q n by apply/negP; rewrite -ltNge; apply: lt_trans h_lt1 _.
-  suff /QintP [z zP] : sigma_Q n \is a Qint.
+  suff /intrP [z zP] : sigma_Q n \is a Num.int.
     by move: h_pos; rewrite zP ler1z -gtz0_ge1 ltr0z; apply.
   rewrite /sigma_Q mulrDr mulrN; apply/rpredB/Qint_l3b.
   rewrite -mulrA; apply: rpredM (rpred_int _ _) _.

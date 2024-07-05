@@ -27,7 +27,7 @@ Local Open Scope ring_scope.
 
 (* Although the type of the values of a is the one of rationals, these *)
 (* values are all integer. *)
-Fact Qint_a (i : int)  : a i \is a Qint.
+Fact Qint_a (i : int)  : a i \is a Num.int.
 Proof. by apply: rpred_sum => ?; rewrite rpred_zify. Qed.
 
 (* The values of a are strictly positive at positive indexes. *)
@@ -305,9 +305,10 @@ suff im_hr j x : 0 <= j -> 0 < x -> x <= xp j -> hr j x <= xp (j + 1).
   move/(_ (eqxx _)): ihn => ler3x.
   have -> : n.+3 = Posz n.+2 + 1 :> int by rewrite -addn1 PoszD.
   have -> : QtoR (rho (Posz n.+2 + 1)) = hr n.+2 (QtoR (rho n.+2)).
-    rewrite rho_rec // h2hr // ; exact: lt_0_rho.
-  apply: le_trans (im_hr _ _ _ _ ler3x) _ => //.
-  rewrite RealAlg.ltr_to_alg; exact: lt_0_rho.
+    by rewrite rho_rec // h2hr; exact: lt_0_rho.
+  apply: le_trans (im_hr _ _ _ _ ler3x) _; first by [].
+    by rewrite RealAlg.ltr_to_alg lt_0_rho.
+  exact: le_refl. (* FIXME: done is too slow here *)
 move=> le0j lt0x /(hr_incr j _ _ le0j lt0x) {i le2i}.
 have -> : hr j (xp j) = xp j.
   apply/eqP; rewrite -subr_eq0 hr_p; last exact/lt0r_neq0/lt_0_xp.
@@ -315,8 +316,7 @@ have -> : hr j (xp j) = xp j.
   by rewrite fac_p // subrr mul0r oppr0.
 move=> h; apply: le_trans h _.
 suff xp_incr : xp j <= xp (j + 1) by [].
-rewrite /xp ler_pM2r; last first.
-  by rewrite invr_gt0 RealAlg.ltr_to_alg.
+rewrite /xp ler_pM2r; last by rewrite invr_gt0 RealAlg.ltr_to_alg.
 apply: lerD.
   by rewrite RealAlg.ler_to_alg rmorphD /=; apply: alpha_incr; rewrite ler0z.
 rewrite ler_sqrt; last by try apply/ltW; apply/deltap_pos/addr_ge0.

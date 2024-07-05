@@ -51,7 +51,7 @@ Qed.
 (* This lemma is not in arithmetics.v becuse it uses type rat. *)
 
 Lemma iter_lcmn_mul_rat (r : rat) (n : nat) : `|denq r| <= n ->
-  (iter_lcmn n)%:Q * r \is a Qint.
+  (iter_lcmn n)%:Q * r \is a Num.int.
 Proof.
 move=> ledn; rewrite -[r]divq_num_den mulrA -rmorphM.
 by apply/Qint_dvdz/dvdz_mulr/iter_lcmn_div; rewrite // absz_gt0 denq_neq0.
@@ -59,9 +59,9 @@ Qed.
 
 
 (* FIXME : still too much nat/int conversions, not so easy to do better *)
-Lemma Qint_l3b (n : nat) : 2%:Q * (l n)%:Q ^ 3 * b (Posz n) \is a Qint.
+Lemma Qint_l3b (n : nat) : 2%:Q * (l n)%:Q ^ 3 * b (Posz n) \is a Num.int.
 Proof.
-set goal_term := (X in X \is a Qint).
+set goal_term := (X in X \is a Num.int).
 have {goal_term} -> : goal_term =
   2%:Q * (l n)%:Q ^ 3 * ghn3 n * a n +
   2%:Q * (l n)%:Q ^ 3 * (\sum_(0 <= k < Posz n + 1 :> int) c n k * s n k).
@@ -76,7 +76,7 @@ move=> k /andP [/andP [le0k lekn] _]; rewrite mulrA mulr_sumr big_int_cond /=.
 apply/rpred_sum => m /andP [/andP [le1m lemk] _]; rewrite -mulrA cdM //.
 pose hardest_term := (l n)%:Q ^ 3 / (m%:Q ^ 3 * (binomialz k m)%:Q ^ 2).
 set other_term := (X in _ * _ * _ * X).
-set goal_term := (X in X \is a Qint).
+set goal_term := (X in X \is a Num.int).
 have {goal_term} -> : goal_term = (-1) ^ (m + 1) * other_term * hardest_term.
   rewrite /goal_term /hardest_term; field.
   rewrite !intr_eq0 lt0r_neq0 ?binz_gt0; lia.
