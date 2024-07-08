@@ -55,12 +55,6 @@ supported_coq_versions:
   opam: '{(>= "8.16" & < "8.20~") | (= "dev")}'
 
 tested_coq_opam_versions:
-- version: '2.0.0-coq-8.16'
-  repo: 'mathcomp/mathcomp'
-- version: '2.0.0-coq-8.17'
-  repo: 'mathcomp/mathcomp'
-- version: '2.0.0-coq-8.18'
-  repo: 'mathcomp/mathcomp'
 - version: '2.1.0-coq-8.16'
   repo: 'mathcomp/mathcomp'
 - version: '2.1.0-coq-8.17'
@@ -77,8 +71,6 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '2.2.0-coq-dev'
   repo: 'mathcomp/mathcomp'
-- version: 'coq-8.17'
-  repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.18'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.19'
@@ -89,9 +81,9 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{(>= "2.0" & < "2.3~") | (= "dev")}'
+    version: '{(>= "2.1" & < "2.3~") | (= "dev")}'
   description: |-
-    [MathComp ssreflect 2.0 or later](https://math-comp.github.io)
+    [MathComp ssreflect 2.1 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-algebra
   description: |-
@@ -122,9 +114,9 @@ dependencies:
     [Mczify](https://github.com/math-comp/mczify) 1.5.0 or later
 - opam:
     name: coq-mathcomp-algebra-tactics
-    version: '{>= "1.2.0"}'
+    version: '{>= "1.2.2"}'
   description: |-
-    [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 1.2.0 or later
+    [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 1.2.2 or later
 
 namespace: mathcomp.apery
 
