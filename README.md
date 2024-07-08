@@ -43,14 +43,14 @@ remains the sole trusted code base.
 - License: [CeCILL-C](LICENSE)
 - Compatible Coq versions: 8.16 or later
 - Additional dependencies:
-  - [MathComp ssreflect 2.0 or later](https://math-comp.github.io)
+  - [MathComp ssreflect 2.1 or later](https://math-comp.github.io)
   - [MathComp algebra](https://math-comp.github.io)
   - [MathComp field](https://math-comp.github.io)
   - [CoqEAL 2.0.0 or later](https://github.com/coq-community/coqeal)
   - [MathComp real closed fields 2.0.0 or later](https://github.com/math-comp/real-closed)
   - [MathComp bigenough 1.0.1 or later](https://github.com/math-comp/bigenough)
   - [Mczify](https://github.com/math-comp/mczify) 1.5.0 or later
-  - [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 1.2.0 or later
+  - [Algebra Tactics](https://github.com/math-comp/algebra-tactics) 1.2.2 or later
 - Coq namespace: `mathcomp.apery`
 - Related publication(s):
   - [A Formal Proof of the Irrationality of ζ(3)](https://arxiv.org/abs/1912.06611) 
