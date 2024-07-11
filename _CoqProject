@@ -42,7 +42,6 @@ theories/z3irrational.v
 theories/z3seq_props.v
 theories/rho_computations.v
 theories/multinomial.v
-theories/floor.v
 theories/hanson_elem_arith.v
 theories/hanson_elem_analysis.v
 theories/hanson.v
