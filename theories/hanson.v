@@ -1,6 +1,6 @@
 Require Import ZArith.
-From mathcomp Require Import all_ssreflect all_algebra all_field.
-Require Import extra_mathcomp tactics binomialz floor arithmetics posnum.
+From mathcomp Require Import all_ssreflect all_algebra all_field archimedean.
+Require Import extra_mathcomp tactics binomialz arithmetics posnum.
 Require Import rat_of_Z hanson_elem_arith hanson_elem_analysis.
 
 Set Implicit Arguments.
@@ -522,13 +522,10 @@ suff [K [Kpos KP]] : exists K : nat,
   exists K; split => // -[| n]; first by rewrite expn0 muln1 iter_lcmn0.
   case: n => [| n]; first by rewrite iter_lcmn1 muln_gt0 Kpos.
   by apply/leq_trans/KP/n_between_a => //; apply/lcm_leq_Cnk.
-suff [K [Kpos KP]] : exists K : rat,
+suff [K [/ltW/trunc_itv/andP[_ Kpos] KP]] : exists K : rat,
     (0 < K) /\ forall n k, cond n k -> (C n k.+1)%:R <= K * 3%:R ^ n.
-  move: (floorQ K) (floorQ_ge0 (ltW Kpos)) (floorQ_spec K).
-  case=> // k _ /andP [_ leKSn]; exists k.+1; split=> // n m {}/KP KP.
-  suff: (C n m.+1)%:R <= (k%:Q + 1) * 3%:R ^ n.
-    by rewrite -[_ + 1%:R]natrD -[_ ^ n]natrX -natrM ler_nat addn1.
-  exact/le_trans/ler_wpM2r/ltW/leKSn/exprz_ge0.
+  exists (Num.trunc K).+1; split=> // n m {}/KP.
+  by rewrite -(ler_nat rat) natrM natrX => /le_trans-> //; apply/ler_wpM2r/ltW.
 move mE: 10%N%:Q => m. (* FIXME *)
 have lt0m : 0 < m by rewrite -mE.
 have le0m : 0 <= m by exact: ltW.

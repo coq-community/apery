@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import extra_mathcomp tactics floor arithmetics multinomial.
+Require Import extra_mathcomp tactics arithmetics multinomial.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
