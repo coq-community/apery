@@ -132,7 +132,7 @@ Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
 Proof. by rewrite ltNge posnum_ge0. Qed.
 
 Lemma min_pos_gt0 x y : 0 < minr x%:num y%:num.
-Proof. by rewrite lt_minr !posnum_gt0. Qed.
+Proof. by rewrite lt_min !posnum_gt0. Qed.
 Canonical minr_posnum x y := PosNum (@min_pos_gt0 x y).
 
 End PosNumReal.
