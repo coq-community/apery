@@ -1,5 +1,5 @@
 Require Import BinInt ZifyClasses.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 Require Import tactics.
 
 (* Tentative definition of shifts for indexes of sequences. *)

@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 Require Import extra_mathcomp.
 (* Infrastructure for iterated operators indexed by ints. *)
 

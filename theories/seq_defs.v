@@ -4,7 +4,7 @@
    the alternative definition below is better suited for
    algorithmically getting a recurrence on b. *)
 
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import binomialz bigopz.
 Require harmonic_numbers.
 

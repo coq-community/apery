@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import extra_mathcomp.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -35,7 +35,7 @@ Proof. by rewrite /multinomial big_nil. Qed.
 
 Lemma multi_singl n : 'C[[:: n]] = 1.
 Proof.
-by rewrite /multinomial; do 2! (rewrite !big_mkord /= big_ord1 /=); rewrite binn.
+by rewrite /multinomial; do 2! (rewrite !big_mkord /= zmodp.big_ord1 /=); rewrite binn.
 Qed.
 
 Lemma multi_gt0 l : 'C[l] > 0.

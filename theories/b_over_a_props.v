@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import extra_mathcomp tactics shift rat_of_Z.
 Require annotated_recs_c.
 Require Import seq_defs initial_conds algo_closures reduce_order a_props.

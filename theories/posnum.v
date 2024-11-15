@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* Require Import Reals. *)
-From mathcomp Require Import all_ssreflect all_algebra all_field.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint all_field.
 (* Require Import boolp reals. *)
 
 (******************************************************************************)

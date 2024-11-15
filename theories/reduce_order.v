@@ -1,5 +1,5 @@
 Require Import BinInt.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import tactics binomialz shift rat_of_Z seq_defs.
 Require annotated_recs_c annotated_recs_v algo_closures initial_conds.
 
@@ -21,14 +21,14 @@ match n with
 | 1 => b 1
 | S (S o as o') =>
     let n' := Posz o in
-    - (annotated_recs_c.P_cf0 n' * b'_rec o + 
+    - (annotated_recs_c.P_cf0 n' * b'_rec o +
        annotated_recs_c.P_cf1 n' * b'_rec o') /
       annotated_recs_c.P_cf2 n'
 end.
 
 Lemma b'_rec_eq (o : nat) (n := Posz o) :
   b'_rec o.+2 =
-    - (annotated_recs_c.P_cf0 n * b'_rec o + 
+    - (annotated_recs_c.P_cf0 n * b'_rec o +
        annotated_recs_c.P_cf1 n * b'_rec o.+1) /
       annotated_recs_c.P_cf2 n.
 Proof.  by [].  Qed.
@@ -45,7 +45,7 @@ Proof.  done.  Qed.
 Lemma b'_Sn2_rew (n : int) :
 n >= 0 ->
   b' (int.shift 2 n) =
-    - (annotated_recs_c.P_cf0 n * b' n + 
+    - (annotated_recs_c.P_cf0 n * b' n +
        annotated_recs_c.P_cf1 n * b' (int.shift 1 n)) /
       annotated_recs_c.P_cf2 n.
 Proof.

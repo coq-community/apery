@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import tactics binomialz seq_defs.
 
 Set Implicit Arguments.

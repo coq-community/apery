@@ -1,7 +1,7 @@
 (* In this file, we now propagate the theories in the ops_for_x files to
    prove results on our concrete sequences defined in seq_defs.v. *)
 
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import tactics shift binomialz rat_of_Z seq_defs.
 Require annotated_recs_c annotated_recs_z annotated_recs_d.
 Require ops_for_a ops_for_b ops_for_s ops_for_u ops_for_v.

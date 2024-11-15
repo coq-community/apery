@@ -1,5 +1,5 @@
 Require Import BinInt.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 From CoqEAL Require Import hrel param refinements.
 From CoqEAL Require Import pos binnat rational.
 Require Import tactics rat_of_Z.
@@ -259,7 +259,7 @@ by split; last split; [| lia | exact: canLR positive_of_posK _].
 Qed.
 
 Global Instance Z_refines_eq (x : Z) : refines Logic.eq x x.
-Proof. by rewrite refinesE. Qed. 
+Proof. by rewrite refinesE. Qed.
 
 Global Instance refines_eq_nat_R_spec : refines (eq ==> nat_R)%rel spec_id id.
 Proof. by rewrite refinesE=> ? ? ->; apply: nat_Rxx. Qed.

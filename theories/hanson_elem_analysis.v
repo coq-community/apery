@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra all_field.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat all_field.
 Require Import extra_mathcomp posnum hanson_elem_arith.
 
 Set Implicit Arguments.

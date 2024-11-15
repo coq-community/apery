@@ -1,6 +1,6 @@
 Require Import BinInt.
 
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 From mathcomp Require Import realalg.
 
 From CoqEAL Require Import hrel param refinements.
@@ -348,7 +348,7 @@ move=> lt_Nrho_n; rewrite -compat33; apply: lt_le_trans lt_33_r51 _.
 by apply: rho_incr => //; rewrite lez_nat; apply: leq_trans lt_Nrho_n.
 Qed.
 
-Definition Ka := 
+Definition Ka :=
   a 1 * ((\prod_(1 <= i < Posz N_rho + 1 :> int) rho i) / 33%:Q ^+ N_rho.+1).
 
 Lemma lt_0_Ka : 0 < Ka.
@@ -371,7 +371,7 @@ suff : Ka' * 33%:Q ^ i < a i / a 1.
 rewrite -[X in _ < X](@telescope_prod_int _ 1 i (fun i => a i)) //; last first.
   by move=> /= k /andP [le1k ltki]; apply/a_neq0/le_trans/le1k.
 rewrite (big_cat_int _ _ _ _ (ltW ltiNrho)) /=; last by rewrite lerDr.
-suff hrho_maj : 33%:Q ^ i / 33%:Q ^+ N_rho.+1 < 
+suff hrho_maj : 33%:Q ^ i / 33%:Q ^+ N_rho.+1 <
                   \prod_(Posz N_rho + 1 <= i0 < i :> int) (a (i0 + 1) / a i0).
   rewrite /Ka' mulrAC -mulrA ltr_pM2l; first exact: hrho_maj.
   rewrite big_int_cond; apply: prodr_gt0 => j; rewrite andbT => /andP [hj _].
@@ -379,7 +379,7 @@ suff hrho_maj : 33%:Q ^ i / 33%:Q ^+ N_rho.+1 <
 rewrite -PoszD; case: i lt1i ltiNrho => i //.
 rewrite !ltz_nat addn1 => lt1i ltiNrho.
 rewrite eq_big_int_nat /= -expfB // -prodr_const_nat.
-by apply: ltr_prod_nat=> [// | j /andP[h51j hji]]; rewrite rho_maj 1?h51j. 
+by apply: ltr_prod_nat=> [// | j /andP[h51j hji]]; rewrite rho_maj 1?h51j.
 Qed.
 
 Lemma a_asympt (n : nat) : (N_rho + 1 < n)%N -> 1 / a n < Ka^-1 / 33%:Q ^ n.

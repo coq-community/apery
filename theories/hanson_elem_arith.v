@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import extra_mathcomp tactics arithmetics multinomial.
 
 Set Implicit Arguments.
@@ -197,7 +197,7 @@ Local Open Scope ring_scope.
 Lemma sum_aV (n : nat) :
   \sum_(0 <= i < n.+1) (a i)%:Q ^-1 = ((a n.+1)%:Q - 2%:Q) / ((a n.+1)%:Q - 1).
 Proof.
-elim: n => [|n ihn]; first by rewrite big_mkord big_ord1.
+elim: n => [|n ihn]; first by rewrite big_mkord zmodp.big_ord1.
 pose an1 := (a n.+1)%:Q; pose an2 := (a n.+2)%:Q.
 suff step : (an1 - 2%:Q) / (an1 - 1) + an1 ^-1 = (an2 - 2%:Q) / (an2 - 1).
   by rewrite big_nat_recr // ihn /= step.
