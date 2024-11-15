@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat archimedean.
 From mathcomp Require Import bigenough cauchyreals.
 Require Import extra_mathcomp extra_cauchyreals.
 Require Import tactics shift bigopz arithmetics seq_defs.

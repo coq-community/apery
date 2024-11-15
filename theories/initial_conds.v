@@ -1,5 +1,5 @@
 Require Import BinInt.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import tactics binomialz rat_of_Z seq_defs.
 Require harmonic_numbers.
 
@@ -9,7 +9,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(* We state the equalities and prove evaluations of the main sequences 
+(* We state the equalities and prove evaluations of the main sequences
    a and b, to be used as initial conditions. Proofs are done by
    (internal) computation, using the field tactic so that computations
    are performed using a rather efficient binary arithmetic instead of

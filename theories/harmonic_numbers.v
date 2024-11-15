@@ -1,5 +1,5 @@
 (* A stub library on generalized harmonic numbers. *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import tactics shift bigopz.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -14,7 +14,7 @@ Definition ghn (m : nat) (n : int) : rat :=
 Lemma ghn_Sn_inhom m n : n >= 0 ->
   ghn m (int.shift 1 n) = ghn m n + ((n%:Q + 1)^m)^-1.
 Proof.
-move=> pn. 
+move=> pn.
 by rewrite /ghn int.shift2Z big_int_recr /= ?rmorphD //= -lerBlDr.
 Qed.
 

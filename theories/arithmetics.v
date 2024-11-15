@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrint.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -187,7 +187,7 @@ have {}hvp_bin : vp 'C(k, m) =
   \sum_(i < tp k) (m %/ p ^ i.+1 + (k - m) %/ p ^ i.+1).
   rewrite -fact_logp_sum_small ?trunc_log_ltn //.
   rewrite big_split /= -!fact_logp_sum_small ?trunc_log_ltn //.
-  - by apply: (ltn_trans _ (trunc_log_ltn _ le2p)); rewrite ltn_subrL gt_m_0. 
+  - by apply: (ltn_trans _ (trunc_log_ltn _ le2p)); rewrite ltn_subrL gt_m_0.
   - exact: (leq_trans _ (trunc_log_ltn _ le2p)).
 have {}hvp_bin : vp 'C(k, m) =
   \sum_(i < tp k - vp m) (k %/ p ^ (vp m + i).+1) -
@@ -197,16 +197,16 @@ have {}hvp_bin : vp 'C(k, m) =
   rewrite 2!big_split_ord /=.
   set x := \sum_(i < vp m) _; set y := \sum_(i < vp m) _.
   suff <- : x = y by rewrite subnDl.
-  by apply: eq_bigr => [] [i] Him _ /=; rewrite -divnDl ?subnKC ?pfactor_dvdn. 
+  by apply: eq_bigr => [] [i] Him _ /=; rewrite -divnDl ?subnKC ?pfactor_dvdn.
 have min_vplk : vp m + (tp k - vp m) <= vp (l k).
   rewrite -maxnE geq_max.
   have -> : vp m <= vp (l k) by apply: dvdn_leq_log => //; exact: iter_lcmn_div.
   suff -> : tp k <= vp (l k) by [].
   rewrite -pfactor_dvdn //; apply: iter_lcmn_div; last exact: trunc_logP.
-  by rewrite expn_gt0 prime_gt0. 
+  by rewrite expn_gt0 prime_gt0.
 suff {min_vplk} h : vp 'C(k, m) <= tp k - vp m.
   by apply: leq_trans min_vplk; rewrite /vp lognM ?bin_gt0 // leq_add2l.
-have -> : tp k - vp m = \sum_(i < tp k - vp m) 1 by rewrite sum1_card card_ord. 
+have -> : tp k - vp m = \sum_(i < tp k - vp m) 1 by rewrite sum1_card card_ord.
 rewrite {}hvp_bin leq_subLR -big_split /=; apply: leq_sum=> [] [i hi] _ /=.
 have e : k = m + (k - m) by rewrite subnKC.
 rewrite {}[X in X%/ _]e; exact: leq_divDl.
@@ -221,6 +221,6 @@ move=> le0j leji lein.
 apply/dvdn_partP => [|p hp]; first by rewrite muln_gt0 bin_gt0 le0j.
 apply: dvdn_trans ( iter_lcmn_leq_div lein); move: hp.
 rewrite mem_primes; case/and3P=> pp hpos hdvd.
-rewrite p_part pfactor_dvdn //. 
+rewrite p_part pfactor_dvdn //.
 exact: bin_valp.
 Qed.

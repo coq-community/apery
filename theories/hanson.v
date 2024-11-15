@@ -1,5 +1,5 @@
 Require Import ZArith.
-From mathcomp Require Import all_ssreflect all_algebra all_field archimedean.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat all_field archimedean.
 Require Import extra_mathcomp tactics binomialz arithmetics posnum.
 Require Import rat_of_Z hanson_elem_arith hanson_elem_analysis.
 

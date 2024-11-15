@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
 Require Import shift bigopz.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -33,7 +33,7 @@ Proof.
 rewrite /horner_seqop; elim: cf {1 4}n => [ | a cf' ihcf] m.
   by rewrite big_mkord big_ord0.
 case: cf' ihcf => [_ /= | b cf' ihcf].
-  by rewrite big_mkord big_ord1 /=.
+  by rewrite big_mkord zmodp.big_ord1 /=.
 have -> : horner_seqop_rec [:: a, b & cf'] u m n =
   (horner_seqop_rec [::b & cf'] u (int.shift 1%N m) n) + a n * u m by [].
 symmetry; rewrite ihcf [size _]/= big_nat_recl // addrC; congr (_ + _).

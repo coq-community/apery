@@ -4,7 +4,7 @@
    formalization. *)
 
 Require Import BinInt.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 Require Import tactics rat_of_Z.
 
 Import Order.TTheory GRing.Theory Num.Theory.
