@@ -1,6 +1,6 @@
 Require Import BinInt.
 
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat archimedean.
 From mathcomp Require Import realalg.
 
 From CoqEAL Require Import hrel param refinements.

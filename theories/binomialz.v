@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint archimedean.
 Require Import tactics.
 
 Set Implicit Arguments.

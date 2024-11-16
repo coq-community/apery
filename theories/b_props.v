@@ -1,4 +1,5 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint intdiv rat.
+From mathcomp Require Import archimedean.
 Require Import tactics binomialz bigopz arithmetics seq_defs a_props.
 
 Set Implicit Arguments.

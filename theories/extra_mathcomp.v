@@ -1,5 +1,5 @@
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat all_field.
-From mathcomp Require Import bigenough.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint rat archimedean.
+From mathcomp Require Import all_field bigenough.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
