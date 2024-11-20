@@ -48,6 +48,7 @@ rewrite /annotated_recs_d.Sn /annotated_recs_d.precond.Sn /d => n k m ?.
 rewrite addrAC !binSz /annotated_recs_d.Sn_cf0_0_0; [ | lia ..].
 have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 have b2_pos: 0 < binomialz (n + m) m by apply: bin_nonneg; lia.
+have ->: @GRing.add (int : nmodType) n m = n + m by [].
 by field; ring_lia.
 Qed.
 
@@ -65,6 +66,7 @@ rewrite int.zshiftP !alt_sign addrA !(binzS, binSz); [ | lia ..].
 rewrite /annotated_recs_d.Sm_cf0_0_0.
 have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 have b2_pos: 0 < binomialz (n + m) m by apply: bin_nonneg; lia.
+have ->: @GRing.add (int : nmodType) n m = n + m by [].
 by field; ring_lia.
 Qed.
 
