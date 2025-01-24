@@ -240,7 +240,7 @@ Proof.
 suff -> : index_iotaz (m + a) n = map (fun i => i + a) (index_iotaz m (n - a)).
   by rewrite big_map.
 apply: (@eq_from_nth _ 0).
-  by rewrite size_map !size_index_iotaz lerBDl addrC -addrA opprD.
+  by rewrite size_map !size_index_iotaz lerBDl [m + a]addrC -addrA opprD.
 move=> i; rewrite size_index_iotaz; case: ifP => // hman hi.
 rewrite nth_index_iotaz // (nth_map 0); last first.
   rewrite size_index_iotaz lerBDr hman.
@@ -290,7 +290,7 @@ apply: (@eq_from_nth _ 0); rewrite size_cat !size_index_iotaz hmn hnp.
   have hmn' : `|n - m |  = n - m by apply: ger0_norm; rewrite subr_gte0.
   rewrite nth_index_iotaz //; last first.
     rewrite -subzn; last by  rewrite leqNgt hi2.
-    by rewrite lterBDr addrC h ltz_nat.
+    by rewrite lterBDr [ltRHS]addrC h ltz_nat.
   rewrite nth_index_iotaz //; last exact: le_trans hnp.
   rewrite -subzn; last by  rewrite leqNgt hi2.
   move: hmn'; rewrite abszE; move->. rewrite addrCA opprB.
@@ -311,7 +311,7 @@ Lemma big_int_recr m n F : m <= n ->
      op  (\big[op/idx]_(m <= i < n :> int) F (i)) (F n).
 Proof.
 move=> hmn; rewrite (@big_cat_int n) ?ler_wpDr //=.
-rewrite big_addz2l (@big_ltz 0 1) // add0r (@big_geqz 1 1) // add0r.
+rewrite big_addz2l (@big_ltz 0 1) // add0r (@big_geqz 1 1) // ?add0r.
 by rewrite Monoid.Theory.mulm1.
 Qed.
 

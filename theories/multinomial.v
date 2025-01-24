@@ -155,7 +155,7 @@ rewrite {}/s; elim/last_ind: l n m => [|l a ihl] n m /=.
 - move=> leqnm; rewrite size_rcons big_rcons /= exprDn.
   set s := size l.
   pose tlast s (t : s.-tuple 'I_m.+1) := last ord0 t.
-  have -> P F :
+  have -> P (F : _ -> R) :
    \sum_(t : s.+1.-tuple 'I_m.+1 | P t) F t =
    \sum_(j < m.+1) \sum_(t | P t && (tlast _ t == j)) F t.
      exact: partition_big.
@@ -171,7 +171,7 @@ rewrite {}/s; elim/last_ind: l n m => [|l a ihl] n m /=.
     by apply: (leq_trans (leq_subr _ _)); apply: (leq_trans leqnm).
   rewrite mulr_suml -sumrMnl.
   pose tsum a (t : a.-tuple 'I_m.+1) b := ((\sum_(j <- t) j) == b)%N.
-  have -> F :
+  have -> (F : _ -> R) :
   \sum_(t : s.+1.-tuple 'I_m.+1 | tsum _ t n && (tlast _ t == i)) F t =
   \sum_(t : s.-tuple 'I_m.+1    | tsum _ t (n - i)%N) F [tuple of (rcons t i)].
     pose indx (t : s.-tuple 'I_m.+1) := [tuple of rcons t i].
