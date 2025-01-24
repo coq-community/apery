@@ -46,11 +46,11 @@ Lemma d_Sn : annotated_recs_d.Sn d.
 Proof.
 rewrite /annotated_recs_d.Sn /annotated_recs_d.precond.Sn /d => n k m ?.
 rewrite addrAC !binSz /annotated_recs_d.Sn_cf0_0_0; [ | lia ..].
-field.
 have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
-have ->: (binomialz (n + m) m)%:~R != 0 :> rat.
-  by rewrite intq_eq0; apply/Num.Theory.lt0r_neq0/bin_nonneg; lia.
-by ring_lia.
+(* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
+set b := binomialz (n + m) _.
+have b2_pos: 0 < b by apply: bin_nonneg; lia.
+field; ring_lia.
 Qed.
 
 (* This is a fake recurrence, because d does not really depend on k *)
@@ -65,11 +65,11 @@ Proof.
 rewrite /annotated_recs_d.Sm /annotated_recs_d.precond.Sm /d => n k m ?.
 rewrite int.zshiftP !alt_sign addrA !(binzS, binSz); [ | lia ..].
 rewrite /annotated_recs_d.Sm_cf0_0_0.
-field.
 have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
-have ->: (binomialz (n + m) m)%:~R != 0 :> rat.
-  by rewrite intq_eq0; apply/Num.Theory.lt0r_neq0/bin_nonneg; lia.
-by ring_lia.
+(* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
+set b := binomialz (n + m) _.
+have b2_pos: 0 < b by apply: bin_nonneg; lia.
+field; ring_lia.
 Qed.
 
 Definition d_ann := annotated_recs_d.ann d_Sn d_Sk d_Sm.
