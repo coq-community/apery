@@ -50,7 +50,7 @@ have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 (* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
 set b := binomialz (n + m) _.
 have b2_pos: 0 < b by apply: bin_nonneg; lia.
-field; ring_lia.
+by field; ring_lia.
 Qed.
 
 (* This is a fake recurrence, because d does not really depend on k *)
@@ -69,7 +69,7 @@ have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 (* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
 set b := binomialz (n + m) _.
 have b2_pos: 0 < b by apply: bin_nonneg; lia.
-field; ring_lia.
+by field; ring_lia.
 Qed.
 
 Definition d_ann := annotated_recs_d.ann d_Sn d_Sk d_Sm.
