@@ -46,7 +46,7 @@ remains the sole trusted code base.
   - [MathComp ssreflect 2.1 or later](https://math-comp.github.io)
   - [MathComp algebra](https://math-comp.github.io)
   - [MathComp field](https://math-comp.github.io)
-  - [CoqEAL 2.0.0 or later](https://github.com/coq-community/coqeal)
+  - [CoqEAL 2.0.4 or later](https://github.com/coq-community/coqeal)
   - [MathComp real closed fields 2.0.0 or later](https://github.com/math-comp/real-closed)
   - [MathComp bigenough 1.0.1 or later](https://github.com/math-comp/bigenough)
   - [Mczify](https://github.com/math-comp/mczify) 1.5.0 or later
