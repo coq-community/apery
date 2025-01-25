@@ -196,15 +196,22 @@ Context (RexpAQ : refines (RAQ ==> Logic.eq ==> RAQ)%rel (@GRing.exp _) exp_op).
 Context (RZtoAQ : refines (Logic.eq ==> RAQ)%rel rat_of_Z cast).
 Context (Rnat_to_AQ : refines (Logic.eq ==> RAQ)%rel natr cast).
 
-Parametricity positive.
-Parametricity Z.
-Parametricity generic_beta.
-Parametricity generic_alpha.
-Parametricity generic_h.
-Parametricity generic_h_iter.
+Elpi derive.param2 positive.
+Elpi derive.param2 Z.
+Elpi derive.param2 generic_beta.
+Elpi derive.param2 generic_alpha.
+Elpi derive.param2 generic_h.
+Elpi derive.param2 generic_h_iter.
 
 Global Instance refines_bool_eq x y : refines Z_R x y -> refines eq x y.
 Proof. by rewrite !refinesE; case => // p q; elim => // ? ? _ [->]. Qed.
+
+Global Instance refines_expAQ :
+  refines (exp_of_R RAQ nat_R) (GRing.exp (R:=rat)) expAQ.
+Proof. by rewrite /exp_of_R refinesE => *; apply: refinesP. Qed.
+
+Global Instance refines_ZtoAQ : refines (cast_of_R Z_R RAQ) rat_of_Z ZtoAQ.
+Proof. by rewrite /cast_of_R refinesE => *; apply: refinesP. Qed.
 
 Global Instance refines_beta :
   refines (RAQ ==> RAQ)%rel beta (generic_beta _ _ _ _).
@@ -218,9 +225,13 @@ Global Instance refines_h :
   refines (RAQ ==> RAQ ==> RAQ)%rel h (generic_h _ _ _ _ _ _).
 Proof. by param generic_h_R. Qed.
 
+Global Instance refines_nat_to_AQ :
+  refines (cast_of_R nat_R RAQ) natr nat_to_AQ.
+Proof. by rewrite /cast_of_R refinesE => *; apply: refinesP. Qed.
+
 Global Instance refines_h_iter n :
   refines (RAQ)%rel (h_iter n) (generic_h_iter _ _ _ _ _ _ _ _ n).
-Proof. by param generic_h_iter_R; rewrite refinesE; elim: n => //= *; constructor. Qed.
+Proof. by param generic_h_iter_R; rewrite refinesE; apply: nat_Rxx. Qed.
 
 End parametric.
 
