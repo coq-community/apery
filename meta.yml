@@ -55,25 +55,11 @@ supported_coq_versions:
   opam: '{(>= "8.16" & < "8.20~") | (= "dev")}'
 
 tested_coq_opam_versions:
-- version: '2.1.0-coq-8.16'
+- version: '2.3.0-coq-8.20'
   repo: 'mathcomp/mathcomp'
-- version: '2.1.0-coq-8.17'
+- version: '2.3.0-coq-dev'
   repo: 'mathcomp/mathcomp'
-- version: '2.1.0-coq-8.18'
-  repo: 'mathcomp/mathcomp'
-- version: '2.2.0-coq-8.16'
-  repo: 'mathcomp/mathcomp'
-- version: '2.2.0-coq-8.17'
-  repo: 'mathcomp/mathcomp'
-- version: '2.2.0-coq-8.18'
-  repo: 'mathcomp/mathcomp'
-- version: '2.2.0-coq-8.19'
-  repo: 'mathcomp/mathcomp'
-- version: '2.2.0-coq-dev'
-  repo: 'mathcomp/mathcomp'
-- version: 'coq-8.18'
-  repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-8.19'
+- version: 'coq-8.20'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-dev'
   repo: 'mathcomp/mathcomp-dev'
@@ -81,7 +67,7 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{(>= "2.1" & < "2.3~") | (= "dev")}'
+    version: '{(>= "2.3" & < "2.4~") | (= "dev")}'
   description: |-
     [MathComp ssreflect 2.1 or later](https://math-comp.github.io)
 - opam:
@@ -94,9 +80,9 @@ dependencies:
     [MathComp field](https://math-comp.github.io)
 - opam:
     name: coq-coqeal
-    version: '{>= "2.0.0"}'
+    version: '{>= "2.0.4"}'
   description: |-
-    [CoqEAL 2.0.0 or later](https://github.com/coq-community/coqeal)
+    [CoqEAL 2.0.4 or later](https://github.com/coq-community/coqeal)
 - opam:
     name: coq-mathcomp-real-closed
     version: '{>= "2.0.0"}'
